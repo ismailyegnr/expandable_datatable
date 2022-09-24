@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../../expandable_datatable.dart';
-import 'expandable_theme_data.dart';
 
 class ExpandableTheme extends InheritedWidget {
   final ExpandableThemeData data;
