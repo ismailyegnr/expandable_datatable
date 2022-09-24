@@ -89,22 +89,22 @@ Create the list of the rows to be used in data table. All row list elements must
 
 #### Sorting the rows
 
-<img src="screenshots/sorting.png" height="400" alt="Sort Screenshot"/>
+<img src="https://raw.githubusercontent.com/ismailyegnr/expandable_datatable/master/screenshots/sorting.png" height="400" alt="Sort Screenshot"/>
 
 
 #### Expansion feature
 
-<img src="screenshots/expansion.png" height="400" alt="Expansion Screenshot"/>
+<img src="https://raw.githubusercontent.com/ismailyegnr/expandable_datatable/master/screenshots/expansion.png" height="400" alt="Expansion Screenshot"/>
 
 
 #### Edit rows dialog (Customizable)
 
-<img src="screenshots/editing.png" height="400" alt="Editing Screenshot"/>
+<img src="https://raw.githubusercontent.com/ismailyegnr/expandable_datatable/master/screenshots/editing.png" height="400" alt="Editing Screenshot"/>
 
 
 #### Styling
 
-<img src="screenshots/styling.png" height="400" alt="Styling Screenshot"/>
+<img src="https://raw.githubusercontent.com/ismailyegnr/expandable_datatable/master/screenshots/styling.png" height="400" alt="Styling Screenshot"/>
 
 ## License
 
