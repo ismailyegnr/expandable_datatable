@@ -48,6 +48,11 @@ class ExpandableDataTable extends StatefulWidget {
   ///
   final int visibleColumnCount;
 
+  /// Flag indicating that multiple expansions are enabled for rows.
+  ///
+  /// It defaults to true.
+  final bool multipleExpansion;
+
   /// Triggers when a row is edited with [ExpandableEditDialog].
   ///
   /// Returns the new [ExpandableRow] data.`
@@ -146,10 +151,11 @@ class ExpandableDataTable extends StatefulWidget {
 
   ExpandableDataTable({
     Key? key,
-    required this.rows,
     required this.headers,
+    required this.rows,
     required this.visibleColumnCount,
     this.pageSize = 10,
+    this.multipleExpansion = true,
     this.onRowChanged,
     this.onPageChanged,
     this.renderEditDialog,
@@ -166,6 +172,8 @@ class ExpandableDataTable extends StatefulWidget {
 }
 
 class _ExpandableDataTableState extends State<ExpandableDataTable> {
+  final SortOperations _sortOperations = SortOperations();
+
   List<ExpandableColumn> _headerTitles = [];
 
   /// Stores the sorted state data of the data table.
@@ -173,13 +181,11 @@ class _ExpandableDataTableState extends State<ExpandableDataTable> {
   /// This helps for building.
   List<List<SortableRow>> _sortedRowsList = [];
 
-  int _totalPageCount = 0;
-
-  int _currentPage = 0;
-
-  final SortOperations _sortOperations = SortOperations();
-
   late double _trailingWidth;
+
+  int _totalPageCount = 0;
+  int _currentPage = 0;
+  int _selectedRow = -1;
 
   int get pageLength =>
       _sortedRowsList.isNotEmpty ? _sortedRowsList[_currentPage].length : 0;
@@ -256,7 +262,15 @@ class _ExpandableDataTableState extends State<ExpandableDataTable> {
 
     _composeRowsList(tempSortArray);
 
+    _shrinkAllRows();
+
     setState(() {});
+  }
+
+  void _shrinkAllRows() {
+    if (_selectedRow != -1) {
+      _selectedRow = -1;
+    }
   }
 
   /// Close expanded rows while page is changing.
@@ -264,6 +278,8 @@ class _ExpandableDataTableState extends State<ExpandableDataTable> {
     if (widget.onPageChanged != null) {
       widget.onPageChanged!(newPage);
     }
+
+    _shrinkAllRows();
 
     setState(() {
       _currentPage = newPage;
@@ -279,6 +295,18 @@ class _ExpandableDataTableState extends State<ExpandableDataTable> {
     }
 
     setState(() {});
+  }
+
+  void _onExpansionChanged(bool value, int rowIndex) {
+    if (widget.multipleExpansion == false) {
+      if (_selectedRow == rowIndex && value == false) {
+        _selectedRow = -1;
+      } else if (value == true) {
+        setState(() {
+          _selectedRow = rowIndex;
+        });
+      }
+    }
   }
 
   @override
@@ -375,6 +403,8 @@ class _ExpandableDataTableState extends State<ExpandableDataTable> {
           backgroundColor: currentRowColor ?? context.expandableTheme.rowColor,
           trailingWidth: _trailingWidth,
           secondTrailing: buildEditIcon(context, index),
+          onExpansionChanged: (value) => _onExpansionChanged(value, index),
+          initiallyExpanded: _selectedRow == index,
           title: buildRowTitleContent(titleCells),
           childrenPadding: EdgeInsets.symmetric(vertical: context.lowValue),
           children: buildExpansionContent(context, row, expansionCells),

@@ -309,6 +309,17 @@ class ExpansionTileState extends State<ExpansionTile>
     super.dispose();
   }
 
+  @override
+  void didUpdateWidget(covariant ExpansionTile oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if (widget.initiallyExpanded != oldWidget.initiallyExpanded &&
+        widget.initiallyExpanded == false &&
+        _isExpanded == true) {
+      handleTap();
+    }
+  }
+
   void handleTap() {
     setState(() {
       _isExpanded = !_isExpanded;

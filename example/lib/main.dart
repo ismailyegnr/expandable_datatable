@@ -138,8 +138,9 @@ class _HomePageState extends State<HomePage> {
                     paginationSelectedTextColor: Colors.white,
                   ),
                   child: ExpandableDataTable(
-                    rows: rows,
                     headers: headers,
+                    rows: rows,
+                    multipleExpansion: false,
                     onRowChanged: (newRow) {
                       print(newRow.cells[01].value);
                     },
