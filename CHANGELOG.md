@@ -1,3 +1,7 @@
+## 0.0.3 - 10/02/2022
+
+- Add enable/disable multiple expansion parameter
+
 ## 0.0.2 - 09/24/2022
 
 - Fix README screenshots
