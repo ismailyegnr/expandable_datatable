@@ -91,9 +91,13 @@ class _PaginationWidgetState extends State<PaginationWidget> {
 
     /// Next or Previous buttons are tapped.
     if (index == prevButton) {
-      newPage != 0 ? --newPage : newPage;
+      if (newPage != 0) {
+        --newPage;
+      }
     } else if (index == nextButton) {
-      newPage < _totalPageCount - 1 ? ++newPage : newPage;
+      if (newPage < _totalPageCount - 1) {
+        ++newPage;
+      }
     } else {
       /// Page is changed by tapping page number.
       if (_midPoint == null) {
@@ -112,15 +116,11 @@ class _PaginationWidgetState extends State<PaginationWidget> {
       if (newPage < midPointMargin) {
         /// New page is closer to right edge. Gives least value of midPoint.
         _midPoint = midPointMargin;
-
-        ///
       } else if (newPage >
           _totalPageCount - widget.maxVisiblePage + midPointMargin) {
         /// New page is closer to left(greatest) edge. Gives greates value of
         /// midPoint.
         _midPoint = _totalPageCount - widget.maxVisiblePage + midPointMargin;
-
-        ///
       } else {
         /// New page is at the middle. midPoint and newPage is equal.
         _midPoint = newPage;
