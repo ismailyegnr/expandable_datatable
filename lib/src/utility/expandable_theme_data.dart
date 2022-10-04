@@ -1,6 +1,14 @@
 import 'package:flutter/material.dart';
 
 class ExpandableThemeData {
+  /// Specifies padding for all header and data rows.
+  ///
+  /// If [headerHeight] is already specified, this will only affect the header row
+  /// horizontally.
+  ///
+  /// It defaults to `EdgeInsets.symmetric(horizontal: 16.0)`.
+  final EdgeInsets contentPadding;
+
   /// Text style of header row.
   final TextStyle headerTextStyle;
 
@@ -87,6 +95,7 @@ class ExpandableThemeData {
 
   factory ExpandableThemeData(
     BuildContext context, {
+    EdgeInsets? contentPadding,
     TextStyle? headerTextStyle,
     TextStyle? rowTextStyle,
     int? headerTextMaxLines,
@@ -119,6 +128,7 @@ class ExpandableThemeData {
 
     const TextStyle fixText = TextStyle(fontSize: 13);
 
+    contentPadding ??= const EdgeInsets.symmetric(horizontal: 16.0);
     headerTextStyle ??= theme.textTheme.bodyText1 ?? fixText;
     rowTextStyle ??= theme.textTheme.bodyText2 ?? fixText;
     headerTextMaxLines ??= 2;
@@ -146,6 +156,7 @@ class ExpandableThemeData {
     paginationSize ??= 48;
 
     return ExpandableThemeData.raw(
+      contentPadding: contentPadding,
       headerTextStyle: headerTextStyle,
       rowTextStyle: rowTextStyle,
       headerTextMaxLines: headerTextMaxLines,
@@ -175,6 +186,7 @@ class ExpandableThemeData {
   }
 
   const ExpandableThemeData.raw({
+    required this.contentPadding,
     required this.headerTextStyle,
     required this.rowTextStyle,
     required this.headerTextMaxLines,

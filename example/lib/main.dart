@@ -117,6 +117,7 @@ class _HomePageState extends State<HomePage> {
                 return ExpandableTheme(
                   data: ExpandableThemeData(
                     context,
+                    contentPadding: const EdgeInsets.all(20),
                     expandedBorderColor: Colors.transparent,
                     paginationSize: 48,
                     headerHeight: 56,

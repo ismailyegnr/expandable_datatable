@@ -29,11 +29,24 @@ class TableHeader extends StatelessWidget {
       color: context.expandableTheme.headerColor,
     );
 
+    double? height = context.expandableTheme.headerHeight;
+    late EdgeInsets padding;
+
+    if (height == null) {
+      padding = context.expandableTheme.contentPadding;
+    } else {
+      padding = EdgeInsets.only(
+        right: context.expandableTheme.contentPadding.right,
+        left: context.expandableTheme.contentPadding.left,
+      );
+    }
+
     return Container(
       decoration: boxDecoration,
-      height: context.expandableTheme.headerHeight,
+      height: height,
       child: Center(
         child: ListTile(
+          contentPadding: padding,
           dense: true,
           title: IntrinsicHeight(
             child: Row(

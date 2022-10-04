@@ -396,6 +396,7 @@ class _ExpandableDataTableState extends State<ExpandableDataTable> {
           dividerColor: context.expandableTheme.expandedBorderColor,
         ),
         child: custom_tile.ExpansionTile(
+          tilePadding: context.expandableTheme.contentPadding,
           showExpansionIcon: expansionCells.isNotEmpty,
           expansionIcon: context.expandableTheme.expansionIcon,
           collapsedBackgroundColor:
