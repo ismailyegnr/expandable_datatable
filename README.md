@@ -17,6 +17,7 @@ ExpandableDataTable is a Flutter library for dealing with displaying and editing
 <br />
 
 **ExpandableDataTable Parameters:**
+
 | Name | Description |
 | --- | --- |
 | headers | Header list of data columns |
@@ -32,6 +33,7 @@ ExpandableDataTable is a Flutter library for dealing with displaying and editing
 <br />
 
 **ExpandableThemeData Parameters:**
+
 | Name | Description |
 | --- | --- |
 | headerTextStyle | Text style of header row |

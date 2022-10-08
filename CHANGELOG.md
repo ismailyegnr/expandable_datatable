@@ -1,4 +1,8 @@
-## 0.0.4 - 10/08/2022
+## 0.0.6 - 10/08/2022
+
+- Fix README table
+
+## 0.0.5 - 10/08/2022
 
 - Add content padding parameter for all rows
 - Remove unnecessary code blocks
