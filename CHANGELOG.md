@@ -1,3 +1,9 @@
+## 0.0.4 - 10/08/2022
+
+- Add content padding parameter for all rows
+- Remove unnecessary code blocks
+- Add parameters table to README
+
 ## 0.0.3 - 10/02/2022
 
 - Add enable/disable multiple expansion parameter
