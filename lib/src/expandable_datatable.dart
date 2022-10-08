@@ -53,7 +53,7 @@ class ExpandableDataTable extends StatefulWidget {
   /// It defaults to true.
   final bool multipleExpansion;
 
-  /// Triggers when a row is edited with [ExpandableEditDialog].
+  /// Triggers when a row is edited with [EditDialog].
   ///
   /// Returns the new [ExpandableRow] data.`
   final void Function(ExpandableRow newRow)? onRowChanged;

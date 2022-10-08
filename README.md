@@ -14,6 +14,52 @@ ExpandableDataTable is a Flutter library for dealing with displaying and editing
 * Customizable expansion content
 * Styling rows and header columns
 
+<br />
+
+**ExpandableDataTable Parameters:**
+| Name | Description |
+| --- | --- |
+| headers | Header list of data columns |
+| rows | List of the data rows |
+| visibleColumnCount | Number of columns to show in the headers |
+| multipleExpansion | Flag indicating that multiple expansions are enabled for rows |
+| onRowChanged | The callback that is called when a row is changed with edit dialog |
+| onPageChanged | The callback that is called when the page changed with pagination widget |
+| renderEditDialog | Render function that builds a custom edit dialog widget |
+| renderCustomPagination | Render function that builds a custom pagination widget |
+| renderExpansionContent | Render function that builds custom expansion container for all rows |
+
+<br />
+
+**ExpandableThemeData Parameters:**
+| Name | Description |
+| --- | --- |
+| headerTextStyle | Text style of header row |
+| rowTextStyle | Text style of all rows |
+| contentPadding | Padding for all header and data rows |
+| headerTextMaxLines | Maximum number of lines for header text to span |
+| rowTextMaxLines | Maximum number of lines for row text to span |
+| rowTextOverflow | Visual overflow of the row's cell text |
+| expandedTextStyle | Text style of expansion content |
+| headerColor | Background color of header row |
+| headerSortIconColor | Color of the header sort arrow icon |
+| headerHeight | Height of the header widget |
+| expandedBorderColor | Expansion border color |
+| rowColor | Background color of rows |
+| evenRowColor | Background color of the even indexed rows |
+| oddRowColor | Background color of the odd indexed rows |
+| rowBorder | Border style of all rows |
+| editIcon | Icon image showing editing feature |
+| expansionIcon | Icon image expanding expansion content |
+| paginationSize | Size of the default pagination widget |
+| paginationTextStyle | TextStyle of the page numbers for default pagination widget  |
+| paginationSelectedTextColor | Color of the selected cell's page number for default pagination widget |
+| paginationUnselectedTextColor | Color of the unselected cells' page number for default pagination widget |
+| paginationSelectedFillColor | Background fill color of the selected cell for default pagination widget |
+| paginationBorderColor | Border color for default pagination widget |
+| paginationBorderRadius | Border radius value for default pagination widget |
+| paginationBorderWidth | Border width value for default pagination widget |
+
 
 ## Usage
 

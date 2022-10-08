@@ -64,10 +64,10 @@ class ExpandableThemeData {
   /// Border style of all rows.
   final BorderSide rowBorder;
 
-  /// Icon showing editing feature.
+  /// Icon image showing editing feature.
   final Icon editIcon;
 
-  /// Icon that expands the expansion content.
+  /// Icon image expanding expansion content.
   final Icon expansionIcon;
 
   /*************** Pagination Widget Theme Properties *******************/
