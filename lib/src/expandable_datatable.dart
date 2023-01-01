@@ -172,6 +172,7 @@ class ExpandableDataTable extends StatefulWidget {
 }
 
 class _ExpandableDataTableState extends State<ExpandableDataTable> {
+  final ScrollController _scrollController = ScrollController();
   final SortOperations _sortOperations = SortOperations();
 
   List<ExpandableColumn> _headerTitles = [];
@@ -347,7 +348,9 @@ class _ExpandableDataTableState extends State<ExpandableDataTable> {
     }
 
     return Scrollbar(
+      controller: _scrollController,
       child: ListView.builder(
+        controller: _scrollController,
         itemCount: pageLength,
         itemBuilder: (context, index) {
           //gets current index value of sorted data list
