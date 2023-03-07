@@ -12,7 +12,6 @@ void main() {
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -80,7 +79,7 @@ class _HomePageState extends State<HomePage> {
       ExpandableColumn<String>(columnTitle: "Last name", columnFlex: 2),
       ExpandableColumn<String>(columnTitle: "Maiden name", columnFlex: 2),
       ExpandableColumn<int>(columnTitle: "Age", columnFlex: 1),
-      ExpandableColumn<String>(columnTitle: "Gender", columnFlex: 2),
+      ExpandableColumn<String>(columnTitle: "Gender", columnFlex: 1),
       ExpandableColumn<String>(columnTitle: "Email", columnFlex: 4),
     ];
 
@@ -142,6 +141,7 @@ class _HomePageState extends State<HomePage> {
                     headers: headers,
                     rows: rows,
                     multipleExpansion: false,
+                    isEditable: false,
                     onRowChanged: (newRow) {
                       print(newRow.cells[01].value);
                     },

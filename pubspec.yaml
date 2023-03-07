@@ -1,4 +1,5 @@
 name: expandable_datatable
+repository: https://github.com/ismailyegnr/expandable_datatable/tree/master
 description: A flutter package for viewing and editing data in a table view with expandable rows.
 version: 0.0.6
 homepage: https://github.com/ismailyegnr/expandable_datatable
