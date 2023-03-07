@@ -129,12 +129,12 @@ class ExpandableThemeData {
     const TextStyle fixText = TextStyle(fontSize: 13);
 
     contentPadding ??= const EdgeInsets.symmetric(horizontal: 16.0);
-    headerTextStyle ??= theme.textTheme.bodyText1 ?? fixText;
-    rowTextStyle ??= theme.textTheme.bodyText2 ?? fixText;
+    headerTextStyle ??= theme.textTheme.bodyLarge ?? fixText;
+    rowTextStyle ??= theme.textTheme.bodyMedium ?? fixText;
     headerTextMaxLines ??= 2;
     rowTextMaxLines ??= 3;
     rowTextOverflow ??= TextOverflow.ellipsis;
-    expandedTextStyle ??= theme.textTheme.bodyText2 ?? fixText;
+    expandedTextStyle ??= theme.textTheme.bodyMedium ?? fixText;
     headerColor ??= theme.scaffoldBackgroundColor;
     expandedBorderColor ??= colorScheme.onBackground;
     rowColor ??= theme.scaffoldBackgroundColor;

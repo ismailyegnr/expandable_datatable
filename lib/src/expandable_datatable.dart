@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'constants/constants.dart';
 import 'extension/context_extension.dart';
 import 'model/cell_item.dart';
 import 'model/expandable_column.dart';
@@ -52,6 +53,12 @@ class ExpandableDataTable extends StatefulWidget {
   ///
   /// It defaults to true.
   final bool multipleExpansion;
+
+  /// Flag indicating whether the rows are editable.
+  /// If this value is false, renderEditDialog does not affect.
+  ///
+  /// It defaults to true.
+  final bool isEditable;
 
   /// Triggers when a row is edited with [EditDialog].
   ///
@@ -156,6 +163,7 @@ class ExpandableDataTable extends StatefulWidget {
     required this.visibleColumnCount,
     this.pageSize = 10,
     this.multipleExpansion = true,
+    this.isEditable = true,
     this.onRowChanged,
     this.onPageChanged,
     this.renderEditDialog,
@@ -200,7 +208,9 @@ class _ExpandableDataTableState extends State<ExpandableDataTable> {
 
   @override
   void didChangeDependencies() {
-    _trailingWidth = context.dynamicWidth(0.15);
+    _trailingWidth = context.dynamicWidth(widget.isEditable
+        ? GeneralConstants.largeTrailing
+        : GeneralConstants.smallTrailing);
 
     super.didChangeDependencies();
   }
@@ -406,7 +416,8 @@ class _ExpandableDataTableState extends State<ExpandableDataTable> {
               currentRowColor ?? context.expandableTheme.rowColor,
           backgroundColor: currentRowColor ?? context.expandableTheme.rowColor,
           trailingWidth: _trailingWidth,
-          secondTrailing: buildEditIcon(context, index),
+          secondTrailing:
+              widget.isEditable ? buildEditIcon(context, index) : null,
           onExpansionChanged: (value) => _onExpansionChanged(value, index),
           initiallyExpanded: _selectedRow == index,
           title: buildRowTitleContent(titleCells),
