@@ -54,7 +54,7 @@ class ExpandableDataTable extends StatefulWidget {
   /// It defaults to true.
   final bool multipleExpansion;
 
-  /// Flag indicating whether rows are editable.
+  /// Flag indicating whether the rows are editable.
   /// If this value is false, renderEditDialog does not affect.
   ///
   /// It defaults to true.

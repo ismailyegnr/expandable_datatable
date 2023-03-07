@@ -1,3 +1,8 @@
+## 0.0.7 - 07/03/2023
+
+- Fix Scrollbar ScrollPosition error
+- Add option to disable row editing
+
 ## 0.0.6 - 10/08/2022
 
 - Fix README table
@@ -18,6 +23,7 @@
 - Fix code warnings and analysis
 
 ## 0.0.1 - 09/24/2022
+
 Initial release
 
 - Create the package template
