@@ -18,19 +18,19 @@ ExpandableDataTable is a Flutter library for dealing with displaying and editing
 
 **ExpandableDataTable Parameters:**
 
-| Name                   | Description                                                              |
-| ---------------------- | ------------------------------------------------------------------------ |
-| headers                | Header list of data columns                                              |
-| rows                   | List of the data rows                                                    |
-| visibleColumnCount     | Number of columns to show in the headers                                 |
-| multipleExpansion      | Flag indicating that multiple expansions are enabled for rows            |
-| isEditable             | Flag indicating whether the rows are editable                            |
-| onRowChanged           | The callback that is called when a row is changed with edit dialog       |
-| onPageChanged          | The callback that is called when the page changed with pagination widget |
-| renderEditDialog       | Render function that builds a custom edit dialog widget                  |
-| renderCustomPagination | Render function that builds a custom pagination widget                   |
-| renderExpansionContent | Render function that builds custom expansion container for all rows      |
-
+| Name                               | Description                                                              |
+| ---------------------------------- | ------------------------------------------------------------------------ |
+| headers                            | Header list of data columns                                              |
+| rows                               | List of the data rows                                                    |
+| visibleColumnCount                 | Number of columns to show in the headers                                 |
+| multipleExpansion                  | Flag indicating that multiple expansions are enabled for rows            |
+| isEditable                         | Flag indicating whether the rows are editable                            |
+| onRowChanged                       | The callback that is called when a row is changed with edit dialog       |
+| onPageChanged                      | The callback that is called when the page changed with pagination widget |
+| renderEditDialog                   | Render function that builds a custom edit dialog widget                  |
+| renderCustomPagination             | Render function that builds a custom pagination widget                   |
+| renderExpansionContent             | Render function that builds custom expansion container for all rows      |
+| alwaysEnableCustomExpansionContent | Flag indicating to always allow to show custom expansion container       |
 <br />
 
 **ExpandableThemeData Parameters:**
