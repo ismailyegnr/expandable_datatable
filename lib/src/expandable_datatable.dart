@@ -156,6 +156,11 @@ class ExpandableDataTable extends StatefulWidget {
     ExpandableRow row,
   )? renderExpansionContent;
 
+  /// Display label provider for cell values that allows changing how a value
+  /// is displayed but not how it behaves for e.g. sorting
+  final String Function(String columTitle, Object value)?
+      createCellValueDisplayLabel;
+
   ExpandableDataTable({
     Key? key,
     required this.headers,
@@ -169,6 +174,7 @@ class ExpandableDataTable extends StatefulWidget {
     this.renderEditDialog,
     this.renderCustomPagination,
     this.renderExpansionContent,
+    this.createCellValueDisplayLabel,
   })  : assert(visibleColumnCount > 0),
         assert(
           rows.isNotEmpty ? headers.length == rows.first.cells.length : true,
@@ -248,7 +254,10 @@ class _ExpandableDataTableState extends State<ExpandableDataTable> {
         titleCells.add(
           CellItem(
             columnName: element.columnTitle,
-            value: element.value,
+            value: widget.createCellValueDisplayLabel == null
+                ? element.value
+                : widget.createCellValueDisplayLabel!(
+                    element.columnTitle, element.value),
             flex: _headerTitles[headerInd].columnFlex,
           ),
         );
@@ -256,7 +265,10 @@ class _ExpandableDataTableState extends State<ExpandableDataTable> {
         expansionCells.add(
           CellItem(
             columnName: element.columnTitle,
-            value: element.value,
+            value: widget.createCellValueDisplayLabel == null
+                ? element.value
+                : widget.createCellValueDisplayLabel!(
+                    element.columnTitle, element.value),
           ),
         );
       }

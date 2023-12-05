@@ -30,6 +30,8 @@ ExpandableDataTable is a Flutter library for dealing with displaying and editing
 | renderEditDialog       | Render function that builds a custom edit dialog widget                  |
 | renderCustomPagination | Render function that builds a custom pagination widget                   |
 | renderExpansionContent | Render function that builds custom expansion container for all rows      |
+| createCellValueDisplayLabel | Allows change how a value is displayed (e.g. formatting)            |
+
 
 <br />
 
