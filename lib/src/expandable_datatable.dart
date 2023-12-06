@@ -196,14 +196,14 @@ class _ExpandableDataTableState extends State<ExpandableDataTable> {
   int _currentPage = 0;
   int _selectedRow = -1;
 
+  ExpandableColumn? _sortColumn;
+
   int get pageLength =>
       _sortedRowsList.isNotEmpty ? _sortedRowsList[_currentPage].length : 0;
 
   @override
   void initState() {
     super.initState();
-
-    _composeRowsList(widget.rows, isInit: true);
   }
 
   @override
@@ -322,6 +322,12 @@ class _ExpandableDataTableState extends State<ExpandableDataTable> {
 
   @override
   Widget build(BuildContext context) {
+    _composeRowsList(widget.rows, isInit: true);
+
+    if (_sortOperations.sortInformation.sortedColumn != null) {
+      _sortRows(_sortOperations.sortInformation.sortedColumn!);
+    }
+
     return Column(
       children: [
         buildHeader(),
@@ -436,7 +442,11 @@ class _ExpandableDataTableState extends State<ExpandableDataTable> {
     return TableHeader(
       headerRow: _headerTitles,
       currentSort: _sortOperations.sortInformation,
-      onTitleTap: _sortRows,
+      onTitleTap: (column) {
+        setState(() {
+          _sortOperations.changeSortDirection(column);
+        });
+      },
       trailingWidth: _trailingWidth,
     );
   }

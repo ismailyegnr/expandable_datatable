@@ -94,7 +94,7 @@ class TableHeader extends StatelessWidget {
               ),
               Visibility(
                 visible: currentSort.sortedColumn != null &&
-                    currentSort.sortedColumn == column,
+                    currentSort.sortedColumn!.columnTitle == column.columnTitle,
                 child: currentSort.sortOption == SortOption.ASC
                     ? Icon(
                         Icons.arrow_drop_up,
