@@ -30,19 +30,6 @@ class _PaginationWidgetState extends State<PaginationWidget> {
 
   late int _totalPageCount;
 
-  @override
-  void didUpdateWidget(covariant PaginationWidget oldWidget) {
-    super.didUpdateWidget(oldWidget);
-
-    if (widget.currentPage != oldWidget.currentPage) {
-      setState(() {
-        _changeMidPoint(widget.currentPage);
-
-        _setButtons(widget.currentPage);
-      });
-    }
-  }
-
   int get midPointMargin => widget.maxVisiblePage ~/ 2;
 
   /// Gives the previous button's index in the [_toggleButtons] list.
