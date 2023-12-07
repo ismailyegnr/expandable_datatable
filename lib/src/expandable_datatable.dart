@@ -196,8 +196,6 @@ class _ExpandableDataTableState extends State<ExpandableDataTable> {
   int _currentPage = 0;
   int _selectedRow = -1;
 
-  ExpandableColumn? _sortColumn;
-
   int get pageLength =>
       _sortedRowsList.isNotEmpty ? _sortedRowsList[_currentPage].length : 0;
 
@@ -265,9 +263,6 @@ class _ExpandableDataTableState extends State<ExpandableDataTable> {
 
   /// Sort all rows.
   void _sortRows(ExpandableColumn column) {
-    ///Resets the page and go back to first page.
-    _currentPage = 0;
-
     List<SortableRow> tempSortArray =
         _sortOperations.sortAllRows(column, _sortedRowsList);
 
@@ -445,6 +440,9 @@ class _ExpandableDataTableState extends State<ExpandableDataTable> {
       onTitleTap: (column) {
         setState(() {
           _sortOperations.changeSortDirection(column);
+
+          ///Resets the page and go back to first page.
+          _currentPage = 0;
         });
       },
       trailingWidth: _trailingWidth,

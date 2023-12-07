@@ -43,39 +43,6 @@ class _PaginationWidgetState extends State<PaginationWidget> {
     }
   }
 
-  @override
-  void initState() {
-    super.initState();
-
-    _totalPageCount = widget.totalPageCount;
-
-    if (_totalPageCount == 0) {
-      _toggleButtons = [];
-    } else if (_totalPageCount == 1) {
-      /// The total number of pages is 1, there is no need to have previous and
-      /// next buttons.
-      _toggleButtons = [true];
-    } else if (_totalPageCount <= widget.maxVisiblePage) {
-      /// Total page count is smaller than or equal to wanted shown page count. So,
-      /// all pages will have their own buttons and previous and next buttons will
-      /// be shown.
-      _toggleButtons = List.filled(_totalPageCount + 2, false);
-
-      /// First page is selected initially.
-      _toggleButtons[1] = true;
-    } else {
-      /// Total page count is greater than the wanted shown page count. So, it needs
-      /// to have a dynamic button appearances.
-      _toggleButtons = List.filled(widget.maxVisiblePage + 2, false);
-
-      /// Middle point is equal to integer division of the wanted shown page count.
-      _midPoint = midPointMargin;
-
-      /// First page is selected initially.
-      _toggleButtons[1] = true;
-    }
-  }
-
   int get midPointMargin => widget.maxVisiblePage ~/ 2;
 
   /// Gives the previous button's index in the [_toggleButtons] list.
@@ -150,6 +117,33 @@ class _PaginationWidgetState extends State<PaginationWidget> {
   Widget build(BuildContext context) {
     final ExpandableThemeData theme = context.expandableTheme;
     final double size = theme.paginationSize;
+
+    _totalPageCount = widget.totalPageCount;
+
+    if (_totalPageCount == 0) {
+      _toggleButtons = [];
+    } else if (_totalPageCount == 1) {
+      /// The total number of pages is 1, there is no need to have previous and
+      /// next buttons.
+      _toggleButtons = [true];
+    } else if (_totalPageCount <= widget.maxVisiblePage) {
+      /// Total page count is smaller than or equal to wanted shown page count. So,
+      /// all pages will have their own buttons and previous and next buttons will
+      /// be shown.
+      _toggleButtons = List.filled(_totalPageCount + 2, false);
+    } else {
+      /// Total page count is greater than the wanted shown page count. So, it needs
+      /// to have a dynamic button appearances.
+      _toggleButtons = List.filled(widget.maxVisiblePage + 2, false);
+
+      /// Middle point is equal to integer division of the wanted shown page count.
+      _midPoint = midPointMargin;
+    }
+
+    if (_toggleButtons.length > 1) {
+      _changeMidPoint(widget.currentPage);
+      _setButtons(widget.currentPage);
+    }
 
     return ToggleButtons(
       constraints: BoxConstraints(minHeight: size, minWidth: size),
