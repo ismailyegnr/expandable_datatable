@@ -319,6 +319,11 @@ class _ExpandableDataTableState extends State<ExpandableDataTable> {
   Widget build(BuildContext context) {
     _composeRowsList(widget.rows, isInit: true);
 
+    // adjust current page if resize caused the page to not exist
+    if(_currentPage > _sortedRowsList.length){
+      _currentPage = _sortedRowsList.length - 1;
+    }
+
     if (_sortOperations.sortInformation.sortedColumn != null) {
       _sortRows(_sortOperations.sortInformation.sortedColumn!);
     }
