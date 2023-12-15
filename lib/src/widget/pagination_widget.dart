@@ -106,6 +106,7 @@ class _PaginationWidgetState extends State<PaginationWidget> {
     final double size = theme.paginationSize;
 
     _totalPageCount = widget.totalPageCount;
+    _midPoint = null;
 
     if (_totalPageCount == 0) {
       _toggleButtons = [];

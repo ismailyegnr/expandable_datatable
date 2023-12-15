@@ -320,7 +320,7 @@ class _ExpandableDataTableState extends State<ExpandableDataTable> {
     _composeRowsList(widget.rows, isInit: true);
 
     // adjust current page if resize caused the page to not exist
-    if(_currentPage > _sortedRowsList.length){
+    if (_sortedRowsList.isNotEmpty && _currentPage >= _sortedRowsList.length) {
       _currentPage = _sortedRowsList.length - 1;
     }
 
