@@ -202,8 +202,6 @@ class _ExpandableDataTableState extends State<ExpandableDataTable> {
   @override
   void initState() {
     super.initState();
-
-    _composeRowsList(widget.rows, isInit: true);
   }
 
   @override
@@ -265,9 +263,6 @@ class _ExpandableDataTableState extends State<ExpandableDataTable> {
 
   /// Sort all rows.
   void _sortRows(ExpandableColumn column) {
-    ///Resets the page and go back to first page.
-    _currentPage = 0;
-
     List<SortableRow> tempSortArray =
         _sortOperations.sortAllRows(column, _sortedRowsList);
 
@@ -322,6 +317,17 @@ class _ExpandableDataTableState extends State<ExpandableDataTable> {
 
   @override
   Widget build(BuildContext context) {
+    _composeRowsList(widget.rows, isInit: true);
+
+    // adjust current page if resize caused the page to not exist
+    if (_sortedRowsList.isNotEmpty && _currentPage >= _sortedRowsList.length) {
+      _currentPage = _sortedRowsList.length - 1;
+    }
+
+    if (_sortOperations.sortInformation.sortedColumn != null) {
+      _sortRows(_sortOperations.sortInformation.sortedColumn!);
+    }
+
     return Column(
       children: [
         buildHeader(),
@@ -436,7 +442,14 @@ class _ExpandableDataTableState extends State<ExpandableDataTable> {
     return TableHeader(
       headerRow: _headerTitles,
       currentSort: _sortOperations.sortInformation,
-      onTitleTap: _sortRows,
+      onTitleTap: (column) {
+        setState(() {
+          _sortOperations.changeSortDirection(column);
+
+          ///Resets the page and go back to first page.
+          _currentPage = 0;
+        });
+      },
       trailingWidth: _trailingWidth,
     );
   }
