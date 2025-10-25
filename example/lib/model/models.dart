@@ -34,6 +34,7 @@ class Users {
   String? password;
   String? birthDate;
   String? image;
+  bool? isActive;
   String? bloodGroup;
   int? height;
   num? weight;
@@ -63,6 +64,7 @@ class Users {
       this.password,
       this.birthDate,
       this.image,
+      this.isActive,
       this.bloodGroup,
       this.height,
       this.weight,
@@ -92,6 +94,7 @@ class Users {
     password = json['password'];
     birthDate = json['birthDate'];
     image = json['image'];
+    isActive = json['isActive'];
     bloodGroup = json['bloodGroup'];
     height = json['height'];
     weight = json['weight'];
@@ -125,6 +128,7 @@ class Users {
     data['password'] = password;
     data['birthDate'] = birthDate;
     data['image'] = image;
+    data['isActive'] = isActive;
     data['bloodGroup'] = bloodGroup;
     data['height'] = height;
     data['weight'] = weight;

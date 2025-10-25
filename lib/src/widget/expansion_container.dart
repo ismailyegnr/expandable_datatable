@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../extension/context_extension.dart';
 import '../model/cell_item.dart';
 
 class ExpansionContainer extends StatelessWidget {
@@ -41,14 +40,14 @@ class ExpansionContainer extends StatelessWidget {
         Expanded(
           flex: 1,
           child: Text(
-            "${element.columnName}:",
+            "${element.header}:",
             style: context.expandableTheme.expandedTextStyle,
           ),
         ),
         Expanded(
           flex: 4,
           child: Text(
-            "${element.value}",
+            "${element.cellInfo.value}",
             style: context.expandableTheme.expandedTextStyle,
           ),
         ),

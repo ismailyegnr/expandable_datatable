@@ -1,18 +1,17 @@
-import 'package:flutter/material.dart';
-
-import 'constants/constants.dart';
+import 'dart:math';
 import 'extension/context_extension.dart';
+import 'package:flutter/material.dart';
+import 'constants/constants.dart';
 import 'model/cell_item.dart';
+import 'model/expandable_cell.dart';
 import 'model/expandable_column.dart';
 import 'model/expandable_row.dart';
-import 'model/sortable_row.dart';
-import 'utility/sort_operations.dart';
+import 'utility/sort_utility.dart';
 import 'widget/custom_expansion_tile.dart' as custom_tile;
-import 'widget/edit_dialog.dart';
-import 'widget/expansion_container.dart';
+import 'widget/edit/n_edit_dialog.dart';
 import 'widget/pagination_widget.dart';
+import 'widget/row_container.dart';
 import 'widget/table_header.dart';
-import 'widget/title_container.dart';
 
 class ExpandableDataTable extends StatefulWidget {
   /// The data of rows
@@ -65,7 +64,7 @@ class ExpandableDataTable extends StatefulWidget {
   /// Returns the new [ExpandableRow] data.`
   final void Function(ExpandableRow newRow)? onRowChanged;
 
-  /// When the current page is changed, this returns the new page value.
+  /// When the current page is changed, [value] is the new page value.
   ///
   final void Function(int page)? onPageChanged;
 
@@ -76,9 +75,9 @@ class ExpandableDataTable extends StatefulWidget {
 
   /// Renders a custom edit dialog widget with two parameters.
   ///
-  /// First parameter, row, gives the current selected row information.
+  /// Parameter [row], gives the current selected row information.
   ///
-  /// Second parameter, onSuccess, is a function and it must return a new
+  /// Parameter [onSuccess], is a function and it must return a new
   /// [ExpandableRow] variable to update the value of the row inside the widget.
   ///
   /// ```dart
@@ -181,126 +180,96 @@ class ExpandableDataTable extends StatefulWidget {
 
 class _ExpandableDataTableState extends State<ExpandableDataTable> {
   final ScrollController _scrollController = ScrollController();
-  final SortOperations _sortOperations = SortOperations();
+  late final SortUtil sortUtil;
 
-  List<ExpandableColumn> _headerTitles = [];
+  List<ExpandableColumn> shownCols = <ExpandableColumn>[];
+  List<ExpandableColumn> unshownCols = <ExpandableColumn>[];
 
-  /// Stores the sorted state data of the data table.
-  ///
-  /// This helps for building.
-  List<List<SortableRow>> _sortedRowsList = [];
+  List<ExpandableRow> get pageRows =>
+      sortUtil.rows.sublist(currentPage * widget.pageSize, getUpperRange);
 
-  late double _trailingWidth;
+  int totalPages = 0;
+  int currentPage = 0;
+  int selectedRow = -1;
 
-  int _totalPageCount = 0;
-  int _currentPage = 0;
-  int _selectedRow = -1;
+  int get getUpperRange =>
+      min((currentPage + 1) * widget.pageSize, widget.rows.length);
 
-  int get pageLength =>
-      _sortedRowsList.isNotEmpty ? _sortedRowsList[_currentPage].length : 0;
+  double get trailingWidth => context.dynamicWidth(widget.isEditable
+      ? GeneralConstants.largeTrailing
+      : GeneralConstants.smallTrailing);
 
   @override
   void initState() {
     super.initState();
 
-    _composeRowsList(widget.rows, isInit: true);
-  }
+    sortUtil = SortUtil(widget.rows);
 
-  @override
-  void didChangeDependencies() {
-    _trailingWidth = context.dynamicWidth(widget.isEditable
-        ? GeneralConstants.largeTrailing
-        : GeneralConstants.smallTrailing);
+    totalPages = (widget.rows.length / widget.pageSize).ceil();
 
-    super.didChangeDependencies();
-  }
-
-  /// Create or update two dimension sorted rows list
-  void _composeRowsList(List<dynamic> list, {bool isInit = false}) {
-    _totalPageCount = 0;
-    _sortedRowsList = [];
-
-    for (int i = 0; i < list.length; i++) {
-      if (i % widget.pageSize == 0) {
-        _totalPageCount++;
-        _sortedRowsList.add([]);
+    // Load shown and unshown accesor lists
+    if (widget.headers.isNotEmpty) {
+      for (int index = 0; index < widget.headers.length; index++) {
+        if (index < widget.visibleColumnCount) {
+          shownCols.add(widget.headers[index]);
+        } else {
+          unshownCols.add(widget.headers[index]);
+        }
       }
-
-      _sortedRowsList[_totalPageCount - 1].add(
-        isInit ? SortableRow(i, row: list[i]) : list[i],
-      );
     }
   }
 
-  /// Handles the row data by, loading titleCells and expansionCells lists for
-  /// expansion tiles.
-  void _createRowCells(
-    List<String> headerNames,
-    ExpandableRow rowData,
-    List<CellItem> titleCells,
-    List<CellItem> expansionCells,
+  /// Creates shown cells and unshown cells list,
+  /// using the current row's cell list
+  (List<CellData>, List<CellData>) createRowCellDataLists(
+    List<ExpandableCell> cellList,
   ) {
-    for (var element in rowData.cells) {
-      if (headerNames.contains(element.columnTitle)) {
-        int headerInd = _headerTitles
-            .indexWhere((val) => val.columnTitle == element.columnTitle);
+    List<CellData> currentRowShownCells = [];
+    List<CellData> currentRowUnshownCells = [];
 
-        titleCells.add(
-          CellItem(
-            columnName: element.columnTitle,
-            value: element.value,
-            flex: _headerTitles[headerInd].columnFlex,
-          ),
-        );
-      } else {
-        expansionCells.add(
-          CellItem(
-            columnName: element.columnTitle,
-            value: element.value,
-          ),
-        );
-      }
+    for (ExpandableColumn colItem in shownCols) {
+      ExpandableCell cellInfo = cellList
+          .firstWhere((element) => colItem.accessor == element.accessor);
+      currentRowShownCells.add(CellData(column: colItem, cell: cellInfo));
     }
+
+    for (ExpandableColumn colItem in unshownCols) {
+      ExpandableCell cellInfo = cellList
+          .firstWhere((element) => colItem.accessor == element.accessor);
+      currentRowUnshownCells.add(CellData(column: colItem, cell: cellInfo));
+    }
+
+    return (currentRowShownCells, currentRowUnshownCells);
   }
 
-  /// Sort all rows.
-  void _sortRows(ExpandableColumn column) {
-    ///Resets the page and go back to first page.
-    _currentPage = 0;
+  /// Sort all rows and update page.
+  void sortRows(ExpandableColumn column) {
+    currentPage = 0;
 
-    List<SortableRow> tempSortArray =
-        _sortOperations.sortAllRows(column, _sortedRowsList);
-
-    _composeRowsList(tempSortArray);
-
-    _shrinkAllRows();
+    sortUtil.sort(column);
 
     setState(() {});
   }
 
-  void _shrinkAllRows() {
-    if (_selectedRow != -1) {
-      _selectedRow = -1;
+  void shrinkAllRows() {
+    if (selectedRow != -1) {
+      selectedRow = -1;
     }
   }
 
-  /// Close expanded rows while page is changing.
-  void _changePage(int newPage) {
-    if (widget.onPageChanged != null) {
+  void changePage(int newPage) {
+    /* if (widget.onPageChanged != null) {
       widget.onPageChanged!(newPage);
-    }
+    } */
 
-    _shrinkAllRows();
+    currentPage = newPage;
 
-    setState(() {
-      _currentPage = newPage;
-    });
+    // shrinkAllRows();
+    setState(() {});
   }
 
   /// Change a row after the row is edited with an edit dialog.
   void _updateRow(ExpandableRow newRow, int rowInd) {
-    _sortedRowsList[_currentPage][rowInd].row = newRow;
-
     if (widget.onRowChanged != null) {
       widget.onRowChanged!(newRow);
     }
@@ -308,13 +277,13 @@ class _ExpandableDataTableState extends State<ExpandableDataTable> {
     setState(() {});
   }
 
-  void _onExpansionChanged(bool value, int rowIndex) {
+  void changeExpanded(bool value, int rowIndex) {
     if (widget.multipleExpansion == false) {
-      if (_selectedRow == rowIndex && value == false) {
-        _selectedRow = -1;
+      if (selectedRow == rowIndex && value == false) {
+        selectedRow = -1;
       } else if (value == true) {
         setState(() {
-          _selectedRow = rowIndex;
+          selectedRow = rowIndex;
         });
       }
     }
@@ -324,73 +293,35 @@ class _ExpandableDataTableState extends State<ExpandableDataTable> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        buildHeader(),
-        Expanded(
-          child: buildRows(),
+        TableHeader(
+          sortData: sortUtil,
+          headers: shownCols,
+          onHeaderTap: sortRows,
+          trailingWidth: trailingWidth,
         ),
-        buildPagination(context)
+        Expanded(
+          child: buildAllPageRows(),
+        ),
+        buildPaginationWidget(context)
       ],
     );
   }
 
-  Widget buildPagination(BuildContext context) {
-    return widget.renderCustomPagination != null
-        ? widget.renderCustomPagination!(
-            _totalPageCount,
-            _currentPage,
-            (value) => _changePage(value),
-          )
-        : Padding(
-            padding: EdgeInsets.symmetric(vertical: context.lowValue),
-            child: PaginationWidget(
-              currentPage: _currentPage,
-              totalPageCount: _totalPageCount,
-              onChanged: (value) => _changePage(value),
-            ),
-          );
-  }
-
-  Widget buildRows() {
-    List<String> headerNames = [];
-
-    for (var element in _headerTitles) {
-      headerNames.add(element.columnTitle);
-    }
-
+  Widget buildAllPageRows() {
     return Scrollbar(
       controller: _scrollController,
       child: ListView.builder(
         controller: _scrollController,
-        itemCount: pageLength,
-        itemBuilder: (context, index) {
-          //gets current index value of sorted data list
-          ExpandableRow rowData =
-              _sortedRowsList[_currentPage].elementAt(index).row;
-
-          List<CellItem> expansionCells = [];
-          List<CellItem> titleCells = [];
-
-          _createRowCells(headerNames, rowData, titleCells, expansionCells);
-
-          return buildSingleRow(
-              context, index, rowData, expansionCells, titleCells);
-        },
+        itemCount: pageRows.length,
+        itemBuilder: (context, index) =>
+            buildSingleRow(context, index, pageRows[index]),
       ),
     );
   }
 
-  Container buildSingleRow(
-    BuildContext context,
-    int index,
-    ExpandableRow row,
-    List<CellItem> expansionCells,
-    List<CellItem> titleCells,
-  ) {
-    var boxDecoration = BoxDecoration(
-      border: Border(
-        bottom: context.expandableTheme.rowBorder,
-      ),
-    );
+  Container buildSingleRow(BuildContext context, int index, ExpandableRow row) {
+    var (shownCellsOfCurrentRow, unShownCellsOfCurrentRow) =
+        createRowCellDataLists(row.cells);
 
     Color? currentRowColor;
     if (context.expandableTheme.evenRowColor != null &&
@@ -403,89 +334,76 @@ class _ExpandableDataTableState extends State<ExpandableDataTable> {
     }
 
     return Container(
-      decoration: boxDecoration,
+      decoration: BoxDecoration(
+        border: Border(
+          bottom: context.expandableTheme.rowBorder,
+        ),
+      ),
       child: Theme(
         data: ThemeData().copyWith(
           dividerColor: context.expandableTheme.expandedBorderColor,
         ),
         child: custom_tile.ExpansionTile(
           tilePadding: context.expandableTheme.contentPadding,
-          showExpansionIcon: expansionCells.isNotEmpty,
+          showExpansionIcon: unShownCellsOfCurrentRow.isNotEmpty,
           expansionIcon: context.expandableTheme.expansionIcon,
           collapsedBackgroundColor:
               currentRowColor ?? context.expandableTheme.rowColor,
           backgroundColor: currentRowColor ?? context.expandableTheme.rowColor,
-          trailingWidth: _trailingWidth,
-          secondTrailing:
-              widget.isEditable ? buildEditIcon(context, index) : null,
-          onExpansionChanged: (value) => _onExpansionChanged(value, index),
-          initiallyExpanded: _selectedRow == index,
-          title: buildRowTitleContent(titleCells),
+          trailingWidth: trailingWidth,
+          secondTrailing: widget.isEditable ? buildEditIcon(row) : null,
+          onExpansionChanged: (value) => changeExpanded(value, index),
+          initiallyExpanded: selectedRow == index,
+          title: RowContainer(
+            shownCells: shownCellsOfCurrentRow,
+          ),
           childrenPadding: EdgeInsets.symmetric(vertical: context.lowValue),
-          children: buildExpansionContent(context, row, expansionCells),
+          /* children: _buildExpansion(context, row, expansionCells), */
         ),
       ),
     );
   }
 
-  Widget buildHeader() {
-    if (widget.headers.isNotEmpty) {
-      _headerTitles = widget.headers.sublist(0, widget.visibleColumnCount);
+  Widget buildPaginationWidget(BuildContext context) {
+    if (widget.renderCustomPagination != null) {
+      return widget.renderCustomPagination!(
+        totalPages,
+        currentPage,
+        (value) => changePage(value),
+      );
     }
 
-    return TableHeader(
-      headerRow: _headerTitles,
-      currentSort: _sortOperations.sortInformation,
-      onTitleTap: _sortRows,
-      trailingWidth: _trailingWidth,
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: context.lowValue),
+      child: PaginationWidget(
+        currentPage: currentPage,
+        totalPageCount: totalPages,
+        onChanged: (value) => changePage(value),
+      ),
     );
   }
 
-  Widget buildRowTitleContent(List<CellItem> titleCells) {
-    return TitleContainer(
-      titleCells: titleCells,
-    );
-  }
-
-  List<Widget> buildExpansionContent(
-    BuildContext context,
-    ExpandableRow row,
-    List<CellItem> expansionCells,
-  ) {
-    if (expansionCells.isEmpty) {
-      return [];
-    } else if (widget.renderExpansionContent != null) {
-      return [
-        widget.renderExpansionContent!(row),
-      ];
-    }
-
-    return [
-      ExpansionContainer(expansionCells: expansionCells),
-    ];
-  }
-
-  Widget buildEditIcon(BuildContext context, int rowInd) {
+  Widget buildEditIcon(ExpandableRow row) {
     return IconButton(
       padding: EdgeInsets.zero,
       constraints: const BoxConstraints(),
       icon: context.expandableTheme.editIcon,
-      onPressed: () => showEditDialog(context, rowInd),
+      onPressed: () {
+        showDialog(
+          context: context,
+          builder: (context) => NEditDialog(
+            headers: widget.headers,
+            row: row,
+            onSaved: (cells) {
+              setState(() {
+                row.cells = cells;
+              });
+            },
+          ),
+        );
+      },
     );
   }
 
-  Future<dynamic> showEditDialog(BuildContext context, int rowInd) {
-    return showDialog(
-      context: context,
-      builder: (context) => widget.renderEditDialog != null
-          ? widget.renderEditDialog!(
-              _sortedRowsList[_currentPage][rowInd].row,
-              (newRow) => _updateRow(newRow, rowInd),
-            )
-          : EditDialog(
-              row: _sortedRowsList[_currentPage][rowInd].row,
-              onSuccess: (newRow) => _updateRow(newRow, rowInd),
-            ),
-    );
-  }
+  // TODO:: Build Expansion Container
 }

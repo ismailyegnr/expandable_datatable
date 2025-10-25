@@ -32,68 +32,86 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   List<Users> userList = [];
 
-  late List<ExpandableColumn<dynamic>> headers;
+  late List<ExpandableColumn> headers;
   late List<ExpandableRow> rows;
 
   bool _isLoading = true;
 
-  void setLoading() {
-    setState(() {
-      _isLoading = false;
-    });
-  }
-
   @override
   void initState() {
     super.initState();
-
     fetch();
   }
 
   void fetch() async {
     userList = await getUsers();
+    createLists();
 
-    createDataSource();
-
-    setLoading();
+    setState(() {
+      _isLoading = false;
+    });
   }
 
   Future<List<Users>> getUsers() async {
     final String response = await rootBundle.loadString('asset/dumb.json');
-
     final data = await json.decode(response);
-
     API apiData = API.fromJson(data);
 
-    if (apiData.users != null) {
-      return apiData.users!;
+    if (apiData.users == null) {
+      return [];
     }
 
-    return [];
+    return apiData.users!;
   }
 
-  void createDataSource() {
+  void createLists() {
     headers = [
-      ExpandableColumn<int>(columnTitle: "ID", columnFlex: 1),
-      ExpandableColumn<String>(columnTitle: "First name", columnFlex: 2),
-      ExpandableColumn<String>(columnTitle: "Last name", columnFlex: 2),
-      ExpandableColumn<String>(columnTitle: "Maiden name", columnFlex: 2),
-      ExpandableColumn<int>(columnTitle: "Age", columnFlex: 1),
-      ExpandableColumn<String>(columnTitle: "Gender", columnFlex: 1),
-      ExpandableColumn<String>(columnTitle: "Email", columnFlex: 4),
+      ExpandableColumn(
+          title: "ID",
+          accessor: "id",
+          sortable: false,
+          editable: false,
+          flex: 1),
+      ExpandableColumn(
+          title: "Image",
+          accessor: "img",
+          editable: false,
+          sortable: false,
+          flex: 2),
+      ExpandableColumn(title: "First Name", accessor: "first_name", flex: 2),
+      ExpandableColumn(title: "Active", accessor: "is_active", flex: 1),
+      ExpandableColumn(title: "Last Name", accessor: "last_name", flex: 2),
+      ExpandableColumn(title: "Maiden Name", accessor: "maiden_name", flex: 2),
+      ExpandableColumn(title: "Age", accessor: "age", flex: 1),
+      ExpandableColumn(title: "Gender", accessor: "gender"),
+      ExpandableColumn(title: "Email", accessor: "email"),
     ];
 
-    rows = userList.map<ExpandableRow>((e) {
-      return ExpandableRow(cells: [
-        ExpandableCell<int>(columnTitle: "ID", value: e.id),
-        ExpandableCell<String>(columnTitle: "First name", value: e.firstName),
-        ExpandableCell<String>(columnTitle: "Last name", value: e.lastName),
-        ExpandableCell<String>(columnTitle: "Maiden name", value: e.maidenName),
-        ExpandableCell<int>(columnTitle: "Age", value: e.age),
-        ExpandableCell<String>(columnTitle: "Gender", value: e.gender),
-        ExpandableCell<String>(columnTitle: "Email", value: e.email),
-      ]);
-    }).toList();
+    rows = userList
+        .map((val) => ExpandableRow(cells: [
+              NumberCell(accessor: "id", value: val.id!),
+              StringCell(
+                accessor: "img",
+                value: val.image!,
+                render: SizedBox(
+                  height: 50,
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Image.network(
+                      val.image!,
+                    ),
+                  ),
+                ),
+              ),
+              StringCell(accessor: "first_name", value: val.firstName!),
+              StringCell(accessor: "last_name", value: val.lastName!),
+              BooleanCell(accessor: "is_active", value: val.isActive!),
+              StringCell(accessor: "maiden_name", value: val.maidenName!),
+              NumberCell(accessor: "age", value: val.age!),
+              StringCell(accessor: "gender", value: val.gender!),
+              StringCell(accessor: "email", value: val.email!),
+            ]))
+        .toList();
   }
 
   @override
@@ -141,7 +159,7 @@ class _HomePageState extends State<HomePage> {
                     headers: headers,
                     rows: rows,
                     multipleExpansion: false,
-                    isEditable: false,
+                    isEditable: true,
                     onRowChanged: (newRow) {
                       print(newRow.cells[01].value);
                     },
@@ -167,7 +185,6 @@ class _HomePageState extends State<HomePage> {
         child: TextButton(
           child: const Text("Change name"),
           onPressed: () {
-            row.cells[1].value = "x3";
             onSuccess(row);
           },
         ),

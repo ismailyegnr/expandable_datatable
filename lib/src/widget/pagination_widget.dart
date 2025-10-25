@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../extension/context_extension.dart';
 import '../utility/expandable_theme_data.dart';
 
 class PaginationWidget extends StatefulWidget {

@@ -1,4 +1,4 @@
-import '../model/expandable_row.dart';
+/* import '../model/expandable_row.dart';
 
 extension RowExtension on ExpandableRow {
   dynamic searchTitleValue(String columnTitle) {
@@ -7,3 +7,4 @@ extension RowExtension on ExpandableRow {
         .value;
   }
 }
+ */

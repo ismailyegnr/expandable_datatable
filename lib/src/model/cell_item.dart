@@ -1,19 +1,27 @@
+import 'package:expandable_datatable/src/model/expandable_column.dart';
+import 'expandable_cell.dart';
+
 /// [ExpansionTile] title class that helps to build rows.
 ///
-/// Multiple [CellItem] creates a title of the row.
+/// Multiple [CellItem] creates a row.
 class CellItem {
-  ///  The name of the column where you want to place this cell
-  String columnName;
-
-  /// Value of the cell
-  dynamic value;
-
-  /// The flexible value you want this cell to contain
-  int? flex;
+  String? header;
+  ExpandableCell cellInfo;
+  int flex;
 
   CellItem({
-    required this.columnName,
-    this.value,
-    this.flex,
+    this.header,
+    required this.cellInfo,
+    required this.flex,
+  });
+}
+
+class CellData {
+  ExpandableColumn column;
+  ExpandableCell cell;
+
+  CellData({
+    required this.column,
+    required this.cell,
   });
 }
