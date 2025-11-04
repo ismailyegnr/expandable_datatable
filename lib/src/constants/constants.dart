@@ -5,6 +5,6 @@ class GeneralConstants {
 
   static const double titlePadding = 8;
 
-  static const double largeTrailing = 0.15;
+  static const double largeTrailing = 0.16;
   static const double smallTrailing = 0.08;
 }
