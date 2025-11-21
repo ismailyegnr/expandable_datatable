@@ -49,12 +49,9 @@ class _PaginationWidgetState extends State<PaginationWidget> {
 
     _totalPageCount = widget.totalPageCount;
 
-    if (_totalPageCount == 0) {
+    if (_totalPageCount == 0 || _totalPageCount == 1) {
+      /// If there is no total page or only one page, no buttons will be shown.
       _toggleButtons = [];
-    } else if (_totalPageCount == 1) {
-      /// The total number of pages is 1, there is no need to have previous and
-      /// next buttons.
-      _toggleButtons = [true];
     } else if (_totalPageCount <= widget.maxVisiblePage) {
       /// Total page count is smaller than or equal to wanted shown page count. So,
       /// all pages will have their own buttons and previous and next buttons will
@@ -176,10 +173,8 @@ class _PaginationWidgetState extends State<PaginationWidget> {
   }
 
   List<Widget> buildButtons() {
-    if (_totalPageCount == 0) {
+    if (_totalPageCount == 0 || _totalPageCount == 1) {
       return [];
-    } else if (_totalPageCount == 1) {
-      return [const Text("0")];
     }
 
     return [
@@ -189,8 +184,8 @@ class _PaginationWidgetState extends State<PaginationWidget> {
             ? widget.maxVisiblePage
             : _totalPageCount,
         (index) => _midPoint == null
-            ? Text("$index")
-            : Text("${_midPoint! + index - midPointMargin}"),
+            ? Text("${index + 1}")
+            : Text("${_midPoint! + index - midPointMargin + 1}"),
       ),
       const Icon(Icons.keyboard_arrow_right),
     ];
