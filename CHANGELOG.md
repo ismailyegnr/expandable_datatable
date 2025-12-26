@@ -1,3 +1,10 @@
+# 0.0.8 - 26/12/2025
+
+- Fix the Icon overflow on editable option ([#10](https://github.com/ismailyegnr/expandable_datatable/pull/10))
+- Fix page numbering and button visibility ([#11](https://github.com/ismailyegnr/expandable_datatable/pull/11))
+- Add missing README parameter
+
+
 ## 0.0.7 - 07/03/2023
 
 - Fix Scrollbar ScrollPosition error

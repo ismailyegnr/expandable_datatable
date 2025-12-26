@@ -19,9 +19,10 @@ ExpandableDataTable is a Flutter library for dealing with displaying and editing
 **ExpandableDataTable Parameters:**
 
 | Name                   | Description                                                              |
-| ---------------------- | ------------------------------------------------------------------------ |
+| ---------------------- |--------------------------------------------------------------------------|
 | headers                | Header list of data columns                                              |
 | rows                   | List of the data rows                                                    |
+| pageSize               | Number of rows to be used on a single page                               |
 | visibleColumnCount     | Number of columns to show in the headers                                 |
 | multipleExpansion      | Flag indicating that multiple expansions are enabled for rows            |
 | isEditable             | Flag indicating whether the rows are editable                            |
