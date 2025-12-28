@@ -1,6 +1,6 @@
-# example
+# example_datatable
 
-A new Flutter project.
+Example project of expandable_datatable.
 
 ## Getting Started
 

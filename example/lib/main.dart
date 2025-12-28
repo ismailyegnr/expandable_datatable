@@ -1,35 +1,40 @@
 import 'dart:convert';
 
+import 'package:example_datatable/model/models.dart';
 import 'package:expandable_datatable/expandable_datatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
-import 'model/models.dart';
 
 void main() {
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({super.key});
+
+  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: const HomePage(),
-      theme: ThemeData.light(),
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
+      ),
+      home: const MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }
 }
 
-class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+class MyHomePage extends StatefulWidget {
+  const MyHomePage({super.key, required this.title});
+
+  final String title;
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _MyHomePageState extends State<MyHomePage> {
   List<Users> userList = [];
 
   late List<ExpandableColumn<dynamic>> headers;
@@ -45,6 +50,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void initState() {
+    // TODO: implement initState
     super.initState();
 
     fetch();
@@ -59,7 +65,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<List<Users>> getUsers() async {
-    final String response = await rootBundle.loadString('asset/dumb.json');
+    final String response = await rootBundle.loadString("asset/dumb.json");
 
     final data = await json.decode(response);
 
@@ -67,9 +73,9 @@ class _HomePageState extends State<HomePage> {
 
     if (apiData.users != null) {
       return apiData.users!;
+    } else {
+      return [];
     }
-
-    return [];
   }
 
   void createDataSource() {
@@ -96,64 +102,67 @@ class _HomePageState extends State<HomePage> {
     }).toList();
   }
 
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
         child: !_isLoading
             ? LayoutBuilder(builder: (context, constraints) {
-                int visibleCount = 3;
-                if (constraints.maxWidth < 600) {
-                  visibleCount = 3;
-                } else if (constraints.maxWidth < 800) {
-                  visibleCount = 4;
-                } else if (constraints.maxWidth < 1000) {
-                  visibleCount = 5;
-                } else {
-                  visibleCount = 6;
-                }
+          int visibleCount = 3;
+          if (constraints.maxWidth < 600) {
+            visibleCount = 3;
+          } else if (constraints.maxWidth < 800) {
+            visibleCount = 4;
+          } else if (constraints.maxWidth < 1000) {
+            visibleCount = 5;
+          } else {
+            visibleCount = 6;
+          }
 
-                return ExpandableTheme(
-                  data: ExpandableThemeData(
-                    context,
-                    contentPadding: const EdgeInsets.all(20),
-                    expandedBorderColor: Colors.transparent,
-                    paginationSize: 48,
-                    headerHeight: 56,
-                    headerColor: Colors.amber[400],
-                    headerBorder: const BorderSide(
-                      color: Colors.black,
-                      width: 1,
-                    ),
-                    evenRowColor: const Color(0xFFFFFFFF),
-                    oddRowColor: Colors.amber[200],
-                    rowBorder: const BorderSide(
-                      color: Colors.black,
-                      width: 0.3,
-                    ),
-                    rowColor: Colors.green,
-                    headerTextMaxLines: 4,
-                    headerSortIconColor: const Color(0xFF6c59cf),
-                    paginationSelectedFillColor: const Color(0xFF6c59cf),
-                    paginationSelectedTextColor: Colors.white,
-                  ),
-                  child: ExpandableDataTable(
-                    headers: headers,
-                    rows: rows,
-                    multipleExpansion: false,
-                    isEditable: false,
-                    onRowChanged: (newRow) {
-                      print(newRow.cells[01].value);
-                    },
-                    onPageChanged: (page) {
-                      print(page);
-                    },
-                    renderEditDialog: (row, onSuccess) =>
-                        _buildEditDialog(row, onSuccess),
-                    visibleColumnCount: visibleCount,
-                  ),
-                );
-              })
+          return ExpandableTheme(
+            data: ExpandableThemeData(
+              context,
+              contentPadding: const EdgeInsets.all(20),
+              expandedBorderColor: Colors.transparent,
+              paginationSize: 48,
+              headerHeight: 56,
+              headerColor: Colors.amber[400],
+              headerBorder: const BorderSide(
+                color: Colors.black,
+                width: 1,
+              ),
+              evenRowColor: const Color(0xFFFFFFFF),
+              oddRowColor: Colors.amber[200],
+              rowBorder: const BorderSide(
+                color: Colors.black,
+                width: 0.5,
+              ),
+              rowColor: Colors.green,
+              headerTextMaxLines: 4,
+              headerSortIconColor: const Color(0xFF6c59cf),
+              paginationSelectedFillColor: const Color(0xFF6c59cf),
+              paginationSelectedTextColor: Colors.white,
+            ),
+            child: ExpandableDataTable(
+              headers: headers,
+              rows: rows,
+              multipleExpansion: false,
+              isEditable: false,
+              pageSize: 8,
+              onRowChanged: (newRow) {
+                print(newRow.cells[01].value);
+              },
+              onPageChanged: (page) {
+                print(page);
+              },
+              renderEditDialog: (row, onSuccess) =>
+                  _buildEditDialog(row, onSuccess),
+              visibleColumnCount: visibleCount,
+            ),
+          );
+        })
             : const Center(child: CircularProgressIndicator()),
       ),
     );
