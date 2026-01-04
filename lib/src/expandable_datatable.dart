@@ -8,6 +8,7 @@ import 'model/expandable_row.dart';
 import 'model/sortable_row.dart';
 import 'utility/sort_operations.dart';
 import 'widget/custom_expansion_tile.dart' as custom_tile;
+import 'widget/custom_expansible.dart' as custom_expansible;
 import 'widget/edit_dialog.dart';
 import 'widget/expansion_container.dart';
 import 'widget/pagination_widget.dart';
@@ -405,26 +406,39 @@ class _ExpandableDataTableState extends State<ExpandableDataTable> {
     return Container(
       decoration: boxDecoration,
       child: Theme(
-        data: ThemeData().copyWith(
-          dividerColor: context.expandableTheme.expandedBorderColor,
-        ),
-        child: custom_tile.ExpansionTile(
+          data: ThemeData().copyWith(
+            dividerColor: context.expandableTheme.expandedBorderColor,
+          ),
+          child: custom_expansible.ExpansionTile(
+            tilePadding: context.expandableTheme.contentPadding,
+            showTrailingIcon: expansionCells.isNotEmpty,
+            collapsedBackgroundColor:
+                currentRowColor ?? context.expandableTheme.rowColor,
+            backgroundColor:
+                currentRowColor ?? context.expandableTheme.rowColor,
+            onExpansionChanged: (value) => _onExpansionChanged(value, index),
+            initiallyExpanded: _selectedRow == index,
+            title: buildRowTitleContent(titleCells),
+            childrenPadding: EdgeInsets.symmetric(vertical: context.lowValue),
+            children: buildExpansionContent(context, row, expansionCells),
+          )
+          /*custom_tile.ExpansionTile(
           tilePadding: context.expandableTheme.contentPadding,
           showExpansionIcon: expansionCells.isNotEmpty,
-          expansionIcon: context.expandableTheme.expansionIcon,
+          expansionIcon: context.expandableTheme.expansionIcon, // look
           collapsedBackgroundColor:
               currentRowColor ?? context.expandableTheme.rowColor,
           backgroundColor: currentRowColor ?? context.expandableTheme.rowColor,
-          trailingWidth: _trailingWidth,
+          trailingWidth: _trailingWidth, // look
           secondTrailing:
-              widget.isEditable ? buildEditIcon(context, index) : null,
+              widget.isEditable ? buildEditIcon(context, index) : null, // look
           onExpansionChanged: (value) => _onExpansionChanged(value, index),
           initiallyExpanded: _selectedRow == index,
           title: buildRowTitleContent(titleCells),
           childrenPadding: EdgeInsets.symmetric(vertical: context.lowValue),
           children: buildExpansionContent(context, row, expansionCells),
-        ),
-      ),
+        ), */
+          ),
     );
   }
 
