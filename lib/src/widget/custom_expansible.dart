@@ -50,14 +50,6 @@ const Duration _kExpand = Duration(milliseconds: 200);
 /// methods cause the [ExpansionTile] to rebuild, so they may not be called from
 /// a build method.
 ///
-/// Remember to dispose of the [ExpansionTileController] when it is no longer
-/// needed. This will ensure we discard any resources used by the object.
-@Deprecated(
-  'Use ExpansibleController instead. '
-      'This feature was deprecated after v3.31.0-0.1.pre.',
-)
-typedef ExpansionTileController = ExpansibleController;
-
 /// A single-line [ListTile] with an expansion arrow icon that expands or collapses
 /// the tile to reveal or hide the [children].
 ///
@@ -467,7 +459,7 @@ class _ExpansionTileState extends State<ExpansionTile> {
   late Animation<Color?> _backgroundColor;
 
   late ExpansionTileThemeData _expansionTileTheme;
-  late ExpansionTileController _tileController;
+  late ExpansibleController _tileController;
   Timer? _timer;
   late Curve _curve;
   late Curve? _reverseCurve;
@@ -478,7 +470,7 @@ class _ExpansionTileState extends State<ExpansionTile> {
     super.initState();
     _curve = Curves.easeIn;
     _duration = _kExpand;
-    _tileController = widget.controller ?? ExpansionTileController();
+    _tileController = widget.controller ?? ExpansibleController();
     if (widget.initiallyExpanded) {
       _tileController.expand();
     }
@@ -537,20 +529,6 @@ class _ExpansionTileState extends State<ExpansionTile> {
     return RotationTransition(turns: _iconTurns, child: const Icon(Icons.expand_more));
   }
 
-  Widget? _buildLeadingIcon(BuildContext context, Animation<double> animation) {
-    if (_effectiveAffinity() != ListTileControlAffinity.leading) {
-      return null;
-    }
-    return _buildIcon(context, animation);
-  }
-
-  Widget? _buildTrailingIcon(BuildContext context, Animation<double> animation) {
-    if (_effectiveAffinity() != ListTileControlAffinity.trailing) {
-      return null;
-    }
-    return _buildIcon(context, animation);
-  }
-
   Widget _buildHeader(BuildContext context, Animation<double> animation) {
     _iconColor = animation.drive(_iconColorTween.chain(_easeInTween));
     _headerColor = animation.drive(_headerColorTween.chain(_easeInTween));
@@ -574,27 +552,78 @@ class _ExpansionTileState extends State<ExpansionTile> {
         break;
     }
 
+    final ListTileControlAffinity affinity = _effectiveAffinity();
+    final Widget? expansionArrowIcon = widget.showTrailingIcon
+        ? _buildIcon(context, animation)
+        : null;
+
+    Widget? effectiveLeading;
+    Widget? effectiveTrailing;
+
+
+    if (expansionArrowIcon != null && affinity == ListTileControlAffinity.leading) {
+      effectiveLeading = expansionArrowIcon;
+      effectiveTrailing = widget.trailing;
+    } else if (expansionArrowIcon != null && affinity == ListTileControlAffinity.trailing) {
+      effectiveLeading = widget.leading;
+      effectiveTrailing = expansionArrowIcon;
+    } else {
+      effectiveLeading = widget.leading;
+      effectiveTrailing = widget.trailing;
+    }
+
+    final Widget titleSection = Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        widget.title,
+        if (widget.subtitle != null) widget.subtitle!,
+      ],
+    );
+
     return Semantics(
       hint: semanticsHint,
       onTapHint: onTapHint,
-      child: ListTileTheme.merge(
-        iconColor: _iconColor.value ?? _expansionTileTheme.iconColor,
-        textColor: _headerColor.value,
-        child: ListTile(
-          enabled: widget.enabled,
-          onTap: _tileController.isExpanded ? _tileController.collapse : _tileController.expand,
-          dense: widget.dense,
-          visualDensity: widget.visualDensity,
-          enableFeedback: widget.enableFeedback,
-          contentPadding: widget.tilePadding ?? _expansionTileTheme.tilePadding,
-          leading: widget.leading ?? _buildLeadingIcon(context, animation),
-          title: widget.title,
-          subtitle: widget.subtitle,
-          trailing: widget.showTrailingIcon
-              ? widget.trailing ?? _buildTrailingIcon(context, animation)
+      child: GestureDetector(
+        onTap: widget.enabled
+            ? (_tileController.isExpanded ? _tileController.collapse : _tileController.expand)
+            : null,
+        child: Container(
+          padding: widget.tilePadding ?? _expansionTileTheme.tilePadding ?? const EdgeInsets.symmetric(horizontal: 16.0),
+          constraints: widget.minTileHeight != null
+              ? BoxConstraints(minHeight: widget.minTileHeight!)
               : null,
-          minTileHeight: widget.minTileHeight,
-          internalAddSemanticForOnTap: widget.internalAddSemanticForOnTap,
+          color: (_tileController.isExpanded
+              ? widget.backgroundColor ?? _expansionTileTheme.backgroundColor
+              : widget.collapsedBackgroundColor ?? _expansionTileTheme.collapsedBackgroundColor) ??
+              Colors.transparent,
+          child: IconTheme.merge(
+            data: IconThemeData(
+              color: _iconColor.value ?? _expansionTileTheme.iconColor,
+            ),
+            child: DefaultTextStyle.merge(
+              style: TextStyle(
+                color: _headerColor.value,
+              ),
+              child: Row(
+                children: <Widget>[
+                  if (effectiveLeading != null)
+                    Padding(
+                      padding: const EdgeInsets.only(right: 16.0),
+                      child: effectiveLeading,
+                    ),
+                  Expanded(
+                    child: titleSection,
+                  ),
+                  if (effectiveTrailing != null)
+                    Padding(
+                      padding: const EdgeInsets.only(left: 16.0),
+                      child: effectiveTrailing,
+                    ),
+                ],
+              ),
+            ),
+          ),
         ),
       ),
     );
