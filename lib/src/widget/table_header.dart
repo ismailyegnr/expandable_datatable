@@ -13,12 +13,12 @@ class TableHeader extends StatelessWidget {
   final double trailingWidth;
 
   const TableHeader({
-    Key? key,
+    super.key,
     required this.headerRow,
     required this.currentSort,
     required this.onTitleTap,
     required this.trailingWidth,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -149,7 +149,7 @@ class ExpandableThemeData {
       size: 16,
     );
     expansionIcon ??= Icon(
-      Icons.more_vert,
+      Icons.expand_more,
       color: theme.unselectedWidgetColor,
       size: 18,
     );

@@ -158,7 +158,7 @@ class ExpandableDataTable extends StatefulWidget {
   )? renderExpansionContent;
 
   ExpandableDataTable({
-    Key? key,
+    super.key,
     required this.headers,
     required this.rows,
     required this.visibleColumnCount,
@@ -173,8 +173,7 @@ class ExpandableDataTable extends StatefulWidget {
   })  : assert(visibleColumnCount > 0),
         assert(
           rows.isNotEmpty ? headers.length == rows.first.cells.length : true,
-        ),
-        super(key: key);
+        );
 
   @override
   State<ExpandableDataTable> createState() => _ExpandableDataTableState();
@@ -412,6 +411,7 @@ class _ExpandableDataTableState extends State<ExpandableDataTable> {
           child: custom_expansible.ExpansionTile(
             tilePadding: context.expandableTheme.contentPadding,
             showTrailingIcon: expansionCells.isNotEmpty,
+            expansionIcon: context.expandableTheme.expansionIcon,
             collapsedBackgroundColor:
                 currentRowColor ?? context.expandableTheme.rowColor,
             backgroundColor:
@@ -420,6 +420,8 @@ class _ExpandableDataTableState extends State<ExpandableDataTable> {
             initiallyExpanded: _selectedRow == index,
             title: buildRowTitleContent(titleCells),
             childrenPadding: EdgeInsets.symmetric(vertical: context.lowValue),
+            secondTrailing: widget.isEditable ? buildEditIcon(context, index) : null,
+            trailingWidth: _trailingWidth,
             children: buildExpansionContent(context, row, expansionCells),
           )
           /*custom_tile.ExpansionTile(
@@ -429,9 +431,9 @@ class _ExpandableDataTableState extends State<ExpandableDataTable> {
           collapsedBackgroundColor:
               currentRowColor ?? context.expandableTheme.rowColor,
           backgroundColor: currentRowColor ?? context.expandableTheme.rowColor,
-          trailingWidth: _trailingWidth, // look
+          trailingWidth: _trailingWidth, // look ++
           secondTrailing:
-              widget.isEditable ? buildEditIcon(context, index) : null, // look
+              widget.isEditable ? buildEditIcon(context, index) : null, // look ++
           onExpansionChanged: (value) => _onExpansionChanged(value, index),
           initiallyExpanded: _selectedRow == index,
           title: buildRowTitleContent(titleCells),

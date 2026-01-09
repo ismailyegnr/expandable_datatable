@@ -125,11 +125,18 @@ class ExpansionTile extends StatefulWidget {
     this.enabled = true,
     this.expansionAnimationStyle,
     this.internalAddSemanticForOnTap = false,
+    this.secondTrailing,
+    this.trailingWidth,
+    this.expansionIcon
   }) : assert(
   expandedCrossAxisAlignment != CrossAxisAlignment.baseline,
   'CrossAxisAlignment.baseline is not supported since the expanded children '
       'are aligned in a column, not a row. Try to use another constant.',
   );
+
+  final double? trailingWidth;
+  final Widget? secondTrailing;
+  final Icon? expansionIcon;
 
   /// A widget to display before the title.
   ///
@@ -526,8 +533,18 @@ class _ExpansionTileState extends State<ExpansionTile> {
 
   Widget? _buildIcon(BuildContext context, Animation<double> animation) {
     _iconTurns = animation.drive(_halfTween.chain(_easeInTween));
-    return RotationTransition(turns: _iconTurns, child: const Icon(Icons.expand_more));
+    return
+      GestureDetector(
+          onTap: widget.enabled
+              ? (_tileController.isExpanded
+              ? _tileController.collapse
+              : _tileController.expand)
+              : null,
+          child: RotationTransition(
+              turns: _iconTurns, child: widget.expansionIcon)
+      );
   }
+
 
   Widget _buildHeader(BuildContext context, Animation<double> animation) {
     _iconColor = animation.drive(_iconColorTween.chain(_easeInTween));
@@ -584,44 +601,43 @@ class _ExpansionTileState extends State<ExpansionTile> {
     return Semantics(
       hint: semanticsHint,
       onTapHint: onTapHint,
-      child: GestureDetector(
-        onTap: widget.enabled
-            ? (_tileController.isExpanded ? _tileController.collapse : _tileController.expand)
+      child: Container(
+        padding: widget.tilePadding ?? _expansionTileTheme.tilePadding ?? const EdgeInsets.symmetric(horizontal: 16.0),
+        constraints: widget.minTileHeight != null
+            ? BoxConstraints(minHeight: widget.minTileHeight!)
             : null,
-        child: Container(
-          padding: widget.tilePadding ?? _expansionTileTheme.tilePadding ?? const EdgeInsets.symmetric(horizontal: 16.0),
-          constraints: widget.minTileHeight != null
-              ? BoxConstraints(minHeight: widget.minTileHeight!)
-              : null,
-          color: (_tileController.isExpanded
-              ? widget.backgroundColor ?? _expansionTileTheme.backgroundColor
-              : widget.collapsedBackgroundColor ?? _expansionTileTheme.collapsedBackgroundColor) ??
-              Colors.transparent,
-          child: IconTheme.merge(
-            data: IconThemeData(
-              color: _iconColor.value ?? _expansionTileTheme.iconColor,
+        color: (_tileController.isExpanded
+            ? widget.backgroundColor ?? _expansionTileTheme.backgroundColor
+            : widget.collapsedBackgroundColor ?? _expansionTileTheme.collapsedBackgroundColor) ??
+            Colors.transparent,
+        child: IconTheme.merge(
+          data: IconThemeData(
+            color: _iconColor.value ?? _expansionTileTheme.iconColor,
+          ),
+          child: DefaultTextStyle.merge(
+            style: TextStyle(
+              color: _headerColor.value,
             ),
-            child: DefaultTextStyle.merge(
-              style: TextStyle(
-                color: _headerColor.value,
-              ),
-              child: Row(
-                children: <Widget>[
-                  if (effectiveLeading != null)
-                    Padding(
-                      padding: const EdgeInsets.only(right: 16.0),
-                      child: effectiveLeading,
-                    ),
-                  Expanded(
-                    child: titleSection,
+            child: Row(
+              children: <Widget>[
+                if (effectiveLeading != null)
+                  Padding(
+                    padding: const EdgeInsets.only(right: 16.0),
+                    child: effectiveLeading,
                   ),
-                  if (effectiveTrailing != null)
-                    Padding(
-                      padding: const EdgeInsets.only(left: 16.0),
-                      child: effectiveTrailing,
-                    ),
-                ],
-              ),
+                Expanded(
+                  child: titleSection,
+                ),
+                SizedBox(
+                  width: widget.trailingWidth,
+                  child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    widget.secondTrailing ?? SizedBox(),
+                    effectiveTrailing ?? SizedBox(),
+                  ],
+                  ),
+                ),
+              ],
             ),
           ),
         ),
