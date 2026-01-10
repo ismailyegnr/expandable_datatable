@@ -125,7 +125,6 @@ class _MyHomePageState extends State<MyHomePage> {
             data: ExpandableThemeData(
               context,
               contentPadding: const EdgeInsets.all(20),
-              expandedBorderColor: Colors.transparent,
               paginationSize: 48,
               headerHeight: 56,
               headerColor: Colors.amber[400],
@@ -135,11 +134,9 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
               evenRowColor: const Color(0xFFFFFFFF),
               oddRowColor: Colors.amber[200],
-              rowBorder: const BorderSide(
-                color: Colors.black,
-                width: 0.5,
-              ),
               rowColor: Colors.green,
+              shape: Border.all(color: Colors.black),
+              collapsedShape: Border.all(color: Colors.black, width: 0.3),
               headerTextMaxLines: 4,
               headerSortIconColor: const Color(0xFF6c59cf),
               paginationSelectedFillColor: const Color(0xFF6c59cf),
