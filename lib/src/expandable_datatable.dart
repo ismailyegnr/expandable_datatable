@@ -379,18 +379,13 @@ class _ExpandableDataTableState extends State<ExpandableDataTable> {
     );
   }
 
-  Container buildSingleRow(
+  custom_expansible.ExpansionTile buildSingleRow(
     BuildContext context,
     int index,
     ExpandableRow row,
     List<CellItem> expansionCells,
     List<CellItem> titleCells,
   ) {
-    var boxDecoration = BoxDecoration(
-      border: Border(
-        bottom: context.expandableTheme.rowBorder,
-      ),
-    );
 
     Color? currentRowColor;
     if (context.expandableTheme.evenRowColor != null &&
@@ -402,46 +397,38 @@ class _ExpandableDataTableState extends State<ExpandableDataTable> {
       }
     }
 
-    return Container(
-      decoration: boxDecoration,
-      child: Theme(
-          data: ThemeData().copyWith(
-            dividerColor: context.expandableTheme.expandedBorderColor,
-          ),
-          child: custom_expansible.ExpansionTile(
-            tilePadding: context.expandableTheme.contentPadding,
-            showTrailingIcon: expansionCells.isNotEmpty,
-            expansionIcon: context.expandableTheme.expansionIcon,
-            collapsedBackgroundColor:
-                currentRowColor ?? context.expandableTheme.rowColor,
-            backgroundColor:
-                currentRowColor ?? context.expandableTheme.rowColor,
-            onExpansionChanged: (value) => _onExpansionChanged(value, index),
-            initiallyExpanded: _selectedRow == index,
-            title: buildRowTitleContent(titleCells),
-            childrenPadding: EdgeInsets.symmetric(vertical: context.lowValue),
-            secondTrailing: widget.isEditable ? buildEditIcon(context, index) : null,
-            trailingWidth: _trailingWidth,
-            children: buildExpansionContent(context, row, expansionCells),
-          )
-          /*custom_tile.ExpansionTile(
+    return custom_expansible.ExpansionTile(
           tilePadding: context.expandableTheme.contentPadding,
-          showExpansionIcon: expansionCells.isNotEmpty,
-          expansionIcon: context.expandableTheme.expansionIcon, // look
+          showTrailingIcon: expansionCells.isNotEmpty,
+          expansionIcon: context.expandableTheme.expansionIcon,
           collapsedBackgroundColor:
               currentRowColor ?? context.expandableTheme.rowColor,
-          backgroundColor: currentRowColor ?? context.expandableTheme.rowColor,
-          trailingWidth: _trailingWidth, // look ++
-          secondTrailing:
-              widget.isEditable ? buildEditIcon(context, index) : null, // look ++
+          backgroundColor:
+              currentRowColor ?? context.expandableTheme.rowColor,
           onExpansionChanged: (value) => _onExpansionChanged(value, index),
           initiallyExpanded: _selectedRow == index,
           title: buildRowTitleContent(titleCells),
           childrenPadding: EdgeInsets.symmetric(vertical: context.lowValue),
+          secondTrailing: widget.isEditable ? buildEditIcon(context, index) : null,
+          trailingWidth: _trailingWidth,
           children: buildExpansionContent(context, row, expansionCells),
-        ), */
-          ),
-    );
+        );
+        /*custom_tile.ExpansionTile(
+        tilePadding: context.expandableTheme.contentPadding,
+        showExpansionIcon: expansionCells.isNotEmpty,
+        expansionIcon: context.expandableTheme.expansionIcon, // look
+        collapsedBackgroundColor:
+            currentRowColor ?? context.expandableTheme.rowColor,
+        backgroundColor: currentRowColor ?? context.expandableTheme.rowColor,
+        trailingWidth: _trailingWidth, // look ++
+        secondTrailing:
+            widget.isEditable ? buildEditIcon(context, index) : null, // look ++
+        onExpansionChanged: (value) => _onExpansionChanged(value, index),
+        initiallyExpanded: _selectedRow == index,
+        title: buildRowTitleContent(titleCells),
+        childrenPadding: EdgeInsets.symmetric(vertical: context.lowValue),
+        children: buildExpansionContent(context, row, expansionCells),
+      ), */
   }
 
   Widget buildHeader() {

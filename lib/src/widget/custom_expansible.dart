@@ -12,6 +12,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
+import '../../expandable_datatable.dart';
+
 
 const Duration _kExpand = Duration(milliseconds: 200);
 
@@ -386,7 +388,7 @@ class ExpansionTile extends StatefulWidget {
   /// In cases where control over the tile's state is needed from a callback
   /// triggered by a widget within the tile, [ExpansibleController.of] may be
   /// more convenient than supplying a controller.
-  final ExpansionTileController? controller;
+  final ExpansibleController? controller;
 
   /// {@macro flutter.material.ListTile.dense}
   final bool? dense;
@@ -466,7 +468,8 @@ class _ExpansionTileState extends State<ExpansionTile> {
   late Animation<Color?> _backgroundColor;
 
   late ExpansionTileThemeData _expansionTileTheme;
-  late ExpansibleController _tileController;
+  late ExpandableThemeData _expandableTheme;
+  late ExpansibleController _expansibleController;
   Timer? _timer;
   late Curve _curve;
   late Curve? _reverseCurve;
@@ -477,18 +480,18 @@ class _ExpansionTileState extends State<ExpansionTile> {
     super.initState();
     _curve = Curves.easeIn;
     _duration = _kExpand;
-    _tileController = widget.controller ?? ExpansibleController();
+    _expansibleController = widget.controller ?? ExpansibleController();
     if (widget.initiallyExpanded) {
-      _tileController.expand();
+      _expansibleController.expand();
     }
-    _tileController.addListener(_onExpansionChanged);
+    _expansibleController.addListener(_onExpansionChanged);
   }
 
   @override
   void dispose() {
-    _tileController.removeListener(_onExpansionChanged);
+    _expansibleController.removeListener(_onExpansionChanged);
     if (widget.controller == null) {
-      _tileController.dispose();
+      _expansibleController.dispose();
     }
     _timer?.cancel();
     _timer = null;
@@ -498,7 +501,7 @@ class _ExpansionTileState extends State<ExpansionTile> {
   void _onExpansionChanged() {
     final TextDirection textDirection = WidgetsLocalizations.of(context).textDirection;
     final MaterialLocalizations localizations = MaterialLocalizations.of(context);
-    final String stateHint = _tileController.isExpanded
+    final String stateHint = _expansibleController.isExpanded
         ? localizations.collapsedHint
         : localizations.expandedHint;
 
@@ -514,7 +517,7 @@ class _ExpansionTileState extends State<ExpansionTile> {
     } else {
       SemanticsService.announce(stateHint, textDirection);
     }
-    widget.onExpansionChanged?.call(_tileController.isExpanded);
+    widget.onExpansionChanged?.call(_expansibleController.isExpanded);
   }
 
   // Platform or null affinity defaults to trailing.
@@ -536,9 +539,9 @@ class _ExpansionTileState extends State<ExpansionTile> {
     return
       GestureDetector(
           onTap: widget.enabled
-              ? (_tileController.isExpanded
-              ? _tileController.collapse
-              : _tileController.expand)
+              ? (_expansibleController.isExpanded
+              ? _expansibleController.collapse
+              : _expansibleController.expand)
               : null,
           child: RotationTransition(
               turns: _iconTurns, child: widget.expansionIcon)
@@ -551,14 +554,14 @@ class _ExpansionTileState extends State<ExpansionTile> {
     _headerColor = animation.drive(_headerColorTween.chain(_easeInTween));
     final ThemeData theme = Theme.of(context);
     final MaterialLocalizations localizations = MaterialLocalizations.of(context);
-    final String onTapHint = _tileController.isExpanded
+    final String onTapHint = _expansibleController.isExpanded
         ? localizations.expansionTileExpandedTapHint
         : localizations.expansionTileCollapsedTapHint;
     String? semanticsHint;
     switch (theme.platform) {
       case TargetPlatform.iOS:
       case TargetPlatform.macOS:
-        semanticsHint = _tileController.isExpanded
+        semanticsHint = _expansibleController.isExpanded
             ? '${localizations.collapsedHint}\n ${localizations.expansionTileExpandedHint}'
             : '${localizations.expandedHint}\n ${localizations.expansionTileCollapsedHint}';
         break;
@@ -606,7 +609,7 @@ class _ExpansionTileState extends State<ExpansionTile> {
         constraints: widget.minTileHeight != null
             ? BoxConstraints(minHeight: widget.minTileHeight!)
             : null,
-        color: (_tileController.isExpanded
+        color: (_expansibleController.isExpanded
             ? widget.backgroundColor ?? _expansionTileTheme.backgroundColor
             : widget.collapsedBackgroundColor ?? _expansionTileTheme.collapsedBackgroundColor) ??
             Colors.transparent,
@@ -711,9 +714,14 @@ class _ExpansionTileState extends State<ExpansionTile> {
     super.didUpdateWidget(oldWidget);
     final ThemeData theme = Theme.of(context);
     _expansionTileTheme = ExpansionTileTheme.of(context);
+
+    _expandableTheme = ExpandableTheme.of(context);
+
+    // defaults ?
     final ExpansionTileThemeData defaults = theme.useMaterial3
         ? _ExpansionTileDefaultsM3(context)
         : _ExpansionTileDefaultsM2(context);
+
     if (widget.collapsedShape != oldWidget.collapsedShape || widget.shape != oldWidget.shape) {
       _updateShapeBorder(theme);
     }
@@ -739,6 +747,10 @@ class _ExpansionTileState extends State<ExpansionTile> {
   void didChangeDependencies() {
     final ThemeData theme = Theme.of(context);
     _expansionTileTheme = ExpansionTileTheme.of(context);
+
+    _expandableTheme = ExpandableTheme.of(context);
+
+    // defaults ?
     final ExpansionTileThemeData defaults = theme.useMaterial3
         ? _ExpansionTileDefaultsM3(context)
         : _ExpansionTileDefaultsM2(context);
@@ -762,14 +774,14 @@ class _ExpansionTileState extends State<ExpansionTile> {
     _borderTween
       ..begin =
           widget.collapsedShape ??
-              _expansionTileTheme.collapsedShape ??
+              _expandableTheme.collapsedShape ??
               const Border(
                 top: BorderSide(color: Colors.transparent),
                 bottom: BorderSide(color: Colors.transparent),
               )
       ..end =
           widget.shape ??
-              _expansionTileTheme.shape ??
+              _expandableTheme.shape ??
               Border(
                 top: BorderSide(color: theme.dividerColor),
                 bottom: BorderSide(color: theme.dividerColor),
@@ -813,7 +825,7 @@ class _ExpansionTileState extends State<ExpansionTile> {
   @override
   Widget build(BuildContext context) {
     return Expansible(
-      controller: _tileController,
+      controller: _expansibleController,
       curve: _curve,
       duration: _duration,
       reverseCurve: _reverseCurve,

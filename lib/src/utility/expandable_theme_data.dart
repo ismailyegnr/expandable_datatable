@@ -44,11 +44,6 @@ class ExpandableThemeData {
   /// Height of the header widget.
   final double? headerHeight;
 
-  /// Expansion border color.
-  ///
-  /// It overrides if rowBorder is used.
-  final Color expandedBorderColor;
-
   /// Background color of rows.
   final Color rowColor;
 
@@ -62,7 +57,26 @@ class ExpandableThemeData {
   final BorderSide headerBorder;
 
   /// Border style of all rows.
+  @Deprecated('Use shape and collapsedShape instead')
   final BorderSide rowBorder;
+
+  /// Expansion border color.
+  ///
+  /// It overrides if rowBorder is used.
+  @Deprecated('Use shape and collapsedShape instead')
+  final Color expandedBorderColor;
+
+  /// The rows' border shape when the expandable content is expanded.
+  ///
+  /// If this property is null, a [Border] with vertical sides default to
+  /// [ThemeData.dividerColor] is used.
+  final ShapeBorder? shape;
+
+  /// The rows' border shape when the expandable content is collapsed.
+  ///
+  /// If this property is null, a [Border] with vertical sides default to
+  /// [Colors.transparent] is used.
+  final ShapeBorder? collapsedShape;
 
   /// Icon image showing editing feature.
   final Icon editIcon;
@@ -202,6 +216,8 @@ class ExpandableThemeData {
     this.oddRowColor,
     required this.headerBorder,
     required this.rowBorder,
+    this.shape,
+    this.collapsedShape,
     required this.editIcon,
     required this.expansionIcon,
     required this.paginationSize,
