@@ -400,7 +400,6 @@ class _ExpandableDataTableState extends State<ExpandableDataTable> {
     return custom_expansible.ExpansionTile(
           tilePadding: context.expandableTheme.contentPadding,
           showTrailingIcon: expansionCells.isNotEmpty,
-          expansionIcon: context.expandableTheme.expansionIcon,
           collapsedBackgroundColor:
               currentRowColor ?? context.expandableTheme.rowColor,
           backgroundColor:

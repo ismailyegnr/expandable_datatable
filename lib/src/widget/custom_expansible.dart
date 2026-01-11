@@ -120,7 +120,6 @@ class ExpansionTile extends StatefulWidget {
     this.clipBehavior,
     this.controlAffinity,
     this.controller,
-    this.dense,
     this.visualDensity,
     this.minTileHeight,
     this.enableFeedback = true,
@@ -129,7 +128,6 @@ class ExpansionTile extends StatefulWidget {
     this.internalAddSemanticForOnTap = false,
     this.secondTrailing,
     this.trailingWidth,
-    this.expansionIcon
   }) : assert(
   expandedCrossAxisAlignment != CrossAxisAlignment.baseline,
   'CrossAxisAlignment.baseline is not supported since the expanded children '
@@ -138,7 +136,6 @@ class ExpansionTile extends StatefulWidget {
 
   final double? trailingWidth;
   final Widget? secondTrailing;
-  final Icon? expansionIcon;
 
   /// A widget to display before the title.
   ///
@@ -390,9 +387,6 @@ class ExpansionTile extends StatefulWidget {
   /// more convenient than supplying a controller.
   final ExpansibleController? controller;
 
-  /// {@macro flutter.material.ListTile.dense}
-  final bool? dense;
-
   /// Defines how compact the expansion tile's layout will be.
   ///
   /// {@macro flutter.material.themedata.visualDensity}
@@ -544,7 +538,7 @@ class _ExpansionTileState extends State<ExpansionTile> {
               : _expansibleController.expand)
               : null,
           child: RotationTransition(
-              turns: _iconTurns, child: widget.expansionIcon)
+              turns: _iconTurns, child: _expandableTheme.expansionIcon)
       );
   }
 
