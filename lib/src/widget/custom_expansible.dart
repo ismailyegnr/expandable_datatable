@@ -216,19 +216,7 @@ class ExpansionTile extends StatefulWidget {
   /// collapsed and recreated upon expansion.
   final bool maintainState;
 
-  /// Specifies padding for the [ListTile].
-  ///
-  /// Analogous to [ListTile.contentPadding], this property defines the insets for
-  /// the [leading], [title], [subtitle] and [trailing] widgets. It does not inset
-  /// the expanded [children] widgets.
-  ///
-  /// If this property is null then [ExpansionTileThemeData.tilePadding] is used. If that
-  /// is also null then the tile's padding is `EdgeInsets.symmetric(horizontal: 16.0)`.
-  ///
-  /// See also:
-  ///
-  /// * [ExpansionTileTheme.of], which returns the nearest [ExpansionTileTheme]'s
-  ///   [ExpansionTileThemeData].
+  /// If this property is null then [ExpandableThemeData.contentPadding] is used.
   final EdgeInsetsGeometry? tilePadding;
 
   /// Specifies the alignment of [children], which are arranged in a column when
@@ -599,7 +587,7 @@ class _ExpansionTileState extends State<ExpansionTile> {
       hint: semanticsHint,
       onTapHint: onTapHint,
       child: Container(
-        padding: widget.tilePadding ?? _expansionTileTheme.tilePadding ?? const EdgeInsets.symmetric(horizontal: 16.0),
+        padding: widget.tilePadding ?? _expandableTheme.contentPadding,
         constraints: widget.minTileHeight != null
             ? BoxConstraints(minHeight: widget.minTileHeight!)
             : null,

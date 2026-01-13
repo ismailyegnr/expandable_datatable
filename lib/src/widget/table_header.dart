@@ -88,7 +88,7 @@ class TableHeader extends StatelessWidget {
                 child: Text(
                   column.columnTitle,
                   style: context.expandableTheme.headerTextStyle,
-                  overflow: TextOverflow.ellipsis,
+                  overflow: context.expandableTheme.rowTextOverflow,
                   maxLines: context.expandableTheme.headerTextMaxLines,
                 ),
               ),

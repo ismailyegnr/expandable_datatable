@@ -6,7 +6,7 @@ class ExpandableThemeData {
   /// If [headerHeight] is already specified, this will only affect the header row
   /// horizontally.
   ///
-  /// It defaults to `EdgeInsets.symmetric(horizontal: 16.0)`.
+  /// It defaults to `EdgeInsets.all(16.0)`.
   final EdgeInsets contentPadding;
 
   /// Text style of header row.
@@ -45,6 +45,8 @@ class ExpandableThemeData {
   final double? headerHeight;
 
   /// Background color of rows.
+  ///
+  /// It overrides if [evenRowColor] and [oddRowColor] is used.
   final Color rowColor;
 
   /// Background color of the even indexed rows.
@@ -79,9 +81,13 @@ class ExpandableThemeData {
   final ShapeBorder? collapsedShape;
 
   /// Icon image showing editing feature.
+  ///
+  /// If this property is null, then [Icons.edit] icon is used.
   final Icon editIcon;
 
   /// Icon image expanding expansion content.
+  ///
+  /// If this property is null, then [Icons.expand_more] icon is used.
   final Icon expansionIcon;
 
   /*************** Pagination Widget Theme Properties *******************/
@@ -93,18 +99,25 @@ class ExpandableThemeData {
   /// If this property is null, then paginationSize 48 is be used.
   final double paginationSize;
 
+  /// The [TextStyle] used for the page numbers (both selected and unselected).
   final TextStyle? paginationTextStyle;
 
+  /// The color used for the text of the currently selected page number button.
   final Color? paginationSelectedTextColor;
 
+  /// The color used for the text of the unselected page number buttons.
   final Color? paginationUnselectedTextColor;
 
+  /// The fill color (background color) of the currently selected page number button.
   final Color? paginationSelectedFillColor;
 
+  /// The border color applied to the page number buttons.
   final Color? paginationBorderColor;
 
+  /// The radius applied to the corners of the page number buttons.
   final BorderRadius? paginationBorderRadius;
 
+  /// The width of the border applied to the page number buttons.
   final double? paginationBorderWidth;
 
   factory ExpandableThemeData(
@@ -144,7 +157,7 @@ class ExpandableThemeData {
 
     const TextStyle fixText = TextStyle(fontSize: 13);
 
-    contentPadding ??= const EdgeInsets.symmetric(horizontal: 16.0);
+    contentPadding ??= const EdgeInsets.all(16.0);
     headerTextStyle ??= theme.textTheme.bodyLarge ?? fixText;
     rowTextStyle ??= theme.textTheme.bodyMedium ?? fixText;
     headerTextMaxLines ??= 2;
