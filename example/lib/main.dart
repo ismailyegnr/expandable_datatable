@@ -148,7 +148,7 @@ class _MyHomePageState extends State<MyHomePage> {
               headers: headers,
               rows: rows,
               multipleExpansion: false,
-              isEditable: false,
+              isEditable: true,
               pageSize: 8,
               onRowChanged: (newRow) {
                 print(newRow.cells[01].value);

@@ -90,6 +90,10 @@ class ExpandableThemeData {
   /// If this property is null, then [Icons.expand_more] icon is used.
   final Icon expansionIcon;
 
+  /// Overrides the default 200ms expansion animation duration.
+  ///
+  final AnimationStyle? expansionAnimationStyle;
+
   /*************** Pagination Widget Theme Properties *******************/
   /// If the custom pagination widget is not used. These properties
   /// are used to customize default pagination widget.
@@ -143,6 +147,7 @@ class ExpandableThemeData {
     ShapeBorder? collapsedShape,
     Icon? editIcon,
     Icon? expansionIcon,
+    AnimationStyle? expansionAnimationStyle,
     double? paginationSize,
     TextStyle? paginationTextStyle,
     Color? paginationSelectedTextColor,
@@ -203,6 +208,7 @@ class ExpandableThemeData {
       collapsedShape: collapsedShape,
       editIcon: editIcon,
       expansionIcon: expansionIcon,
+      expansionAnimationStyle: expansionAnimationStyle,
       paginationSize: paginationSize,
       paginationTextStyle: paginationTextStyle,
       paginationSelectedTextColor: paginationSelectedTextColor,
@@ -237,6 +243,7 @@ class ExpandableThemeData {
     required this.collapsedShape,
     required this.editIcon,
     required this.expansionIcon,
+    this.expansionAnimationStyle,
     required this.paginationSize,
     this.paginationTextStyle,
     this.paginationSelectedTextColor,

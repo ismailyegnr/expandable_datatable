@@ -675,9 +675,9 @@ class _ExpansionTileState extends State<ExpansionTile> {
 
     final bool isShapeProvided =
         widget.shape != null ||
-            _expansionTileTheme.shape != null ||
+            _expandableTheme.shape != null ||
             widget.collapsedShape != null ||
-            _expansionTileTheme.collapsedShape != null;
+            _expandableTheme.collapsedShape != null;
 
     if (isShapeProvided) {
       return Material(
@@ -745,13 +745,15 @@ class _ExpansionTileState extends State<ExpansionTile> {
     super.didChangeDependencies();
   }
 
+  // Completed
   void _updateAnimationDuration() {
     _duration =
         widget.expansionAnimationStyle?.duration ??
-            _expansionTileTheme.expansionAnimationStyle?.duration ??
+            _expandableTheme.expansionAnimationStyle?.duration ??
             const Duration(milliseconds: 200);
   }
 
+  // Completed
   void _updateShapeBorder(ThemeData theme) {
     _borderTween
       ..begin =
