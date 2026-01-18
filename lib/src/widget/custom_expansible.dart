@@ -588,6 +588,7 @@ class _ExpansionTileState extends State<ExpansionTile> {
       onTapHint: onTapHint,
       child: Container(
         padding: widget.tilePadding ?? _expandableTheme.contentPadding,
+        height: _expandableTheme.rowHeight,
         constraints: widget.minTileHeight != null
             ? BoxConstraints(minHeight: widget.minTileHeight!)
             : null,
@@ -675,9 +676,9 @@ class _ExpansionTileState extends State<ExpansionTile> {
 
     final bool isShapeProvided =
         widget.shape != null ||
-            _expandableTheme.shape != null ||
+            _expandableTheme.expandedShape != null ||
             widget.collapsedShape != null ||
-            _expandableTheme.collapsedShape != null;
+            _expandableTheme.shape != null;
 
     if (isShapeProvided) {
       return Material(
@@ -758,14 +759,14 @@ class _ExpansionTileState extends State<ExpansionTile> {
     _borderTween
       ..begin =
           widget.collapsedShape ??
-              _expandableTheme.collapsedShape ??
+              _expandableTheme.shape ??
               const Border(
                 top: BorderSide(color: Colors.transparent),
                 bottom: BorderSide(color: Colors.transparent),
               )
       ..end =
           widget.shape ??
-              _expandableTheme.shape ??
+              _expandableTheme.expandedShape ??
               Border(
                 top: BorderSide(color: theme.dividerColor),
                 bottom: BorderSide(color: theme.dividerColor),

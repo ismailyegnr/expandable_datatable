@@ -59,26 +59,26 @@ class ExpandableThemeData {
   final BorderSide headerBorder;
 
   /// Border style of all rows.
-  @Deprecated('Use shape and collapsedShape instead')
+  @Deprecated('Use shape and expandedShape instead')
   final BorderSide rowBorder;
 
   /// Expansion border color.
   ///
   /// It overrides if rowBorder is used.
-  @Deprecated('Use shape and collapsedShape instead')
+  @Deprecated('Use shape and expandedShape instead')
   final Color expandedBorderColor;
-
-  /// The rows' border shape when the expandable content is expanded.
-  ///
-  /// If this property is null, a [Border] with vertical sides default to
-  /// [ThemeData.dividerColor] is used.
-  final ShapeBorder? shape;
 
   /// The rows' border shape when the expandable content is collapsed.
   ///
   /// If this property is null, a [Border] with vertical sides default to
   /// [Colors.transparent] is used.
-  final ShapeBorder? collapsedShape;
+  final ShapeBorder? shape;
+
+  /// The rows' border shape when the expandable content is expanded.
+  ///
+  /// If this property is null, a [Border] with vertical sides default to
+  /// [ThemeData.dividerColor] is used.
+  final ShapeBorder? expandedShape;
 
   /// Icon image showing editing feature.
   ///
@@ -93,6 +93,10 @@ class ExpandableThemeData {
   /// Overrides the default 200ms expansion animation duration.
   ///
   final AnimationStyle? expansionAnimationStyle;
+
+  /// Height of the rows
+  ///
+  final double? rowHeight;
 
   /*************** Pagination Widget Theme Properties *******************/
   /// If the custom pagination widget is not used. These properties
@@ -144,10 +148,11 @@ class ExpandableThemeData {
     BorderSide? rowBorder,
     Color? expandedBorderColor,
     ShapeBorder? shape,
-    ShapeBorder? collapsedShape,
+    ShapeBorder? expandedShape,
     Icon? editIcon,
     Icon? expansionIcon,
     AnimationStyle? expansionAnimationStyle,
+    double? rowHeight,
     double? paginationSize,
     TextStyle? paginationTextStyle,
     Color? paginationSelectedTextColor,
@@ -205,10 +210,11 @@ class ExpandableThemeData {
       rowBorder: rowBorder,
       expandedBorderColor: expandedBorderColor,
       shape: shape,
-      collapsedShape: collapsedShape,
+      expandedShape: expandedShape,
       editIcon: editIcon,
       expansionIcon: expansionIcon,
       expansionAnimationStyle: expansionAnimationStyle,
+      rowHeight: rowHeight,
       paginationSize: paginationSize,
       paginationTextStyle: paginationTextStyle,
       paginationSelectedTextColor: paginationSelectedTextColor,
@@ -240,7 +246,8 @@ class ExpandableThemeData {
     required this.rowBorder,
     required this.expandedBorderColor,
     required this.shape,
-    required this.collapsedShape,
+    required this.expandedShape,
+    this.rowHeight,
     required this.editIcon,
     required this.expansionIcon,
     this.expansionAnimationStyle,
