@@ -208,11 +208,25 @@ class _ExpandableDataTableState extends State<ExpandableDataTable> {
 
   @override
   void didChangeDependencies() {
-    _trailingWidth = context.dynamicWidth(widget.isEditable
-        ? GeneralConstants.largeTrailing
-        : GeneralConstants.smallTrailing);
-
+    _updateTrailingWidth();
     super.didChangeDependencies();
+  }
+
+
+  @override
+  void didUpdateWidget(covariant ExpandableDataTable oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if (widget.isEditable != oldWidget.isEditable) {
+      _updateTrailingWidth();
+      setState(() {});
+    }
+  }
+
+  void _updateTrailingWidth() {
+    _trailingWidth = widget.isEditable
+        ? GeneralConstants.minEditableTrailing
+        : GeneralConstants.minNonEditableTrailing;
   }
 
   /// Create or update two dimension sorted rows list
@@ -412,22 +426,6 @@ class _ExpandableDataTableState extends State<ExpandableDataTable> {
           trailingWidth: _trailingWidth,
           children: buildExpansionContent(context, row, expansionCells),
         );
-        /*custom_tile.ExpansionTile(
-        tilePadding: context.expandableTheme.contentPadding,
-        showExpansionIcon: expansionCells.isNotEmpty,
-        expansionIcon: context.expandableTheme.expansionIcon, // look
-        collapsedBackgroundColor:
-            currentRowColor ?? context.expandableTheme.rowColor,
-        backgroundColor: currentRowColor ?? context.expandableTheme.rowColor,
-        trailingWidth: _trailingWidth, // look ++
-        secondTrailing:
-            widget.isEditable ? buildEditIcon(context, index) : null, // look ++
-        onExpansionChanged: (value) => _onExpansionChanged(value, index),
-        initiallyExpanded: _selectedRow == index,
-        title: buildRowTitleContent(titleCells),
-        childrenPadding: EdgeInsets.symmetric(vertical: context.lowValue),
-        children: buildExpansionContent(context, row, expansionCells),
-      ), */
   }
 
   Widget buildHeader() {
@@ -470,7 +468,6 @@ class _ExpandableDataTableState extends State<ExpandableDataTable> {
   Widget buildEditIcon(BuildContext context, int rowInd) {
     return IconButton(
       padding: EdgeInsets.zero,
-      constraints: const BoxConstraints(),
       icon: context.expandableTheme.editIcon,
       onPressed: () => showEditDialog(context, rowInd),
     );

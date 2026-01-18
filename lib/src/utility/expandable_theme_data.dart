@@ -190,7 +190,7 @@ class ExpandableThemeData {
     expansionIcon ??= Icon(
       Icons.expand_more,
       color: theme.unselectedWidgetColor,
-      size: 18,
+      size: 20,
     );
     paginationSize ??= 48;
 
