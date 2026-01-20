@@ -7,7 +7,6 @@ import 'model/expandable_column.dart';
 import 'model/expandable_row.dart';
 import 'model/sortable_row.dart';
 import 'utility/sort_operations.dart';
-import 'widget/custom_expansion_tile.dart' as custom_tile;
 import 'widget/custom_expansible.dart' as custom_expansible;
 import 'widget/edit_dialog.dart';
 import 'widget/expansion_container.dart';

@@ -43,30 +43,19 @@ class TableHeader extends StatelessWidget {
 
     return Container(
       decoration: boxDecoration,
+      padding: padding,
       height: height,
-      child: Center(
-        child: ListTile(
-          contentPadding: padding,
-          dense: true,
-          title: IntrinsicHeight(
-            child: Row(
-              children: headerRow
-                  .map(
-                    (e) => Expanded(
-                      flex: e.columnFlex,
-                      child: SizedBox.expand(
-                        child: buildHeaderTitle(context, e),
-                      ),
-                    ),
-                  )
-                  .toList(),
-            ),
-          ),
-          trailing: SizedBox(
-            width: trailingWidth,
+      child: Row(children: [
+        ...headerRow.map(
+          (e) => Expanded(
+            flex: e.columnFlex,
+            child: buildHeaderTitle(context, e),
           ),
         ),
-      ),
+        SizedBox(
+          width: trailingWidth,
+        )
+      ]),
     );
   }
 

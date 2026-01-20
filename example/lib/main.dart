@@ -124,13 +124,12 @@ class _MyHomePageState extends State<MyHomePage> {
           return ExpandableTheme(
             data: ExpandableThemeData(
               context,
-              contentPadding: const EdgeInsets.all(12),
+              contentPadding: const EdgeInsets.all(10),
               headerTextMaxLines: 2,
               rowTextMaxLines: 2,
               rowTextOverflow: TextOverflow.ellipsis,
               headerColor: Colors.amber[400],
               headerSortIconColor: const Color(0xFF6c59cf),
-              headerHeight: 56,
               rowColor: Colors.green,
               evenRowColor: const Color(0xFFFFFFFF),
               oddRowColor: Colors.amber[200],
@@ -141,7 +140,6 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
               shape: Border.all(color: Colors.black, width: 0.3),
               expandedShape: Border.all(color: Colors.black),
-              rowHeight: 80,
               paginationSelectedFillColor: const Color(0xFF6c59cf),
               paginationSelectedTextColor: Colors.white,
             ),
