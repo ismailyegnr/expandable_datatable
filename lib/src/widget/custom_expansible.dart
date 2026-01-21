@@ -2,9 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/// @docImport 'circle_avatar.dart';
-/// @docImport 'text_theme.dart';
-
 
 import 'dart:async';
 
@@ -22,8 +19,8 @@ const Duration _kExpand = Duration(milliseconds: 200);
 /// It can be useful to expand or collapse an [ExpansionTile]
 /// programmatically, for example to reconfigure an existing expansion
 /// tile based on a system event. To do so, create an [ExpansionTile]
-/// with an [ExpansionTileController] that's owned by a stateful widget
-/// or look up the tile's automatically created [ExpansionTileController]
+/// with an [ExpansibleController] that's owned by a stateful widget
+/// or look up the tile's automatically created [ExpansibleController]
 /// with [ExpansibleController.of].
 ///
 /// {@tool dartpad}
@@ -33,7 +30,7 @@ const Duration _kExpand = Duration(milliseconds: 200);
 /// When the [ExpansionTile] is actually created in the same `build`
 /// function as the callback that refers to the controller, then the
 /// `context` argument to the `build` function can't be used to find
-/// the [ExpansionTileController] (since it's "above" the widget
+/// the [ExpansibleController] (since it's "above" the widget
 /// being returned in the widget tree). In cases like that you can
 /// add a [Builder] widget, which provides a new scope with a
 /// [BuildContext] that is "under" the [ExpansionTile]:
@@ -43,10 +40,10 @@ const Duration _kExpand = Duration(milliseconds: 200);
 ///
 /// A more efficient solution is to split your build function into
 /// several widgets. This introduces a new context from which you
-/// can obtain the [ExpansionTileController]. With this approach you
+/// can obtain the [ExpansibleController]. With this approach you
 /// would have an outer widget that creates the [ExpansionTile]
 /// populated by instances of your new inner widgets, and then in
-/// these inner widgets you would use `ExpansionTileController.of`.
+/// these inner widgets you would use `ExpansibleController.of`.
 ///
 /// The  [ExpansibleController.expand] and [ExpansibleController.collapse]
 /// methods cause the [ExpansionTile] to rebuild, so they may not be called from
@@ -78,7 +75,7 @@ const Duration _kExpand = Duration(milliseconds: 200);
 /// {@end-tool}
 ///
 /// {@tool dartpad}
-/// This example demonstrates how an [ExpansionTileController] can be used to
+/// This example demonstrates how an [ExpansibleController] can be used to
 /// programmatically expand or collapse an [ExpansionTile].
 ///
 /// ** See code in examples/api/lib/material/expansion_tile/expansion_tile.1.dart **
@@ -392,7 +389,7 @@ class ExpansionTile extends StatefulWidget {
   /// appearance according to the theme and disabling user interaction.
   ///
   /// Even if disabled, the expansion can still be toggled programmatically
-  /// through an [ExpansionTileController].
+  /// through an [ExpansibleController].
   final bool enabled;
 
   /// Used to override the expansion animation curve and duration.

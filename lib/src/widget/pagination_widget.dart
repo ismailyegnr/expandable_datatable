@@ -10,12 +10,12 @@ class PaginationWidget extends StatefulWidget {
   final int maxVisiblePage;
 
   const PaginationWidget({
-    Key? key,
+    super.key,
     required this.totalPageCount,
     required this.onChanged,
     required this.currentPage,
     this.maxVisiblePage = 4,
-  }) : super(key: key);
+  });
 
   @override
   State<PaginationWidget> createState() => _PaginationWidgetState();

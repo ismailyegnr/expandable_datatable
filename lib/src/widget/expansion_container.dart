@@ -7,9 +7,9 @@ class ExpansionContainer extends StatelessWidget {
   final List<CellItem> expansionCells;
 
   const ExpansionContainer({
-    Key? key,
+    super.key,
     required this.expansionCells,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +30,7 @@ class ExpansionContainer extends StatelessWidget {
               ),
             );
           },
-        ).toList(),
+        ),
       ],
     );
   }

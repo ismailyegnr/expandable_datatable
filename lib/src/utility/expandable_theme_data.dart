@@ -175,7 +175,7 @@ class ExpandableThemeData {
     rowTextOverflow ??= TextOverflow.ellipsis;
     expandedTextStyle ??= theme.textTheme.bodyMedium ?? fixText;
     headerColor ??= theme.scaffoldBackgroundColor;
-    expandedBorderColor ??= colorScheme.onBackground;
+    expandedBorderColor ??= colorScheme.onSurface;
     rowColor ??= theme.scaffoldBackgroundColor;
     headerBorder ??= const BorderSide(
       width: 2.5,
