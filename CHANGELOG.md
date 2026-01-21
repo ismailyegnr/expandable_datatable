@@ -1,4 +1,13 @@
-# 0.0.8 - 26/12/2025
+# 0.1.0 - 21/01/2026
+
+- Add rowHeight feature
+- Remove rowBorder, add shape and expandedShape parameters
+- Change default expansionIcon to Icons.expand_more
+- Add expansionAnimationStyle to theme
+- Fix trailingWidth logic bugs
+- Update expansionTile logic
+
+## 0.0.8 - 26/12/2025
 
 - Fix the Icon overflow on editable option ([#10](https://github.com/ismailyegnr/expandable_datatable/pull/10))
 - Fix page numbering and button visibility ([#11](https://github.com/ismailyegnr/expandable_datatable/pull/11))
