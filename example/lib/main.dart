@@ -129,6 +129,7 @@ class _MyHomePageState extends State<MyHomePage> {
               rowTextMaxLines: 2,
               rowTextOverflow: TextOverflow.ellipsis,
               headerColor: Colors.amber[400],
+
               headerSortIconColor: const Color(0xFF6c59cf),
               rowColor: Colors.green,
               evenRowColor: const Color(0xFFFFFFFF),
@@ -138,8 +139,12 @@ class _MyHomePageState extends State<MyHomePage> {
                 color: Colors.black,
                 width: 1,
               ),
-              shape: Border.all(color: Colors.black, width: 0.3),
-              expandedShape: Border.all(color: Colors.black),
+              shape: const RoundedRectangleBorder(
+                side: BorderSide(color: Colors.transparent),
+              ),
+              expandedShape: const RoundedRectangleBorder(
+                side: BorderSide(color: Colors.amber),
+              ),
               paginationSelectedFillColor: const Color(0xFF6c59cf),
               paginationSelectedTextColor: Colors.white,
             ),
