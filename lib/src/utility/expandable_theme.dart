@@ -6,10 +6,10 @@ class ExpandableTheme extends InheritedWidget {
   final ExpandableThemeData data;
 
   const ExpandableTheme({
-    Key? key,
+    super.key,
     required this.data,
-    required ExpandableDataTable child,
-  }) : super(key: key, child: child);
+    required ExpandableDataTable super.child,
+  });
 
   static ExpandableThemeData of(BuildContext context) {
     final ExpandableTheme? result =

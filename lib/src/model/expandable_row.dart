@@ -1,10 +1,8 @@
 class ExpandableRow {
-  final List<ExpandableCell> _cells;
+  final List<ExpandableCell> cells;
   ExpandableRow({
-    required cells,
-  }) : _cells = cells;
-
-  List<ExpandableCell> get cells => _cells;
+    required this.cells,
+  });
 }
 
 class ExpandableCell<T> {

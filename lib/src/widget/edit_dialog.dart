@@ -11,10 +11,10 @@ class EditDialog extends StatefulWidget {
   final Function(ExpandableRow newRow) onSuccess;
 
   const EditDialog({
-    Key? key,
+    super.key,
     required this.row,
     required this.onSuccess,
-  }) : super(key: key);
+  });
 
   @override
   State<EditDialog> createState() => _EditDialogState();
@@ -164,11 +164,10 @@ class EditRow extends StatefulWidget {
   final Type valueType;
 
   const EditRow(
-      {Key? key,
+      {super.key,
       required this.controller,
       required this.columnName,
-      required this.valueType})
-      : super(key: key);
+      required this.valueType});
 
   @override
   State<EditRow> createState() => _EditRowState();
