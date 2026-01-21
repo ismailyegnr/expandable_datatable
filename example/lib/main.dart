@@ -124,24 +124,27 @@ class _MyHomePageState extends State<MyHomePage> {
           return ExpandableTheme(
             data: ExpandableThemeData(
               context,
-              contentPadding: const EdgeInsets.all(20),
-              expandedBorderColor: Colors.transparent,
-              paginationSize: 48,
-              headerHeight: 56,
+              contentPadding: const EdgeInsets.all(10),
+              headerTextMaxLines: 2,
+              rowTextMaxLines: 2,
+              rowTextOverflow: TextOverflow.ellipsis,
               headerColor: Colors.amber[400],
+
+              headerSortIconColor: const Color(0xFF6c59cf),
+              rowColor: Colors.green,
+              evenRowColor: const Color(0xFFFFFFFF),
+              oddRowColor: Colors.amber[200],
+              paginationSize: 48,
               headerBorder: const BorderSide(
                 color: Colors.black,
                 width: 1,
               ),
-              evenRowColor: const Color(0xFFFFFFFF),
-              oddRowColor: Colors.amber[200],
-              rowBorder: const BorderSide(
-                color: Colors.black,
-                width: 0.5,
+              shape: const RoundedRectangleBorder(
+                side: BorderSide(color: Colors.transparent),
               ),
-              rowColor: Colors.green,
-              headerTextMaxLines: 4,
-              headerSortIconColor: const Color(0xFF6c59cf),
+              expandedShape: const RoundedRectangleBorder(
+                side: BorderSide(color: Colors.amber),
+              ),
               paginationSelectedFillColor: const Color(0xFF6c59cf),
               paginationSelectedTextColor: Colors.white,
             ),
@@ -149,7 +152,7 @@ class _MyHomePageState extends State<MyHomePage> {
               headers: headers,
               rows: rows,
               multipleExpansion: false,
-              isEditable: false,
+              isEditable: true,
               pageSize: 8,
               onRowChanged: (newRow) {
                 print(newRow.cells[01].value);

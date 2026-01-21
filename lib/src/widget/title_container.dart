@@ -7,7 +7,7 @@ import '../model/cell_item.dart';
 class TitleContainer extends StatelessWidget {
   final List<CellItem> titleCells;
 
-  const TitleContainer({Key? key, required this.titleCells}) : super(key: key);
+  const TitleContainer({super.key, required this.titleCells});
 
   @override
   Widget build(BuildContext context) {

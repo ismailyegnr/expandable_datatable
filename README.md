@@ -19,7 +19,7 @@ ExpandableDataTable is a Flutter library for dealing with displaying and editing
 **ExpandableDataTable Parameters:**
 
 | Name                   | Description                                                              |
-| ---------------------- |--------------------------------------------------------------------------|
+|------------------------|--------------------------------------------------------------------------|
 | headers                | Header list of data columns                                              |
 | rows                   | List of the data rows                                                    |
 | pageSize               | Number of rows to be used on a single page                               |
@@ -37,7 +37,8 @@ ExpandableDataTable is a Flutter library for dealing with displaying and editing
 **ExpandableThemeData Parameters:**
 
 | Name                          | Description                                                              |
-| ----------------------------- | ------------------------------------------------------------------------ |
+|-------------------------------|--------------------------------------------------------------------------|
+| rowHeight                     | Height of the rows                                                       |
 | headerTextStyle               | Text style of header row                                                 |
 | rowTextStyle                  | Text style of all rows                                                   |
 | contentPadding                | Padding for all header and data rows                                     |
@@ -48,11 +49,15 @@ ExpandableDataTable is a Flutter library for dealing with displaying and editing
 | headerColor                   | Background color of header row                                           |
 | headerSortIconColor           | Color of the header sort arrow icon                                      |
 | headerHeight                  | Height of the header widget                                              |
-| expandedBorderColor           | Expansion border color                                                   |
+| rowBorder                     | **DEPRECATED**. Border style of all rows. Use `shape` instead.           |
+| expandedBorderColor           | **DEPRECATED**. Expansion border color. Use `expandedShape` instead.     |
 | rowColor                      | Background color of rows                                                 |
 | evenRowColor                  | Background color of the even indexed rows                                |
 | oddRowColor                   | Background color of the odd indexed rows                                 |
-| rowBorder                     | Border style of all rows                                                 |
+| expansionAnimationStyle       | Expansion animation                                                      |
+| shape                         | The rows' border shape when the expandable content is collapsed          |
+| expandedShape                 | The rows' border shape when the expandable content is expanded           |
+| headerBorder                  | Border style of header row                                               |
 | editIcon                      | Icon image showing editing feature                                       |
 | expansionIcon                 | Icon image expanding expansion content                                   |
 | paginationSize                | Size of the default pagination widget                                    |
@@ -120,8 +125,12 @@ Create the list of the rows to be used in data table. All row list elements must
       body: ExpandableTheme(
         data: ExpandableThemeData(
           context,
-          rowBorder: const BorderSide(color: Colors.amber),
-          expandedBorderColor: Colors.transparent,
+          shape: const RoundedRectangleBorder(
+            side: BorderSide(color: Colors.transparent),
+          ),
+          expandedShape: const RoundedRectangleBorder(
+            side: BorderSide(color: Colors.amber),
+          ),
           paginationSize: 48,
         ),
         child: ExpandableDataTable(

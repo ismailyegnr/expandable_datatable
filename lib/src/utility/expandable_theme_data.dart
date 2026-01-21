@@ -6,7 +6,7 @@ class ExpandableThemeData {
   /// If [headerHeight] is already specified, this will only affect the header row
   /// horizontally.
   ///
-  /// It defaults to `EdgeInsets.symmetric(horizontal: 16.0)`.
+  /// It defaults to `EdgeInsets.all(16.0)`.
   final EdgeInsets contentPadding;
 
   /// Text style of header row.
@@ -44,12 +44,9 @@ class ExpandableThemeData {
   /// Height of the header widget.
   final double? headerHeight;
 
-  /// Expansion border color.
-  ///
-  /// It overrides if rowBorder is used.
-  final Color expandedBorderColor;
-
   /// Background color of rows.
+  ///
+  /// It overrides if [evenRowColor] and [oddRowColor] is used.
   final Color rowColor;
 
   /// Background color of the even indexed rows.
@@ -62,13 +59,44 @@ class ExpandableThemeData {
   final BorderSide headerBorder;
 
   /// Border style of all rows.
+  @Deprecated('Use shape and expandedShape instead')
   final BorderSide rowBorder;
 
+  /// Expansion border color.
+  ///
+  /// It overrides if rowBorder is used.
+  @Deprecated('Use shape and expandedShape instead')
+  final Color expandedBorderColor;
+
+  /// The rows' border shape when the expandable content is collapsed.
+  ///
+  /// If this property is null, a [Border] with vertical sides default to
+  /// [Colors.transparent] is used.
+  final ShapeBorder? shape;
+
+  /// The rows' border shape when the expandable content is expanded.
+  ///
+  /// If this property is null, a [Border] with vertical sides default to
+  /// [ThemeData.dividerColor] is used.
+  final ShapeBorder? expandedShape;
+
   /// Icon image showing editing feature.
+  ///
+  /// If this property is null, then [Icons.edit] icon is used.
   final Icon editIcon;
 
   /// Icon image expanding expansion content.
+  ///
+  /// If this property is null, then [Icons.expand_more] icon is used.
   final Icon expansionIcon;
+
+  /// Overrides the default 200ms expansion animation duration.
+  ///
+  final AnimationStyle? expansionAnimationStyle;
+
+  /// Height of the rows
+  ///
+  final double? rowHeight;
 
   /*************** Pagination Widget Theme Properties *******************/
   /// If the custom pagination widget is not used. These properties
@@ -79,18 +107,25 @@ class ExpandableThemeData {
   /// If this property is null, then paginationSize 48 is be used.
   final double paginationSize;
 
+  /// The [TextStyle] used for the page numbers (both selected and unselected).
   final TextStyle? paginationTextStyle;
 
+  /// The color used for the text of the currently selected page number button.
   final Color? paginationSelectedTextColor;
 
+  /// The color used for the text of the unselected page number buttons.
   final Color? paginationUnselectedTextColor;
 
+  /// The fill color (background color) of the currently selected page number button.
   final Color? paginationSelectedFillColor;
 
+  /// The border color applied to the page number buttons.
   final Color? paginationBorderColor;
 
+  /// The radius applied to the corners of the page number buttons.
   final BorderRadius? paginationBorderRadius;
 
+  /// The width of the border applied to the page number buttons.
   final double? paginationBorderWidth;
 
   factory ExpandableThemeData(
@@ -106,14 +141,18 @@ class ExpandableThemeData {
     Color? headerSortIconColor,
     double? headerHeight,
     Color? expandedBackgroundColor,
-    Color? expandedBorderColor,
     Color? rowColor,
     Color? evenRowColor,
     Color? oddRowColor,
     BorderSide? headerBorder,
     BorderSide? rowBorder,
+    Color? expandedBorderColor,
+    ShapeBorder? shape,
+    ShapeBorder? expandedShape,
     Icon? editIcon,
     Icon? expansionIcon,
+    AnimationStyle? expansionAnimationStyle,
+    double? rowHeight,
     double? paginationSize,
     TextStyle? paginationTextStyle,
     Color? paginationSelectedTextColor,
@@ -128,7 +167,7 @@ class ExpandableThemeData {
 
     const TextStyle fixText = TextStyle(fontSize: 13);
 
-    contentPadding ??= const EdgeInsets.symmetric(horizontal: 16.0);
+    contentPadding ??= const EdgeInsets.all(16.0);
     headerTextStyle ??= theme.textTheme.bodyLarge ?? fixText;
     rowTextStyle ??= theme.textTheme.bodyMedium ?? fixText;
     headerTextMaxLines ??= 2;
@@ -149,9 +188,9 @@ class ExpandableThemeData {
       size: 16,
     );
     expansionIcon ??= Icon(
-      Icons.more_vert,
+      Icons.expand_more,
       color: theme.unselectedWidgetColor,
-      size: 18,
+      size: 20,
     );
     paginationSize ??= 48;
 
@@ -166,12 +205,16 @@ class ExpandableThemeData {
       headerColor: headerColor,
       headerSortIconColor: headerSortIconColor,
       headerHeight: headerHeight,
-      expandedBorderColor: expandedBorderColor,
       rowColor: rowColor,
       headerBorder: headerBorder,
       rowBorder: rowBorder,
+      expandedBorderColor: expandedBorderColor,
+      shape: shape,
+      expandedShape: expandedShape,
       editIcon: editIcon,
       expansionIcon: expansionIcon,
+      expansionAnimationStyle: expansionAnimationStyle,
+      rowHeight: rowHeight,
       paginationSize: paginationSize,
       paginationTextStyle: paginationTextStyle,
       paginationSelectedTextColor: paginationSelectedTextColor,
@@ -196,14 +239,18 @@ class ExpandableThemeData {
     required this.headerColor,
     this.headerSortIconColor,
     this.headerHeight,
-    required this.expandedBorderColor,
     required this.rowColor,
     this.evenRowColor,
     this.oddRowColor,
     required this.headerBorder,
     required this.rowBorder,
+    required this.expandedBorderColor,
+    required this.shape,
+    required this.expandedShape,
+    this.rowHeight,
     required this.editIcon,
     required this.expansionIcon,
+    this.expansionAnimationStyle,
     required this.paginationSize,
     this.paginationTextStyle,
     this.paginationSelectedTextColor,

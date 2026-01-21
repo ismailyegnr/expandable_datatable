@@ -7,7 +7,7 @@ import 'model/expandable_column.dart';
 import 'model/expandable_row.dart';
 import 'model/sortable_row.dart';
 import 'utility/sort_operations.dart';
-import 'widget/custom_expansion_tile.dart' as custom_tile;
+import 'widget/custom_expansible.dart' as custom_expansible;
 import 'widget/edit_dialog.dart';
 import 'widget/expansion_container.dart';
 import 'widget/pagination_widget.dart';
@@ -157,7 +157,7 @@ class ExpandableDataTable extends StatefulWidget {
   )? renderExpansionContent;
 
   ExpandableDataTable({
-    Key? key,
+    super.key,
     required this.headers,
     required this.rows,
     required this.visibleColumnCount,
@@ -172,8 +172,7 @@ class ExpandableDataTable extends StatefulWidget {
   })  : assert(visibleColumnCount > 0),
         assert(
           rows.isNotEmpty ? headers.length == rows.first.cells.length : true,
-        ),
-        super(key: key);
+        );
 
   @override
   State<ExpandableDataTable> createState() => _ExpandableDataTableState();
@@ -208,11 +207,25 @@ class _ExpandableDataTableState extends State<ExpandableDataTable> {
 
   @override
   void didChangeDependencies() {
-    _trailingWidth = context.dynamicWidth(widget.isEditable
-        ? GeneralConstants.largeTrailing
-        : GeneralConstants.smallTrailing);
-
+    _updateTrailingWidth();
     super.didChangeDependencies();
+  }
+
+
+  @override
+  void didUpdateWidget(covariant ExpandableDataTable oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if (widget.isEditable != oldWidget.isEditable) {
+      _updateTrailingWidth();
+      setState(() {});
+    }
+  }
+
+  void _updateTrailingWidth() {
+    _trailingWidth = widget.isEditable
+        ? GeneralConstants.minEditableTrailing
+        : GeneralConstants.minNonEditableTrailing;
   }
 
   /// Create or update two dimension sorted rows list
@@ -379,18 +392,13 @@ class _ExpandableDataTableState extends State<ExpandableDataTable> {
     );
   }
 
-  Container buildSingleRow(
+  custom_expansible.ExpansionTile buildSingleRow(
     BuildContext context,
     int index,
     ExpandableRow row,
     List<CellItem> expansionCells,
     List<CellItem> titleCells,
   ) {
-    var boxDecoration = BoxDecoration(
-      border: Border(
-        bottom: context.expandableTheme.rowBorder,
-      ),
-    );
 
     Color? currentRowColor;
     if (context.expandableTheme.evenRowColor != null &&
@@ -402,30 +410,21 @@ class _ExpandableDataTableState extends State<ExpandableDataTable> {
       }
     }
 
-    return Container(
-      decoration: boxDecoration,
-      child: Theme(
-        data: ThemeData().copyWith(
-          dividerColor: context.expandableTheme.expandedBorderColor,
-        ),
-        child: custom_tile.ExpansionTile(
+    return custom_expansible.ExpansionTile(
           tilePadding: context.expandableTheme.contentPadding,
-          showExpansionIcon: expansionCells.isNotEmpty,
-          expansionIcon: context.expandableTheme.expansionIcon,
+          showTrailingIcon: expansionCells.isNotEmpty,
           collapsedBackgroundColor:
               currentRowColor ?? context.expandableTheme.rowColor,
-          backgroundColor: currentRowColor ?? context.expandableTheme.rowColor,
-          trailingWidth: _trailingWidth,
-          secondTrailing:
-              widget.isEditable ? buildEditIcon(context, index) : null,
+          backgroundColor:
+              currentRowColor ?? context.expandableTheme.rowColor,
           onExpansionChanged: (value) => _onExpansionChanged(value, index),
           initiallyExpanded: _selectedRow == index,
           title: buildRowTitleContent(titleCells),
           childrenPadding: EdgeInsets.symmetric(vertical: context.lowValue),
+          secondTrailing: widget.isEditable ? buildEditIcon(context, index) : null,
+          trailingWidth: _trailingWidth,
           children: buildExpansionContent(context, row, expansionCells),
-        ),
-      ),
-    );
+        );
   }
 
   Widget buildHeader() {
@@ -468,7 +467,6 @@ class _ExpandableDataTableState extends State<ExpandableDataTable> {
   Widget buildEditIcon(BuildContext context, int rowInd) {
     return IconButton(
       padding: EdgeInsets.zero,
-      constraints: const BoxConstraints(),
       icon: context.expandableTheme.editIcon,
       onPressed: () => showEditDialog(context, rowInd),
     );

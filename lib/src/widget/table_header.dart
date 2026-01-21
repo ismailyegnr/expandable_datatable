@@ -13,12 +13,12 @@ class TableHeader extends StatelessWidget {
   final double trailingWidth;
 
   const TableHeader({
-    Key? key,
+    super.key,
     required this.headerRow,
     required this.currentSort,
     required this.onTitleTap,
     required this.trailingWidth,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -43,30 +43,19 @@ class TableHeader extends StatelessWidget {
 
     return Container(
       decoration: boxDecoration,
+      padding: padding,
       height: height,
-      child: Center(
-        child: ListTile(
-          contentPadding: padding,
-          dense: true,
-          title: IntrinsicHeight(
-            child: Row(
-              children: headerRow
-                  .map(
-                    (e) => Expanded(
-                      flex: e.columnFlex,
-                      child: SizedBox.expand(
-                        child: buildHeaderTitle(context, e),
-                      ),
-                    ),
-                  )
-                  .toList(),
-            ),
-          ),
-          trailing: SizedBox(
-            width: trailingWidth,
+      child: Row(children: [
+        ...headerRow.map(
+          (e) => Expanded(
+            flex: e.columnFlex,
+            child: buildHeaderTitle(context, e),
           ),
         ),
-      ),
+        SizedBox(
+          width: trailingWidth,
+        )
+      ]),
     );
   }
 
@@ -88,7 +77,7 @@ class TableHeader extends StatelessWidget {
                 child: Text(
                   column.columnTitle,
                   style: context.expandableTheme.headerTextStyle,
-                  overflow: TextOverflow.ellipsis,
+                  overflow: context.expandableTheme.rowTextOverflow,
                   maxLines: context.expandableTheme.headerTextMaxLines,
                 ),
               ),
