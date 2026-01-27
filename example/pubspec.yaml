@@ -36,6 +36,7 @@ dependencies:
   cupertino_icons: ^1.0.8
   expandable_datatable:
     path: ../
+  provider: ^6.1.5+1
 
 
 
