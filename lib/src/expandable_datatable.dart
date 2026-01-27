@@ -211,13 +211,37 @@ class _ExpandableDataTableState extends State<ExpandableDataTable> {
     super.didChangeDependencies();
   }
 
-
   @override
   void didUpdateWidget(covariant ExpandableDataTable oldWidget) {
     super.didUpdateWidget(oldWidget);
 
+    // Flag to control the single setState at the end
+    bool shouldSetState = false;
+
     if (widget.isEditable != oldWidget.isEditable) {
       _updateTrailingWidth();
+      shouldSetState = true;
+    }
+
+    // Re-compose the internal row list if the data source (rows), or the pagination
+    // configuration (pageSize) or columns (headers) changes.
+    if (widget.rows != oldWidget.rows ||
+        widget.pageSize != oldWidget.pageSize ||
+        widget.headers != oldWidget.headers) {
+      // Rebuild internal data structure for pagination
+      _composeRowsList(widget.rows, isInit: true);
+
+      // Re-apply sort if one was active
+      _reApplySort();
+
+      // Reset state-dependent variables
+      _currentPage = 0;
+      _shrinkAllRows();
+
+      shouldSetState = true;
+    }
+
+    if (shouldSetState) {
       setState(() {});
     }
   }
@@ -289,6 +313,17 @@ class _ExpandableDataTableState extends State<ExpandableDataTable> {
     _shrinkAllRows();
 
     setState(() {});
+  }
+
+  /// Re-applies the last active sort to the current data set if one is active.
+  void _reApplySort() {
+    final column = _sortOperations.sortInformation.sortedColumn;
+    if (column != null) {
+      List<SortableRow> tempSortArray =
+          _sortOperations.sortAllRows(column, _sortedRowsList);
+
+      _composeRowsList(tempSortArray);
+    }
   }
 
   void _shrinkAllRows() {
@@ -399,7 +434,6 @@ class _ExpandableDataTableState extends State<ExpandableDataTable> {
     List<CellItem> expansionCells,
     List<CellItem> titleCells,
   ) {
-
     Color? currentRowColor;
     if (context.expandableTheme.evenRowColor != null &&
         context.expandableTheme.oddRowColor != null) {
@@ -411,20 +445,19 @@ class _ExpandableDataTableState extends State<ExpandableDataTable> {
     }
 
     return custom_expansible.ExpansionTile(
-          tilePadding: context.expandableTheme.contentPadding,
-          showTrailingIcon: expansionCells.isNotEmpty,
-          collapsedBackgroundColor:
-              currentRowColor ?? context.expandableTheme.rowColor,
-          backgroundColor:
-              currentRowColor ?? context.expandableTheme.rowColor,
-          onExpansionChanged: (value) => _onExpansionChanged(value, index),
-          initiallyExpanded: _selectedRow == index,
-          title: buildRowTitleContent(titleCells),
-          childrenPadding: EdgeInsets.symmetric(vertical: context.lowValue),
-          secondTrailing: widget.isEditable ? buildEditIcon(context, index) : null,
-          trailingWidth: _trailingWidth,
-          children: buildExpansionContent(context, row, expansionCells),
-        );
+      tilePadding: context.expandableTheme.contentPadding,
+      showTrailingIcon: expansionCells.isNotEmpty,
+      collapsedBackgroundColor:
+          currentRowColor ?? context.expandableTheme.rowColor,
+      backgroundColor: currentRowColor ?? context.expandableTheme.rowColor,
+      onExpansionChanged: (value) => _onExpansionChanged(value, index),
+      initiallyExpanded: _selectedRow == index,
+      title: buildRowTitleContent(titleCells),
+      childrenPadding: EdgeInsets.symmetric(vertical: context.lowValue),
+      secondTrailing: widget.isEditable ? buildEditIcon(context, index) : null,
+      trailingWidth: _trailingWidth,
+      children: buildExpansionContent(context, row, expansionCells),
+    );
   }
 
   Widget buildHeader() {
