@@ -57,7 +57,7 @@ class ExpandableDataTable extends StatefulWidget {
   /// Flag indicating whether the rows are editable.
   /// If this value is false, renderEditDialog does not affect.
   ///
-  /// It defaults to true.
+  /// It defaults to false.
   final bool isEditable;
 
   /// Triggers when a row is edited with [EditDialog].
@@ -163,7 +163,7 @@ class ExpandableDataTable extends StatefulWidget {
     required this.visibleColumnCount,
     this.pageSize = 10,
     this.multipleExpansion = true,
-    this.isEditable = true,
+    this.isEditable = false,
     this.onRowChanged,
     this.onPageChanged,
     this.renderEditDialog,
@@ -172,6 +172,10 @@ class ExpandableDataTable extends StatefulWidget {
   })  : assert(visibleColumnCount > 0),
         assert(
           rows.isNotEmpty ? headers.length == rows.first.cells.length : true,
+        ),
+        assert(
+          !isEditable || onRowChanged != null,
+          'If isEditable is true, onRowChanged must be provided to handle data updates.',
         );
 
   @override
@@ -346,14 +350,12 @@ class _ExpandableDataTableState extends State<ExpandableDataTable> {
   }
 
   /// Change a row after the row is edited with an edit dialog.
+  ///
+  /// Stateless Approach: No internal changes
   void _updateRow(ExpandableRow newRow, int rowInd) {
-    _sortedRowsList[_currentPage][rowInd].row = newRow;
-
     if (widget.onRowChanged != null) {
       widget.onRowChanged!(newRow);
     }
-
-    setState(() {});
   }
 
   void _onExpansionChanged(bool value, int rowIndex) {
