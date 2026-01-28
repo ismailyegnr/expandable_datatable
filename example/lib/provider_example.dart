@@ -80,6 +80,7 @@ class _MainScreenState extends State<MainScreen> {
         rows: rows(users),
         headers: headers,
         visibleColumnCount: 3,
+        pageSize: 5
       ),
     );
   }
@@ -113,7 +114,12 @@ class _MainScreenState extends State<MainScreen> {
 }
 
 class MainViewModel extends ChangeNotifier {
-  List<User> users = [];
+  List<User> users = [
+    User(name: 'User 1', email: 'user1@naver.com', password: '1234'),
+    User(name: 'User 2', email: 'user2@naver.com', password: '1234'),
+    User(name: 'User 3', email: 'user3@naver.com', password: '1234'),
+    User(name: 'User 4', email: 'user4@naver.com', password: '1234'),
+  ];
   bool isLoading = false;
 
   MainViewModel();

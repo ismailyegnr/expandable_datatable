@@ -206,13 +206,9 @@ class _ExpandableDataTableState extends State<ExpandableDataTable> {
   void initState() {
     super.initState();
 
-    _composeRowsList(widget.rows, isInit: true);
-  }
-
-  @override
-  void didChangeDependencies() {
     _updateTrailingWidth();
-    super.didChangeDependencies();
+
+    _composeRowsList(widget.rows, isInit: true);
   }
 
   @override
@@ -238,8 +234,6 @@ class _ExpandableDataTableState extends State<ExpandableDataTable> {
       // Re-apply sort if one was active
       _reApplySort();
 
-      // Reset state-dependent variables
-      _currentPage = 0;
       _shrinkAllRows();
 
       shouldSetState = true;
@@ -304,10 +298,13 @@ class _ExpandableDataTableState extends State<ExpandableDataTable> {
     }
   }
 
-  /// Sort all rows.
-  void _sortRows(ExpandableColumn column) {
-    ///Resets the page and go back to first page.
+  /// Sort rows by selected column.
+  void _sortRowsByColumn(ExpandableColumn column) {
+    // Resets the page and go back to first page.
     _currentPage = 0;
+
+    // Change sort direction.
+    _sortOperations.changeSortDirection(column);
 
     List<SortableRow> tempSortArray =
         _sortOperations.sortAllRows(column, _sortedRowsList);
@@ -322,6 +319,7 @@ class _ExpandableDataTableState extends State<ExpandableDataTable> {
   /// Re-applies the last active sort to the current data set if one is active.
   void _reApplySort() {
     final column = _sortOperations.sortInformation.sortedColumn;
+
     if (column != null) {
       List<SortableRow> tempSortArray =
           _sortOperations.sortAllRows(column, _sortedRowsList);
@@ -470,7 +468,7 @@ class _ExpandableDataTableState extends State<ExpandableDataTable> {
     return TableHeader(
       headerRow: _headerTitles,
       currentSort: _sortOperations.sortInformation,
-      onTitleTap: _sortRows,
+      onTitleTap: _sortRowsByColumn,
       trailingWidth: _trailingWidth,
     );
   }

@@ -10,12 +10,14 @@ class SortOperations {
     sortInformation = SortInformation();
   }
 
+  void changeSortDirection(ExpandableColumn column) {
+    sortInformation.nextSort(column);
+  }
+
   List<SortableRow> sortAllRows(
     ExpandableColumn column,
     List<List<SortableRow>> twoDimensionList,
   ) {
-    sortInformation.nextSort(column);
-
     List<SortableRow> tempSortArray = createTempArray(twoDimensionList);
 
     if (sortInformation.sortOption == SortOption.NORMAL) {
