@@ -57,7 +57,7 @@ class ExpandableDataTable extends StatefulWidget {
   /// Flag indicating whether the rows are editable.
   /// If this value is false, renderEditDialog does not affect.
   ///
-  /// It defaults to true.
+  /// It defaults to false.
   final bool isEditable;
 
   /// Triggers when a row is edited with [EditDialog].
@@ -163,7 +163,7 @@ class ExpandableDataTable extends StatefulWidget {
     required this.visibleColumnCount,
     this.pageSize = 10,
     this.multipleExpansion = true,
-    this.isEditable = true,
+    this.isEditable = false,
     this.onRowChanged,
     this.onPageChanged,
     this.renderEditDialog,
@@ -172,6 +172,10 @@ class ExpandableDataTable extends StatefulWidget {
   })  : assert(visibleColumnCount > 0),
         assert(
           rows.isNotEmpty ? headers.length == rows.first.cells.length : true,
+        ),
+        assert(
+          !isEditable || onRowChanged != null,
+          'If isEditable is true, onRowChanged must be provided to handle data updates.',
         );
 
   @override
@@ -202,22 +206,40 @@ class _ExpandableDataTableState extends State<ExpandableDataTable> {
   void initState() {
     super.initState();
 
+    _updateTrailingWidth();
+
     _composeRowsList(widget.rows, isInit: true);
   }
-
-  @override
-  void didChangeDependencies() {
-    _updateTrailingWidth();
-    super.didChangeDependencies();
-  }
-
 
   @override
   void didUpdateWidget(covariant ExpandableDataTable oldWidget) {
     super.didUpdateWidget(oldWidget);
 
+    // Flag to control the single setState at the end
+    bool shouldSetState = false;
+
     if (widget.isEditable != oldWidget.isEditable) {
       _updateTrailingWidth();
+      shouldSetState = true;
+    }
+
+    // Re-compose the internal row list if the data source (rows), or the pagination
+    // configuration (pageSize) or columns (headers) changes.
+    if (widget.rows != oldWidget.rows ||
+        widget.pageSize != oldWidget.pageSize ||
+        widget.headers != oldWidget.headers) {
+      // Rebuild internal data structure for pagination
+      _composeRowsList(widget.rows, isInit: true);
+
+      // Re-apply sort if one was active
+      _reApplySort();
+
+      _shrinkAllRows();
+
+      shouldSetState = true;
+    }
+
+    if (shouldSetState) {
       setState(() {});
     }
   }
@@ -276,10 +298,13 @@ class _ExpandableDataTableState extends State<ExpandableDataTable> {
     }
   }
 
-  /// Sort all rows.
-  void _sortRows(ExpandableColumn column) {
-    ///Resets the page and go back to first page.
+  /// Sort rows by selected column.
+  void _sortRowsByColumn(ExpandableColumn column) {
+    // Resets the page and go back to first page.
     _currentPage = 0;
+
+    // Change sort direction.
+    _sortOperations.changeSortDirection(column);
 
     List<SortableRow> tempSortArray =
         _sortOperations.sortAllRows(column, _sortedRowsList);
@@ -289,6 +314,18 @@ class _ExpandableDataTableState extends State<ExpandableDataTable> {
     _shrinkAllRows();
 
     setState(() {});
+  }
+
+  /// Re-applies the last active sort to the current data set if one is active.
+  void _reApplySort() {
+    final column = _sortOperations.sortInformation.sortedColumn;
+
+    if (column != null) {
+      List<SortableRow> tempSortArray =
+          _sortOperations.sortAllRows(column, _sortedRowsList);
+
+      _composeRowsList(tempSortArray);
+    }
   }
 
   void _shrinkAllRows() {
@@ -311,14 +348,12 @@ class _ExpandableDataTableState extends State<ExpandableDataTable> {
   }
 
   /// Change a row after the row is edited with an edit dialog.
+  ///
+  /// Stateless Approach: No internal changes
   void _updateRow(ExpandableRow newRow, int rowInd) {
-    _sortedRowsList[_currentPage][rowInd].row = newRow;
-
     if (widget.onRowChanged != null) {
       widget.onRowChanged!(newRow);
     }
-
-    setState(() {});
   }
 
   void _onExpansionChanged(bool value, int rowIndex) {
@@ -399,7 +434,6 @@ class _ExpandableDataTableState extends State<ExpandableDataTable> {
     List<CellItem> expansionCells,
     List<CellItem> titleCells,
   ) {
-
     Color? currentRowColor;
     if (context.expandableTheme.evenRowColor != null &&
         context.expandableTheme.oddRowColor != null) {
@@ -411,20 +445,19 @@ class _ExpandableDataTableState extends State<ExpandableDataTable> {
     }
 
     return custom_expansible.ExpansionTile(
-          tilePadding: context.expandableTheme.contentPadding,
-          showTrailingIcon: expansionCells.isNotEmpty,
-          collapsedBackgroundColor:
-              currentRowColor ?? context.expandableTheme.rowColor,
-          backgroundColor:
-              currentRowColor ?? context.expandableTheme.rowColor,
-          onExpansionChanged: (value) => _onExpansionChanged(value, index),
-          initiallyExpanded: _selectedRow == index,
-          title: buildRowTitleContent(titleCells),
-          childrenPadding: EdgeInsets.symmetric(vertical: context.lowValue),
-          secondTrailing: widget.isEditable ? buildEditIcon(context, index) : null,
-          trailingWidth: _trailingWidth,
-          children: buildExpansionContent(context, row, expansionCells),
-        );
+      tilePadding: context.expandableTheme.contentPadding,
+      showTrailingIcon: expansionCells.isNotEmpty,
+      collapsedBackgroundColor:
+          currentRowColor ?? context.expandableTheme.rowColor,
+      backgroundColor: currentRowColor ?? context.expandableTheme.rowColor,
+      onExpansionChanged: (value) => _onExpansionChanged(value, index),
+      initiallyExpanded: _selectedRow == index,
+      title: buildRowTitleContent(titleCells),
+      childrenPadding: EdgeInsets.symmetric(vertical: context.lowValue),
+      secondTrailing: widget.isEditable ? buildEditIcon(context, index) : null,
+      trailingWidth: _trailingWidth,
+      children: buildExpansionContent(context, row, expansionCells),
+    );
   }
 
   Widget buildHeader() {
@@ -435,7 +468,7 @@ class _ExpandableDataTableState extends State<ExpandableDataTable> {
     return TableHeader(
       headerRow: _headerTitles,
       currentSort: _sortOperations.sortInformation,
-      onTitleTap: _sortRows,
+      onTitleTap: _sortRowsByColumn,
       trailingWidth: _trailingWidth,
     );
   }

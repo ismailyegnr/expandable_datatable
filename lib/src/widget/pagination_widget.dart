@@ -31,8 +31,22 @@ class _PaginationWidgetState extends State<PaginationWidget> {
   late int _totalPageCount;
 
   @override
+  void initState() {
+    super.initState();
+
+    _reInitializeState();
+  }
+
+  @override
   void didUpdateWidget(covariant PaginationWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
+
+    if (widget.totalPageCount != oldWidget.totalPageCount) {
+      setState(() {
+        _reInitializeState();
+      });
+      return;
+    }
 
     if (widget.currentPage != oldWidget.currentPage) {
       setState(() {
@@ -43,11 +57,11 @@ class _PaginationWidgetState extends State<PaginationWidget> {
     }
   }
 
-  @override
-  void initState() {
-    super.initState();
-
+  /// Re-initializes the state based on the new widget properties.
+  void _reInitializeState() {
     _totalPageCount = widget.totalPageCount;
+    _midPoint = null;
+    _toggleButtons = [];
 
     if (_totalPageCount == 0 || _totalPageCount == 1) {
       /// If there is no total page or only one page, no buttons will be shown.
@@ -58,8 +72,7 @@ class _PaginationWidgetState extends State<PaginationWidget> {
       /// be shown.
       _toggleButtons = List.filled(_totalPageCount + 2, false);
 
-      /// First page is selected initially.
-      _toggleButtons[1] = true;
+      _setButtons(widget.currentPage);
     } else {
       /// Total page count is greater than the wanted shown page count. So, it needs
       /// to have a dynamic button appearances.
@@ -68,8 +81,10 @@ class _PaginationWidgetState extends State<PaginationWidget> {
       /// Middle point is equal to integer division of the wanted shown page count.
       _midPoint = midPointMargin;
 
-      /// First page is selected initially.
-      _toggleButtons[1] = true;
+      // Adjust the midpoint based on the current page if necessary.
+      _changeMidPoint(widget.currentPage);
+      
+      _setButtons(widget.currentPage);
     }
   }
 
