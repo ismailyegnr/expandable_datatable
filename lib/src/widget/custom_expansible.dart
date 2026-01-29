@@ -702,6 +702,15 @@ class _ExpansionTileState extends State<ExpansionTile> {
         ? _ExpansionTileDefaultsM3(context)
         : _ExpansionTileDefaultsM2(context);
 
+    // Handle dynamic changes to initiallyExpanded property if no external controller is provided.
+    if (widget.controller == null && widget.initiallyExpanded != oldWidget.initiallyExpanded) {
+      if (widget.initiallyExpanded) {
+        _expansibleController.expand();
+      } else {
+        _expansibleController.collapse();
+      }
+    }
+
     if (widget.collapsedShape != oldWidget.collapsedShape || widget.shape != oldWidget.shape) {
       _updateShapeBorder(theme);
     }

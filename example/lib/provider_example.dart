@@ -79,7 +79,7 @@ class _MainScreenState extends State<MainScreen> {
       child: ExpandableDataTable(
         rows: rows(users),
         headers: headers,
-        visibleColumnCount: 3,
+        visibleColumnCount: 2,
         pageSize: 5
       ),
     );
@@ -87,10 +87,11 @@ class _MainScreenState extends State<MainScreen> {
 
   User generateRandomUser() {
     final random = Random();
+    final num = random.nextInt(100);
     return User(
-      name: 'User ${random.nextInt(100)}',
-      email: 'user${random.nextInt(100)}@naver.com',
-      password: '1234',
+      name: 'User $num',
+      email: 'user$num@naver.com',
+      password: num.toString(),
     );
   }
 
@@ -115,10 +116,10 @@ class _MainScreenState extends State<MainScreen> {
 
 class MainViewModel extends ChangeNotifier {
   List<User> users = [
-    User(name: 'User 1', email: 'user1@naver.com', password: '1234'),
-    User(name: 'User 2', email: 'user2@naver.com', password: '1234'),
-    User(name: 'User 3', email: 'user3@naver.com', password: '1234'),
-    User(name: 'User 4', email: 'user4@naver.com', password: '1234'),
+    User(name: 'User 1', email: 'user1@naver.com', password: '1'),
+    User(name: 'User 2', email: 'user2@naver.com', password: '2'),
+    User(name: 'User 3', email: 'user3@naver.com', password: '3'),
+    User(name: 'User 4', email: 'user4@naver.com', password: '4'),
   ];
   bool isLoading = false;
 
