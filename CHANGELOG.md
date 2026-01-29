@@ -1,4 +1,12 @@
-# 0.1.0 - 21/01/2026
+# 0.1.1 - 29/01/2026
+
+- Fix table not updating when data was changed externally (e.g., via Provider) ([#4](https://github.com/ismailyegnr/expandable_datatable/issues/4))
+- Fix bug where the `multipleExpansion` parameter was not working.
+- Set `isEditable` default property to `false`.
+- **Major Refactoring:** Switch the table to a stateless model by removing internal data handling. Editing now requires external state management via the `onRowChanged` callback.
+- Add a new example demonstrating Provider integration.
+
+## 0.1.0 - 21/01/2026
 
 - Add rowHeight feature
 - Remove rowBorder, add shape and expandedShape parameters
@@ -12,7 +20,6 @@
 - Fix the Icon overflow on editable option ([#10](https://github.com/ismailyegnr/expandable_datatable/pull/10))
 - Fix page numbering and button visibility ([#11](https://github.com/ismailyegnr/expandable_datatable/pull/11))
 - Add missing README parameter
-
 
 ## 0.0.7 - 07/03/2023
 
