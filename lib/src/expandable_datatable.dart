@@ -62,8 +62,9 @@ class ExpandableDataTable extends StatefulWidget {
 
   /// Triggers when a row is edited with [EditDialog].
   ///
-  /// Returns the new [ExpandableRow] data.`
-  final void Function(ExpandableRow newRow)? onRowChanged;
+  /// Returns the new [ExpandableRow] data and the index of the row
+  /// in the original list provided to [rows].
+  final void Function(ExpandableRow newRow, int originalIndex)? onRowChanged;
 
   /// When the current page is changed, this returns the new page value.
   ///
@@ -352,7 +353,8 @@ class _ExpandableDataTableState extends State<ExpandableDataTable> {
   /// Stateless Approach: No internal changes
   void _updateRow(ExpandableRow newRow, int rowInd) {
     if (widget.onRowChanged != null) {
-      widget.onRowChanged!(newRow);
+      final originalIndex = _sortedRowsList[_currentPage][rowInd].index;
+      widget.onRowChanged!(newRow, originalIndex);
     }
   }
 

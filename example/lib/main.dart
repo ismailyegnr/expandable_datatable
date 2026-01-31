@@ -153,7 +153,7 @@ class _MyHomePageState extends State<MyHomePage> {
               multipleExpansion: false,
               isEditable: true,
               pageSize: 8,
-              onRowChanged: (newRow) {
+              onRowChanged: (newRow, originalIndex) {
                 print(newRow.cells[01].value);
               },
               onPageChanged: (page) {

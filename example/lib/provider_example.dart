@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:expandable_datatable/expandable_datatable.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -33,7 +31,7 @@ class _MainScreenState extends State<MainScreen> {
                       // add user button
                       ElevatedButton(
                         onPressed: () {
-                          viewModel.addUser(generateRandomUser());
+                          viewModel.addUser();
                         },
                         child: const Text('Add User'),
                       ),
@@ -57,7 +55,7 @@ class _MainScreenState extends State<MainScreen> {
                   Expanded(
                     child: viewModel.isLoading
                         ? const Center(child: CircularProgressIndicator())
-                        : buildExpandableTheme(context, viewModel.users),
+                        : buildExpandableDataTable(context, viewModel),
                   ),
                 ],
               ),
@@ -68,7 +66,10 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 
-  ExpandableTheme buildExpandableTheme(BuildContext context, List<User> users) {
+  ExpandableTheme buildExpandableDataTable(
+    BuildContext context,
+    MainViewModel viewModel,
+  ) {
     return ExpandableTheme(
       data: ExpandableThemeData(
         context,
@@ -77,21 +78,37 @@ class _MainScreenState extends State<MainScreen> {
         paginationSize: 48,
       ),
       child: ExpandableDataTable(
-        rows: rows(users),
+        rows: rows(viewModel.users),
         headers: headers,
         visibleColumnCount: 2,
-        pageSize: 5
-      ),
-    );
-  }
+        pageSize: 5,
+        isEditable: true,
+        onRowChanged: (newRow, originalIndex) {
+          User editedUser = viewModel.users[originalIndex];
 
-  User generateRandomUser() {
-    final random = Random();
-    final num = random.nextInt(100);
-    return User(
-      name: 'User $num',
-      email: 'user$num@naver.com',
-      password: num.toString(),
+          for (var cell in newRow.cells) {
+            switch (cell.columnTitle) {
+              case "name":
+                {
+                  editedUser.name = cell.value;
+                  break;
+                }
+              case "email":
+                {
+                  editedUser.email = cell.value;
+                  break;
+                }
+              case "password":
+                {
+                  editedUser.password = cell.value;
+                  break;
+                }
+            }
+          }
+
+          viewModel.editUser(editedUser, originalIndex);
+        },
+      ),
     );
   }
 
@@ -121,12 +138,26 @@ class MainViewModel extends ChangeNotifier {
     User(name: 'User 3', email: 'user3@naver.com', password: '3'),
     User(name: 'User 4', email: 'user4@naver.com', password: '4'),
   ];
+  int count = 4;
   bool isLoading = false;
 
   MainViewModel();
 
-  void addUser(User user) {
+  void addUser() {
+    count += 1;
+
+    final user = User(
+      name: 'User $count',
+      email: 'user$count@naver.com',
+      password: count.toString(),
+    );
+
     users.add(user);
+    notifyListeners();
+  }
+
+  void editUser(User newUserData, int originalIndex) {
+    users[originalIndex] = newUserData;
     notifyListeners();
   }
 
@@ -146,13 +177,9 @@ class MainViewModel extends ChangeNotifier {
 }
 
 class User {
-  final String name;
-  final String email;
-  final String password;
+  String name;
+  String email;
+  String password;
 
-  User({
-    required this.name,
-    required this.email,
-    required this.password,
-  });
+  User({required this.name, required this.email, required this.password});
 }
