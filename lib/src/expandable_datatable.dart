@@ -447,7 +447,6 @@ class _ExpandableDataTableState extends State<ExpandableDataTable> {
     }
 
     return custom_expansible.ExpansionTile(
-      tilePadding: context.expandableTheme.contentPadding,
       showTrailingIcon: expansionCells.isNotEmpty,
       collapsedBackgroundColor:
           currentRowColor ?? context.expandableTheme.rowColor,
@@ -502,7 +501,12 @@ class _ExpandableDataTableState extends State<ExpandableDataTable> {
   Widget buildEditIcon(BuildContext context, int rowInd) {
     return IconButton(
       padding: EdgeInsets.zero,
-      icon: context.expandableTheme.editIcon,
+      icon: context.expandableTheme.editIcon ??
+          Icon(
+            Icons.edit,
+            color: Theme.of(context).unselectedWidgetColor,
+            size: 16,
+          ),
       onPressed: () => showEditDialog(context, rowInd),
     );
   }

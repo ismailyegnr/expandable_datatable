@@ -90,88 +90,94 @@ class _MyHomePageState extends State<MyHomePage> {
     ];
 
     rows = userList.map<ExpandableRow>((e) {
-      return ExpandableRow(cells: [
-        ExpandableCell<int>(columnTitle: "ID", value: e.id),
-        ExpandableCell<String>(columnTitle: "First name", value: e.firstName),
-        ExpandableCell<String>(columnTitle: "Last name", value: e.lastName),
-        ExpandableCell<String>(columnTitle: "Maiden name", value: e.maidenName),
-        ExpandableCell<int>(columnTitle: "Age", value: e.age),
-        ExpandableCell<String>(columnTitle: "Gender", value: e.gender),
-        ExpandableCell<String>(columnTitle: "Email", value: e.email),
-      ]);
+      return ExpandableRow(
+        cells: [
+          ExpandableCell<int>(columnTitle: "ID", value: e.id),
+          ExpandableCell<String>(columnTitle: "First name", value: e.firstName),
+          ExpandableCell<String>(columnTitle: "Last name", value: e.lastName),
+          ExpandableCell<String>(
+            columnTitle: "Maiden name",
+            value: e.maidenName,
+          ),
+          ExpandableCell<int>(columnTitle: "Age", value: e.age),
+          ExpandableCell<String>(columnTitle: "Gender", value: e.gender),
+          ExpandableCell<String>(columnTitle: "Email", value: e.email),
+        ],
+      );
     }).toList();
   }
-
-
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
         child: !_isLoading
-            ? LayoutBuilder(builder: (context, constraints) {
-          int visibleCount = 3;
-          if (constraints.maxWidth < 600) {
-            visibleCount = 3;
-          } else if (constraints.maxWidth < 800) {
-            visibleCount = 4;
-          } else if (constraints.maxWidth < 1000) {
-            visibleCount = 5;
-          } else {
-            visibleCount = 6;
-          }
+            ? LayoutBuilder(
+                builder: (context, constraints) {
+                  int visibleCount = 3;
+                  if (constraints.maxWidth < 600) {
+                    visibleCount = 3;
+                  } else if (constraints.maxWidth < 800) {
+                    visibleCount = 4;
+                  } else if (constraints.maxWidth < 1000) {
+                    visibleCount = 5;
+                  } else {
+                    visibleCount = 6;
+                  }
 
-          return ExpandableTheme(
-            data: ExpandableThemeData(
-              context,
-              contentPadding: const EdgeInsets.all(10),
-              headerTextMaxLines: 2,
-              rowTextMaxLines: 2,
-              rowTextOverflow: TextOverflow.ellipsis,
-              headerColor: Colors.amber[400],
-              headerSortIconColor: const Color(0xFF6c59cf),
-              rowColor: Colors.green,
-              evenRowColor: const Color(0xFFFFFFFF),
-              oddRowColor: Colors.amber[200],
-              paginationSize: 48,
-              headerBorder: const BorderSide(
-                color: Colors.black,
-                width: 1,
-              ),
-              shape: const RoundedRectangleBorder(
-                side: BorderSide(color: Colors.transparent),
-              ),
-              expandedShape: const RoundedRectangleBorder(
-                side: BorderSide(color: Colors.amber),
-              ),
-              paginationSelectedFillColor: const Color(0xFF6c59cf),
-              paginationSelectedTextColor: Colors.white,
-            ),
-            child: ExpandableDataTable(
-              headers: headers,
-              rows: rows,
-              multipleExpansion: false,
-              isEditable: true,
-              pageSize: 8,
-              onRowChanged: (newRow, originalIndex) {
-                print(newRow.cells[01].value);
-              },
-              onPageChanged: (page) {
-                print(page);
-              },
-              renderEditDialog: (row, onSuccess) =>
-                  _buildEditDialog(row, onSuccess),
-              visibleColumnCount: visibleCount,
-            ),
-          );
-        })
+                  return ExpandableTheme(
+                    data: ExpandableThemeData(
+                      contentPadding: const EdgeInsets.all(10),
+                      headerTextMaxLines: 2,
+                      rowTextMaxLines: 2,
+                      rowTextOverflow: TextOverflow.ellipsis,
+                      headerColor: Colors.amber[400],
+                      headerSortIconColor: const Color(0xFF6c59cf),
+                      rowColor: Colors.green,
+                      evenRowColor: const Color(0xFFFFFFFF),
+                      oddRowColor: Colors.amber[200],
+                      paginationSize: 48,
+                      headerBorder: const BorderSide(
+                        color: Colors.black,
+                        width: 1,
+                      ),
+                      shape: const RoundedRectangleBorder(
+                        side: BorderSide(color: Colors.transparent),
+                      ),
+                      expandedShape: const RoundedRectangleBorder(
+                        side: BorderSide(color: Colors.amber),
+                      ),
+                      paginationSelectedFillColor: const Color(0xFF6c59cf),
+                      paginationSelectedTextColor: Colors.white,
+                    ),
+                    child: ExpandableDataTable(
+                      headers: headers,
+                      rows: rows,
+                      multipleExpansion: false,
+                      isEditable: true,
+                      pageSize: 8,
+                      onRowChanged: (newRow, originalIndex) {
+                        print(newRow.cells[01].value);
+                      },
+                      onPageChanged: (page) {
+                        print(page);
+                      },
+                      renderEditDialog: (row, onSuccess) =>
+                          _buildEditDialog(row, onSuccess),
+                      visibleColumnCount: visibleCount,
+                    ),
+                  );
+                },
+              )
             : const Center(child: CircularProgressIndicator()),
       ),
     );
   }
 
   Widget _buildEditDialog(
-      ExpandableRow row, Function(ExpandableRow) onSuccess) {
+    ExpandableRow row,
+    Function(ExpandableRow) onSuccess,
+  ) {
     return AlertDialog(
       title: SizedBox(
         height: 300,

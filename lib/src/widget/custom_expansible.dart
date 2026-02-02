@@ -584,7 +584,7 @@ class _ExpansionTileState extends State<ExpansionTile> {
       hint: semanticsHint,
       onTapHint: onTapHint,
       child: Container(
-        padding: widget.tilePadding ?? _expandableTheme.contentPadding,
+        padding: _expandableTheme.contentPadding ?? const EdgeInsets.all(16.0),
         height: _expandableTheme.rowHeight,
         constraints: widget.minTileHeight != null
             ? BoxConstraints(minHeight: widget.minTileHeight!)
