@@ -32,24 +32,38 @@ class ExpandableThemeData {
   final EdgeInsets? contentPadding;
 
   /// Text style of header row.
+  ///
+  /// If null, the theme's [TextTheme.titleMedium] is used.
   final TextStyle? headerTextStyle;
 
   /// Text style of all rows.
+  ///
+  /// If null, the theme's [TextTheme.bodyMedium] is used.
   final TextStyle? rowTextStyle;
 
   /// Maximum number of lines for header text to span.
+  ///
+  /// If null, defaults to 2.
   final int? headerTextMaxLines;
 
   /// Maximum number of lines for row text to span.
+  ///
+  /// If null, defaults to 3.
   final int? rowTextMaxLines;
 
   /// Visual overflow of the row's cell text.
+  ///
+  /// If null, defaults to [TextOverflow.ellipsis].
   final TextOverflow? rowTextOverflow;
 
   /// Text style of expansion content.
+  ///
+  /// If null, the theme's [TextTheme.bodyMedium] is used.
   final TextStyle? expandedTextStyle;
 
   /// Background color of header row.
+  ///
+  /// If null, the theme's [ColorScheme.surface] is used.
   final Color? headerColor;
 
   /// Color of the header sort arrow icon.
@@ -59,12 +73,20 @@ class ExpandableThemeData {
   final double? headerHeight;
 
   /// Background color of rows.
+  ///
+  /// If null, the theme's [ColorScheme.surface] is used.
+  ///
+  /// It is used only if [evenRowColor] and [oddRowColor] are null.
   final Color? rowColor;
 
   /// Background color of the even indexed rows.
+  ///
+  /// It is used only if both [evenRowColor] and [oddRowColor] are not null.
   final Color? evenRowColor;
 
   /// Background color of the odd indexed rows.
+  ///
+  /// It is used only if both [evenRowColor] and [oddRowColor] are not null.
   final Color? oddRowColor;
 
   /// Border style of header row.
@@ -80,11 +102,11 @@ class ExpandableThemeData {
   final BorderSide? headerBorder;
 
   /// Border style of all rows.
-  @Deprecated('Use shape and expandedShape instead')
+  @Deprecated('Use shape instead')
   final BorderSide? rowBorder;
 
   /// Expansion border color.
-  @Deprecated('Use shape and expandedShape instead')
+  @Deprecated('Use expandedShape instead')
   final Color? expandedBorderColor;
 
   /// The rows' border shape when the expandable content is collapsed.
@@ -113,6 +135,16 @@ class ExpandableThemeData {
   final Icon? editIcon;
 
   /// Icon image expanding expansion content.
+  ///
+  /// If this property is null, the following default icon is used:
+  ///
+  /// ```dart
+  /// Icon(
+  ///   Icons.expand_more,
+  ///   color: Theme.of(context).unselectedWidgetColor,
+  ///   size: 20,
+  /// )
+  /// ```
   final Icon? expansionIcon;
 
   /// Overrides the default 200ms expansion animation duration.
@@ -162,7 +194,9 @@ class ExpandableThemeData {
     this.evenRowColor,
     this.oddRowColor,
     this.headerBorder,
+    @Deprecated('Use shape instead')
     this.rowBorder,
+    @Deprecated('Use expandedShape instead')
     this.expandedBorderColor,
     this.shape,
     this.expandedShape,

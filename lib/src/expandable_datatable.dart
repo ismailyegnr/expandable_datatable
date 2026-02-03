@@ -436,21 +436,22 @@ class _ExpandableDataTableState extends State<ExpandableDataTable> {
     List<CellItem> expansionCells,
     List<CellItem> titleCells,
   ) {
-    Color? currentRowColor;
+    Color currentRowColor = context.expandableTheme.rowColor ??
+        Theme.of(context).colorScheme.surface;
+
     if (context.expandableTheme.evenRowColor != null &&
         context.expandableTheme.oddRowColor != null) {
       if (index % 2 == 0) {
-        currentRowColor = context.expandableTheme.evenRowColor;
+        currentRowColor = context.expandableTheme.evenRowColor!;
       } else {
-        currentRowColor = context.expandableTheme.oddRowColor;
+        currentRowColor = context.expandableTheme.oddRowColor!;
       }
     }
 
     return custom_expansible.ExpansionTile(
       showTrailingIcon: expansionCells.isNotEmpty,
-      collapsedBackgroundColor:
-          currentRowColor ?? context.expandableTheme.rowColor,
-      backgroundColor: currentRowColor ?? context.expandableTheme.rowColor,
+      collapsedBackgroundColor: currentRowColor,
+      backgroundColor: currentRowColor,
       onExpansionChanged: (value) => _onExpansionChanged(value, index),
       initiallyExpanded: _selectedRow == index,
       title: buildRowTitleContent(titleCells),

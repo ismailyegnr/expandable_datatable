@@ -30,7 +30,8 @@ class TableHeader extends StatelessWidget {
               color: Color(0xffeeeeee),
             ),
       ),
-      color: context.expandableTheme.headerColor,
+      color: context.expandableTheme.headerColor ??
+          Theme.of(context).colorScheme.surface,
     );
 
     double? height = context.expandableTheme.headerHeight;
@@ -67,6 +68,7 @@ class TableHeader extends StatelessWidget {
 
   GestureDetector buildHeaderTitle(
       BuildContext context, ExpandableColumn<dynamic> column) {
+    final ThemeData theme = Theme.of(context);
     Color? iconColor = context.expandableTheme.headerSortIconColor;
 
     return GestureDetector(
@@ -82,9 +84,11 @@ class TableHeader extends StatelessWidget {
               Flexible(
                 child: Text(
                   column.columnTitle,
-                  style: context.expandableTheme.headerTextStyle,
-                  overflow: context.expandableTheme.rowTextOverflow,
-                  maxLines: context.expandableTheme.headerTextMaxLines,
+                  style: context.expandableTheme.headerTextStyle ??
+                      theme.textTheme.titleMedium,
+                  overflow: context.expandableTheme.rowTextOverflow ??
+                      TextOverflow.ellipsis,
+                  maxLines: context.expandableTheme.headerTextMaxLines ?? 2,
                 ),
               ),
               Visibility(

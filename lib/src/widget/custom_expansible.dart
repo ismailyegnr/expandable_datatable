@@ -523,7 +523,14 @@ class _ExpansionTileState extends State<ExpansionTile> {
               : _expansibleController.expand)
               : null,
           child: RotationTransition(
-              turns: _iconTurns, child: _expandableTheme.expansionIcon)
+              turns: _iconTurns,
+              child: _expandableTheme.expansionIcon ??
+                  Icon(
+                    Icons.expand_more,
+                    color: Theme.of(context).unselectedWidgetColor,
+                    size: 20,
+                  )
+          )
       );
   }
 
