@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../utility/expandable_theme.dart';
-import '../utility/expandable_theme_data.dart';
 
 extension ContextExtension on BuildContext {
   ExpandableThemeData get expandableTheme => ExpandableTheme.of(this);

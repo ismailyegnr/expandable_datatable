@@ -122,6 +122,8 @@ class ExpandableThemeData {
   final double? rowHeight;
 
   /// Size of the default pagination widget.
+  ///
+  /// Default size is 48.0.
   final double? paginationSize;
 
   /// The [TextStyle] used for the page numbers (both selected and unselected).

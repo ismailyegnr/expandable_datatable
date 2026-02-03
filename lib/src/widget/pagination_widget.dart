@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../expandable_datatable.dart';
 import '../extension/context_extension.dart';
-import '../utility/expandable_theme_data.dart';
 
 class PaginationWidget extends StatefulWidget {
   final int currentPage;
@@ -161,7 +161,7 @@ class _PaginationWidgetState extends State<PaginationWidget> {
   @override
   Widget build(BuildContext context) {
     final ExpandableThemeData theme = context.expandableTheme;
-    final double size = theme.paginationSize;
+    final double size = theme.paginationSize ?? 48;
 
     return ToggleButtons(
       constraints: BoxConstraints(minHeight: size, minWidth: size),
