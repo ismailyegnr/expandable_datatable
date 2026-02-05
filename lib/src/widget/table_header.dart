@@ -24,20 +24,27 @@ class TableHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     var boxDecoration = BoxDecoration(
       border: Border(
-        bottom: context.expandableTheme.headerBorder,
+        bottom: context.expandableTheme.headerBorder ??
+            const BorderSide(
+              width: 2.5,
+              color: Color(0xffeeeeee),
+            ),
       ),
-      color: context.expandableTheme.headerColor,
+      color: context.expandableTheme.headerColor ??
+          Theme.of(context).colorScheme.surface,
     );
 
     double? height = context.expandableTheme.headerHeight;
     late EdgeInsets padding;
+    final themeContentPadding =
+        context.expandableTheme.contentPadding ?? const EdgeInsets.all(16.0);
 
     if (height == null) {
-      padding = context.expandableTheme.contentPadding;
+      padding = themeContentPadding;
     } else {
       padding = EdgeInsets.only(
-        right: context.expandableTheme.contentPadding.right,
-        left: context.expandableTheme.contentPadding.left,
+        right: themeContentPadding.right,
+        left: themeContentPadding.left,
       );
     }
 
@@ -61,6 +68,7 @@ class TableHeader extends StatelessWidget {
 
   GestureDetector buildHeaderTitle(
       BuildContext context, ExpandableColumn<dynamic> column) {
+    final ThemeData theme = Theme.of(context);
     Color? iconColor = context.expandableTheme.headerSortIconColor;
 
     return GestureDetector(
@@ -76,9 +84,11 @@ class TableHeader extends StatelessWidget {
               Flexible(
                 child: Text(
                   column.columnTitle,
-                  style: context.expandableTheme.headerTextStyle,
-                  overflow: context.expandableTheme.rowTextOverflow,
-                  maxLines: context.expandableTheme.headerTextMaxLines,
+                  style: context.expandableTheme.headerTextStyle ??
+                      theme.textTheme.titleMedium,
+                  overflow: context.expandableTheme.rowTextOverflow ??
+                      TextOverflow.ellipsis,
+                  maxLines: context.expandableTheme.headerTextMaxLines ?? 2,
                 ),
               ),
               Visibility(

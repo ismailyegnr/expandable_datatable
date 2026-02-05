@@ -36,20 +36,23 @@ class ExpansionContainer extends StatelessWidget {
   }
 
   Row _buildRow(CellItem element, BuildContext context) {
+    final expandedTextStyle = context.expandableTheme.expandedTextStyle ??
+        Theme.of(context).textTheme.bodyMedium;
+
     return Row(
       children: [
         Expanded(
           flex: 1,
           child: Text(
             "${element.columnName}:",
-            style: context.expandableTheme.expandedTextStyle,
+            style: expandedTextStyle,
           ),
         ),
         Expanded(
           flex: 4,
           child: Text(
             "${element.value}",
-            style: context.expandableTheme.expandedTextStyle,
+            style: expandedTextStyle,
           ),
         ),
       ],

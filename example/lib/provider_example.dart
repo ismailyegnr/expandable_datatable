@@ -72,7 +72,6 @@ class _MainScreenState extends State<MainScreen> {
   ) {
     return ExpandableTheme(
       data: ExpandableThemeData(
-        context,
         rowBorder: const BorderSide(color: Colors.amber),
         expandedBorderColor: Colors.transparent,
         paginationSize: 48,
