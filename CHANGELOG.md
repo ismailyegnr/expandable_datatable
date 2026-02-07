@@ -1,4 +1,9 @@
-# 0.1.1 - 29/01/2026
+# 0.2.0 - 07/02/2026
+
+- Enhanced the `onRowChanged` callback to include the `originalIndex` to improve external state management. ([#19](https://github.com/ismailyegnr/expandable_datatable/pull/19))
+- **Major Refactoring:** Restructured the ExpandableThemeData constructor and improved docs. ([#20](https://github.com/ismailyegnr/expandable_datatable/pull/20))
+
+## 0.1.1 - 29/01/2026
 
 - Fix table not updating when data was changed externally (e.g., via Provider) ([#4](https://github.com/ismailyegnr/expandable_datatable/issues/4))
 - Fix bug where the `multipleExpansion` parameter was not working.
