@@ -116,4 +116,92 @@ void main() {
     expect(toggle.constraints,
         equals(BoxConstraints(minHeight: 30, minWidth: 30)));
   });
+
+  testWidgets('ExpandableTheme contentPadding is applied to table header',
+      (tester) async {
+    final headers = _buildHeaders(3);
+    final rows = _buildRows(1, 3);
+
+    const customPadding =
+        EdgeInsets.only(left: 20, right: 20, top: 8, bottom: 8);
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: ExpandableTheme(
+            data: const ExpandableThemeData(contentPadding: customPadding),
+            child: ExpandableDataTable(
+              headers: headers,
+              rows: rows,
+              visibleColumnCount: 3,
+              pageSize: 10,
+            ),
+          ),
+        ),
+      ),
+    );
+
+    // Find the TableHeader container and verify it has the custom padding and decoration
+    final headerContainerFinder = find.byWidgetPredicate((w) {
+      if (w is Container && w.decoration is BoxDecoration) {
+        return w.padding == customPadding;
+      }
+      return false;
+    });
+
+    expect(headerContainerFinder, findsOneWidget);
+  });
+
+  testWidgets(
+      'ExpandableTheme contentPadding is applied to expansion row content',
+      (tester) async {
+    final headers = _buildHeaders(3);
+    final rows = _buildRows(2, 3);
+
+    const customPadding =
+        EdgeInsets.only(left: 24, right: 24, top: 12, bottom: 12);
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: ExpandableTheme(
+            data: const ExpandableThemeData(contentPadding: customPadding),
+            child: ExpandableDataTable(
+              headers: headers,
+              rows: rows,
+              visibleColumnCount: 2, // leave space for expansion column
+              pageSize: 10,
+            ),
+          ),
+        ),
+      ),
+    );
+
+    // Get initial count of containers with custom padding (should include header)
+    final initialPaddingContainers = find.byWidgetPredicate((w) {
+      if (w is Container && w.padding == customPadding) {
+        return true;
+      }
+      return false;
+    });
+    final initialCount = initialPaddingContainers.evaluate().length;
+
+    // Tap the expansion icon to expand the first row
+    await tester.tap(find.byIcon(Icons.expand_more).first);
+    await tester.pumpAndSettle();
+
+    // Find all containers with the custom padding again
+    final expandedPaddingContainers = find.byWidgetPredicate((w) {
+      if (w is Container && w.padding == customPadding) {
+        return true;
+      }
+      return false;
+    });
+
+    // Should have more or equal containers with contentPadding (header + expanded content)
+    expect(
+      expandedPaddingContainers.evaluate().length,
+      greaterThanOrEqualTo(initialCount),
+    );
+  });
 }
