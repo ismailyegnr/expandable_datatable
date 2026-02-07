@@ -124,18 +124,18 @@ Create the list of the rows to be used in data table. All row list elements must
       ),
       body: ExpandableTheme(
         data: ExpandableThemeData(
-          context,
+          contentPadding: const EdgeInsets.all(10),
           shape: const RoundedRectangleBorder(
             side: BorderSide(color: Colors.transparent),
           ),
           expandedShape: const RoundedRectangleBorder(
             side: BorderSide(color: Colors.amber),
           ),
-          paginationSize: 48,
+          rowHeight: 60,
         ),
         child: ExpandableDataTable(
-          rows: rows,
           headers: headers,
+          rows: rows,
           visibleColumnCount: 4,
         ),
       ),
