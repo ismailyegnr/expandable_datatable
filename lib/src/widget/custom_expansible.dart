@@ -95,6 +95,8 @@ class ExpansionTile extends StatefulWidget {
     super.key,
     this.leading,
     required this.title,
+    required this.backgroundColor,
+    required this.collapsedBackgroundColor,
     this.subtitle,
     this.onExpansionChanged,
     this.children = const <Widget>[],
@@ -106,8 +108,6 @@ class ExpansionTile extends StatefulWidget {
     this.expandedCrossAxisAlignment,
     this.expandedAlignment,
     this.childrenPadding,
-    this.backgroundColor,
-    this.collapsedBackgroundColor,
     this.textColor,
     this.collapsedTextColor,
     this.iconColor,
@@ -168,26 +168,10 @@ class ExpansionTile extends StatefulWidget {
   final List<Widget> children;
 
   /// The color to display behind the sublist when expanded.
-  ///
-  /// If this property is null then [ExpansionTileThemeData.backgroundColor] is used. If that
-  /// is also null then Colors.transparent is used.
-  ///
-  /// See also:
-  ///
-  /// * [ExpansionTileTheme.of], which returns the nearest [ExpansionTileTheme]'s
-  ///   [ExpansionTileThemeData].
-  final Color? backgroundColor;
+  final Color backgroundColor;
 
-  /// When not null, defines the background color of tile when the sublist is collapsed.
-  ///
-  /// If this property is null then [ExpansionTileThemeData.collapsedBackgroundColor] is used.
-  /// If that is also null then Colors.transparent is used.
-  ///
-  /// See also:
-  ///
-  /// * [ExpansionTileTheme.of], which returns the nearest [ExpansionTileTheme]'s
-  ///   [ExpansionTileThemeData].
-  final Color? collapsedBackgroundColor;
+  /// Defines the background color of tile when the sublist is collapsed.
+  final Color collapsedBackgroundColor;
 
   /// A widget to display after the title.
   ///
@@ -654,7 +638,7 @@ class _ExpansionTileState extends State<ExpansionTile> {
     _backgroundColor = animation.drive(_backgroundColorTween.chain(_easeOutTween));
     _border = animation.drive(_borderTween.chain(_easeOutTween));
     final Color backgroundColor =
-        _backgroundColor.value ?? _expansionTileTheme.backgroundColor ?? Colors.transparent;
+        _backgroundColor.value ?? _expandableTheme.rowColor ?? Colors.transparent;
     final ShapeBorder expansionTileBorder =
         _border.value ??
             const Border(
@@ -802,8 +786,8 @@ class _ExpansionTileState extends State<ExpansionTile> {
 
   void _updateBackgroundColor() {
     _backgroundColorTween
-      ..begin = widget.collapsedBackgroundColor ?? _expansionTileTheme.collapsedBackgroundColor
-      ..end = widget.backgroundColor ?? _expansionTileTheme.backgroundColor;
+      ..begin = widget.collapsedBackgroundColor
+      ..end = widget.backgroundColor;
   }
 
   void _updateHeightFactorCurve() {
