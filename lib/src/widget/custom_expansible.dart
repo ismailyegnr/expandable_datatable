@@ -596,10 +596,6 @@ class _ExpansionTileState extends State<ExpansionTile> {
         constraints: widget.minTileHeight != null
             ? BoxConstraints(minHeight: widget.minTileHeight!)
             : null,
-        color: (_expansibleController.isExpanded
-            ? widget.backgroundColor ?? _expansionTileTheme.backgroundColor
-            : widget.collapsedBackgroundColor ?? _expansionTileTheme.collapsedBackgroundColor) ??
-            Colors.transparent,
         child: IconTheme.merge(
           data: IconThemeData(
             color: _iconColor.value ?? _expansionTileTheme.iconColor,

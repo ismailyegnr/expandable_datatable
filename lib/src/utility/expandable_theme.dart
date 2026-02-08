@@ -89,6 +89,12 @@ class ExpandableThemeData {
   /// It is used only if both [evenRowColor] and [oddRowColor] are not null.
   final Color? oddRowColor;
 
+  /// Background color applied to a row when its expandable content is visible.
+  ///
+  /// If this property is null, the row retains its current background color
+  /// (either [rowColor], [evenRowColor], or [oddRowColor]) upon expansion.
+  final Color? expandedBackgroundColor;
+
   /// Border style of header row.
   ///
   /// If this property is null, the following default border is used:
@@ -193,6 +199,7 @@ class ExpandableThemeData {
     this.rowColor,
     this.evenRowColor,
     this.oddRowColor,
+    this.expandedBackgroundColor,
     this.headerBorder,
     @Deprecated('Use shape instead')
     this.rowBorder,
