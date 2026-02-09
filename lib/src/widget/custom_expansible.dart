@@ -511,7 +511,6 @@ class _ExpansionTileState extends State<ExpansionTile> {
               child: _expandableTheme.expansionIcon ??
                   Icon(
                     Icons.expand_more,
-                    color: Theme.of(context).unselectedWidgetColor,
                     size: 20,
                   )
           )
@@ -582,7 +581,7 @@ class _ExpansionTileState extends State<ExpansionTile> {
             : null,
         child: IconTheme.merge(
           data: IconThemeData(
-            color: _iconColor.value ?? _expansionTileTheme.iconColor,
+            color: _iconColor.value,
           ),
           child: DefaultTextStyle.merge(
             style: TextStyle(
@@ -707,7 +706,7 @@ class _ExpansionTileState extends State<ExpansionTile> {
     }
     if (widget.collapsedIconColor != oldWidget.collapsedIconColor ||
         widget.iconColor != oldWidget.iconColor) {
-      _updateIconColor(defaults);
+      _updateIconColor(theme);
     }
     if (widget.backgroundColor != oldWidget.backgroundColor ||
         widget.collapsedBackgroundColor != oldWidget.collapsedBackgroundColor) {
@@ -733,7 +732,7 @@ class _ExpansionTileState extends State<ExpansionTile> {
     _updateAnimationDuration();
     _updateShapeBorder(theme);
     _updateHeaderColor(defaults);
-    _updateIconColor(defaults);
+    _updateIconColor(theme);
     _updateBackgroundColor();
     _updateHeightFactorCurve();
     super.didChangeDependencies();
@@ -775,13 +774,16 @@ class _ExpansionTileState extends State<ExpansionTile> {
       ..end = widget.textColor ?? _expansionTileTheme.textColor ?? defaults.textColor;
   }
 
-  void _updateIconColor(ExpansionTileThemeData defaults) {
+  // Completed
+  void _updateIconColor(ThemeData theme) {
     _iconColorTween
       ..begin =
           widget.collapsedIconColor ??
-              _expansionTileTheme.collapsedIconColor ??
-              defaults.collapsedIconColor
-      ..end = widget.iconColor ?? _expansionTileTheme.iconColor ?? defaults.iconColor;
+              _expandableTheme.iconColor ??
+              theme.colorScheme.onSurfaceVariant
+      ..end = widget.iconColor ??
+          _expandableTheme.expandedIconColor ??
+          theme.colorScheme.onSurface;
   }
 
   void _updateBackgroundColor() {
@@ -815,6 +817,7 @@ class _ExpansionTileState extends State<ExpansionTile> {
   }
 }
 
+// TODO: Remove Defaults
 class _ExpansionTileDefaultsM2 extends ExpansionTileThemeData {
   _ExpansionTileDefaultsM2(this.context);
 

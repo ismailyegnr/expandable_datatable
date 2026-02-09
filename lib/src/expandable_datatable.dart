@@ -506,7 +506,6 @@ class _ExpandableDataTableState extends State<ExpandableDataTable> {
       icon: context.expandableTheme.editIcon ??
           Icon(
             Icons.edit,
-            color: Theme.of(context).unselectedWidgetColor,
             size: 16,
           ),
       onPressed: () => showEditDialog(context, rowInd),

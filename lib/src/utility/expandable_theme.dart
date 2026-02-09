@@ -134,7 +134,6 @@ class ExpandableThemeData {
   /// ```dart
   /// Icon(
   ///   Icons.edit,
-  ///   color: Theme.of(context).unselectedWidgetColor,
   ///   size: 16,
   /// )
   /// ```
@@ -147,11 +146,20 @@ class ExpandableThemeData {
   /// ```dart
   /// Icon(
   ///   Icons.expand_more,
-  ///   color: Theme.of(context).unselectedWidgetColor,
   ///   size: 20,
   /// )
   /// ```
   final Icon? expansionIcon;
+
+  /// Color of icons when the expandable content is collapsed.
+  ///
+  /// If null, the theme's [ColorScheme.onSurfaceVariant] is used.
+  final Color? iconColor;
+
+  /// Color of icons when the expandable content is expanded.
+  ///
+  /// If null, the theme's [ColorScheme.onSurface] is used.
+  final Color? expandedIconColor;
 
   /// Overrides the default 200ms expansion animation duration.
   final AnimationStyle? expansionAnimationStyle;
@@ -210,6 +218,8 @@ class ExpandableThemeData {
     this.rowHeight,
     this.editIcon,
     this.expansionIcon,
+    this.iconColor,
+    this.expandedIconColor,
     this.expansionAnimationStyle,
     this.paginationSize,
     this.paginationTextStyle,
