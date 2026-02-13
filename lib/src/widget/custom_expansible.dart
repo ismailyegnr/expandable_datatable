@@ -58,11 +58,6 @@ const Duration _kExpand = Duration(milliseconds: 200);
 /// [ExpansionTile] to save and restore its expanded state when it is scrolled
 /// in and out of view.
 ///
-/// This class overrides the [ListTileThemeData.iconColor] and [ListTileThemeData.textColor]
-/// theme properties for its [ListTile]. These colors animate between values when
-/// the tile is expanded and collapsed: between [iconColor], [collapsedIconColor] and
-/// between [textColor] and [collapsedTextColor].
-///
 /// The expansion arrow icon is shown on the right by default in left-to-right languages
 /// (i.e. the trailing edge). This can be changed using [controlAffinity]. This maps
 /// to the [leading] and [trailing] properties of [ExpansionTile].
@@ -108,8 +103,6 @@ class ExpansionTile extends StatefulWidget {
     this.expandedCrossAxisAlignment,
     this.expandedAlignment,
     this.childrenPadding,
-    this.textColor,
-    this.collapsedTextColor,
     this.iconColor,
     this.collapsedIconColor,
     this.shape,
@@ -278,35 +271,6 @@ class ExpansionTile extends StatefulWidget {
   ///   [ExpansionTileThemeData].
   final Color? collapsedIconColor;
 
-  /// The color of the tile's titles when the sublist is expanded.
-  ///
-  /// Used to override to the [ListTileThemeData.textColor].
-  ///
-  /// If this property is null then [ExpansionTileThemeData.textColor] is used. If that
-  /// is also null then and [ThemeData.useMaterial3] is true, color of the [TextTheme.bodyLarge]
-  /// will be used for the [title] and [subtitle]. Otherwise, defaults to [ColorScheme.primary] color.
-  ///
-  /// See also:
-  ///
-  /// * [ExpansionTileTheme.of], which returns the nearest [ExpansionTileTheme]'s
-  ///   [ExpansionTileThemeData].
-  final Color? textColor;
-
-  /// The color of the tile's titles when the sublist is collapsed.
-  ///
-  /// Used to override to the [ListTileThemeData.textColor].
-  ///
-  /// If this property is null then [ExpansionTileThemeData.collapsedTextColor] is used.
-  /// If that is also null and [ThemeData.useMaterial3] is true, color of the
-  /// [TextTheme.bodyLarge] will be used for the [title] and [subtitle]. Otherwise,
-  /// defaults to color of the [TextTheme.titleMedium].
-  ///
-  /// See also:
-  ///
-  /// * [ExpansionTileTheme.of], which returns the nearest [ExpansionTileTheme]'s
-  ///   [ExpansionTileThemeData].
-  final Color? collapsedTextColor;
-
   /// The tile's border shape when the sublist is expanded.
   ///
   /// If this property is null, the [ExpansionTileThemeData.shape] is used. If that
@@ -420,13 +384,11 @@ class _ExpansionTileState extends State<ExpansionTile> {
   static final Animatable<double> _halfTween = Tween<double>(begin: 0.0, end: 0.5);
 
   final ShapeBorderTween _borderTween = ShapeBorderTween();
-  final ColorTween _headerColorTween = ColorTween();
   final ColorTween _iconColorTween = ColorTween();
   final ColorTween _backgroundColorTween = ColorTween();
 
   late Animation<double> _iconTurns;
   late Animation<ShapeBorder?> _border;
-  late Animation<Color?> _headerColor;
   late Animation<Color?> _iconColor;
   late Animation<Color?> _backgroundColor;
 
@@ -520,7 +482,6 @@ class _ExpansionTileState extends State<ExpansionTile> {
 
   Widget _buildHeader(BuildContext context, Animation<double> animation) {
     _iconColor = animation.drive(_iconColorTween.chain(_easeInTween));
-    _headerColor = animation.drive(_headerColorTween.chain(_easeInTween));
     final ThemeData theme = Theme.of(context);
     final MaterialLocalizations localizations = MaterialLocalizations.of(context);
     final String onTapHint = _expansibleController.isExpanded
@@ -583,11 +544,7 @@ class _ExpansionTileState extends State<ExpansionTile> {
           data: IconThemeData(
             color: _iconColor.value,
           ),
-          child: DefaultTextStyle.merge(
-            style: TextStyle(
-              color: _headerColor.value,
-            ),
-            child: Row(
+          child: Row(
               children: <Widget>[
                 if (effectiveLeading != null)
                   Padding(
@@ -607,7 +564,6 @@ class _ExpansionTileState extends State<ExpansionTile> {
                   ),
                 ),
               ],
-            ),
           ),
         ),
       ),
@@ -700,10 +656,6 @@ class _ExpansionTileState extends State<ExpansionTile> {
     if (widget.collapsedShape != oldWidget.collapsedShape || widget.shape != oldWidget.shape) {
       _updateShapeBorder(theme);
     }
-    if (widget.collapsedTextColor != oldWidget.collapsedTextColor ||
-        widget.textColor != oldWidget.textColor) {
-      _updateHeaderColor(defaults);
-    }
     if (widget.collapsedIconColor != oldWidget.collapsedIconColor ||
         widget.iconColor != oldWidget.iconColor) {
       _updateIconColor(theme);
@@ -731,7 +683,6 @@ class _ExpansionTileState extends State<ExpansionTile> {
         : _ExpansionTileDefaultsM2(context);
     _updateAnimationDuration();
     _updateShapeBorder(theme);
-    _updateHeaderColor(defaults);
     _updateIconColor(theme);
     _updateBackgroundColor();
     _updateHeightFactorCurve();
@@ -765,15 +716,6 @@ class _ExpansionTileState extends State<ExpansionTile> {
               );
   }
 
-  void _updateHeaderColor(ExpansionTileThemeData defaults) {
-    _headerColorTween
-      ..begin =
-          widget.collapsedTextColor ??
-              _expansionTileTheme.collapsedTextColor ??
-              defaults.collapsedTextColor
-      ..end = widget.textColor ?? _expansionTileTheme.textColor ?? defaults.textColor;
-  }
-
   // Completed
   void _updateIconColor(ThemeData theme) {
     _iconColorTween
@@ -786,6 +728,7 @@ class _ExpansionTileState extends State<ExpansionTile> {
           theme.colorScheme.onSurface;
   }
 
+  // Completed
   void _updateBackgroundColor() {
     _backgroundColorTween
       ..begin = widget.collapsedBackgroundColor
