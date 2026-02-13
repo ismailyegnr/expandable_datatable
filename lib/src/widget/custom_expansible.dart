@@ -735,14 +735,15 @@ class _ExpansionTileState extends State<ExpansionTile> {
       ..end = widget.backgroundColor;
   }
 
+  // Completed
   void _updateHeightFactorCurve() {
     _curve =
         widget.expansionAnimationStyle?.curve ??
-            _expansionTileTheme.expansionAnimationStyle?.curve ??
+            _expandableTheme.expansionAnimationStyle?.curve ??
             Curves.easeIn;
     _reverseCurve =
         widget.expansionAnimationStyle?.reverseCurve ??
-            _expansionTileTheme.expansionAnimationStyle?.reverseCurve;
+            _expandableTheme.expansionAnimationStyle?.reverseCurve;
   }
 
   @override

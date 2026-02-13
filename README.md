@@ -54,7 +54,7 @@ ExpandableDataTable is a Flutter library for dealing with displaying and editing
 | rowColor                      | Background color of rows                                                 |
 | evenRowColor                  | Background color of the even indexed rows                                |
 | oddRowColor                   | Background color of the odd indexed rows                                 |
-| expansionAnimationStyle       | Expansion animation                                                      |
+| expansionAnimationStyle       | Expansion animation curve and duration                                                      |
 | shape                         | The rows' border shape when the expandable content is collapsed          |
 | expandedShape                 | The rows' border shape when the expandable content is expanded           |
 | headerBorder                  | Border style of header row                                               |

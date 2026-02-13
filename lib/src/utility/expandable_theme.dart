@@ -161,7 +161,18 @@ class ExpandableThemeData {
   /// If null, the theme's [ColorScheme.onSurface] is used.
   final Color? expandedIconColor;
 
-  /// Overrides the default 200ms expansion animation duration.
+  /// Expansion animation curve and duration.
+  ///
+  /// If [AnimationStyle.duration] is provided, it will be used to override
+  /// the expansion animation duration, otherwise defaults to 200ms.
+  ///
+  /// If [AnimationStyle.curve] is provided, it will be used to override
+  /// the expansion animation curve, otherwise defaults to [Curves.easeIn].
+  ///
+  /// If [AnimationStyle.reverseCurve] is provided, it will be used to override
+  /// the collapse animation curve, otherwise the same curve will be used as for expansion.
+  ///
+  /// To disable the theme animation, use [AnimationStyle.noAnimation].
   final AnimationStyle? expansionAnimationStyle;
 
   /// Height of the rows
