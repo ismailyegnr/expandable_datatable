@@ -100,8 +100,6 @@ class ExpansionTile extends StatefulWidget {
     this.initiallyExpanded = false,
     this.maintainState = false,
     this.tilePadding,
-    this.expandedCrossAxisAlignment,
-    this.expandedAlignment,
     this.childrenPadding,
     this.iconColor,
     this.collapsedIconColor,
@@ -118,11 +116,7 @@ class ExpansionTile extends StatefulWidget {
     this.internalAddSemanticForOnTap = false,
     this.secondTrailing,
     this.trailingWidth,
-  }) : assert(
-  expandedCrossAxisAlignment != CrossAxisAlignment.baseline,
-  'CrossAxisAlignment.baseline is not supported since the expanded children '
-      'are aligned in a column, not a row. Try to use another constant.',
-  );
+  });
 
   final double? trailingWidth;
   final Widget? secondTrailing;
@@ -192,46 +186,6 @@ class ExpansionTile extends StatefulWidget {
 
   /// If this property is null then [ExpandableThemeData.contentPadding] is used.
   final EdgeInsetsGeometry? tilePadding;
-
-  /// Specifies the alignment of [children], which are arranged in a column when
-  /// the tile is expanded.
-  ///
-  /// The internals of the expanded tile make use of a [Column] widget for
-  /// [children], and [Align] widget to align the column. The [expandedAlignment]
-  /// parameter is passed directly into the [Align].
-  ///
-  /// Modifying this property controls the alignment of the column within the
-  /// expanded tile, not the alignment of [children] widgets within the column.
-  /// To align each child within [children], see [expandedCrossAxisAlignment].
-  ///
-  /// The width of the column is the width of the widest child widget in [children].
-  ///
-  /// If this property is null then [ExpansionTileThemeData.expandedAlignment]is used. If that
-  /// is also null then the value of [expandedAlignment] is [Alignment.center].
-  ///
-  /// See also:
-  ///
-  /// * [ExpansionTileTheme.of], which returns the nearest [ExpansionTileTheme]'s
-  ///   [ExpansionTileThemeData].
-  final Alignment? expandedAlignment;
-
-  /// Specifies the alignment of each child within [children] when the tile is expanded.
-  ///
-  /// The internals of the expanded tile make use of a [Column] widget for
-  /// [children], and the `crossAxisAlignment` parameter is passed directly into
-  /// the [Column].
-  ///
-  /// Modifying this property controls the cross axis alignment of each child
-  /// within its [Column]. The width of the [Column] that houses [children] will
-  /// be the same as the widest child widget in [children]. The width of the
-  /// [Column] might not be equal to the width of the expanded tile.
-  ///
-  /// To align the [Column] along the expanded tile, use the [expandedAlignment]
-  /// property instead.
-  ///
-  /// When the value is null, the value of [expandedCrossAxisAlignment] is
-  /// [CrossAxisAlignment.center].
-  final CrossAxisAlignment? expandedCrossAxisAlignment;
 
   /// Specifies padding for [children].
   ///
@@ -572,12 +526,9 @@ class _ExpansionTileState extends State<ExpansionTile> {
 
   Widget _buildBody(BuildContext context, Animation<double> animation) {
     return Align(
-      alignment:
-      widget.expandedAlignment ?? _expansionTileTheme.expandedAlignment ?? Alignment.center,
       child: Padding(
         padding: widget.childrenPadding ?? _expansionTileTheme.childrenPadding ?? EdgeInsets.zero,
         child: Column(
-          crossAxisAlignment: widget.expandedCrossAxisAlignment ?? CrossAxisAlignment.center,
           children: widget.children,
         ),
       ),
