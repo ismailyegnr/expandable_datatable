@@ -639,11 +639,6 @@ class _ExpansionTileState extends State<ExpansionTile> {
 
     _expandableTheme = ExpandableTheme.of(context);
 
-    // defaults ?
-    final ExpansionTileThemeData defaults = theme.useMaterial3
-        ? _ExpansionTileDefaultsM3(context)
-        : _ExpansionTileDefaultsM2(context);
-
     // Handle dynamic changes to initiallyExpanded property if no external controller is provided.
     if (widget.controller == null && widget.initiallyExpanded != oldWidget.initiallyExpanded) {
       if (widget.initiallyExpanded) {
@@ -677,10 +672,6 @@ class _ExpansionTileState extends State<ExpansionTile> {
 
     _expandableTheme = ExpandableTheme.of(context);
 
-    // defaults ?
-    final ExpansionTileThemeData defaults = theme.useMaterial3
-        ? _ExpansionTileDefaultsM3(context)
-        : _ExpansionTileDefaultsM2(context);
     _updateAnimationDuration();
     _updateShapeBorder(theme);
     _updateIconColor(theme);
@@ -689,7 +680,6 @@ class _ExpansionTileState extends State<ExpansionTile> {
     super.didChangeDependencies();
   }
 
-  // Completed
   void _updateAnimationDuration() {
     _duration =
         widget.expansionAnimationStyle?.duration ??
@@ -697,7 +687,6 @@ class _ExpansionTileState extends State<ExpansionTile> {
             const Duration(milliseconds: 200);
   }
 
-  // Completed
   void _updateShapeBorder(ThemeData theme) {
     _borderTween
       ..begin =
@@ -716,7 +705,6 @@ class _ExpansionTileState extends State<ExpansionTile> {
               );
   }
 
-  // Completed
   void _updateIconColor(ThemeData theme) {
     _iconColorTween
       ..begin =
@@ -728,14 +716,12 @@ class _ExpansionTileState extends State<ExpansionTile> {
           theme.colorScheme.onSurface;
   }
 
-  // Completed
   void _updateBackgroundColor() {
     _backgroundColorTween
       ..begin = widget.collapsedBackgroundColor
       ..end = widget.backgroundColor;
   }
 
-  // Completed
   void _updateHeightFactorCurve() {
     _curve =
         widget.expansionAnimationStyle?.curve ??
@@ -760,55 +746,3 @@ class _ExpansionTileState extends State<ExpansionTile> {
     );
   }
 }
-
-// TODO: Remove Defaults
-class _ExpansionTileDefaultsM2 extends ExpansionTileThemeData {
-  _ExpansionTileDefaultsM2(this.context);
-
-  final BuildContext context;
-  late final ThemeData _theme = Theme.of(context);
-  late final ColorScheme _colorScheme = _theme.colorScheme;
-
-  @override
-  Color? get textColor => _colorScheme.primary;
-
-  @override
-  Color? get iconColor => _colorScheme.primary;
-
-  @override
-  Color? get collapsedTextColor => _theme.textTheme.titleMedium!.color;
-
-  @override
-  Color? get collapsedIconColor => _theme.unselectedWidgetColor;
-}
-
-// BEGIN GENERATED TOKEN PROPERTIES - ExpansionTile
-
-// Do not edit by hand. The code between the "BEGIN GENERATED" and
-// "END GENERATED" comments are generated from data in the Material
-// Design token database by the script:
-//   dev/tools/gen_defaults/bin/gen_defaults.dart.
-
-// dart format off
-class _ExpansionTileDefaultsM3 extends ExpansionTileThemeData {
-  _ExpansionTileDefaultsM3(this.context);
-
-  final BuildContext context;
-  late final ThemeData _theme = Theme.of(context);
-  late final ColorScheme _colors = _theme.colorScheme;
-
-  @override
-  Color? get textColor => _colors.onSurface;
-
-  @override
-  Color? get iconColor => _colors.primary;
-
-  @override
-  Color? get collapsedTextColor => _colors.onSurface;
-
-  @override
-  Color? get collapsedIconColor => _colors.onSurfaceVariant;
-}
-// dart format on
-
-// END GENERATED TOKEN PROPERTIES - ExpansionTile
