@@ -451,11 +451,11 @@ class _ExpandableDataTableState extends State<ExpandableDataTable> {
     return custom_expansible.ExpansionTile(
       showTrailingIcon: expansionCells.isNotEmpty,
       collapsedBackgroundColor: currentRowColor,
-      backgroundColor: currentRowColor,
+      backgroundColor:
+          context.expandableTheme.expandedBackgroundColor ?? currentRowColor,
       onExpansionChanged: (value) => _onExpansionChanged(value, index),
       initiallyExpanded: _selectedRow == index,
       title: buildRowTitleContent(titleCells),
-      childrenPadding: EdgeInsets.symmetric(vertical: context.lowValue),
       secondTrailing: widget.isEditable ? buildEditIcon(context, index) : null,
       trailingWidth: _trailingWidth,
       children: buildExpansionContent(context, row, expansionCells),
@@ -505,7 +505,6 @@ class _ExpandableDataTableState extends State<ExpandableDataTable> {
       icon: context.expandableTheme.editIcon ??
           Icon(
             Icons.edit,
-            color: Theme.of(context).unselectedWidgetColor,
             size: 16,
           ),
       onPressed: () => showEditDialog(context, rowInd),

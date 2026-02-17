@@ -133,9 +133,9 @@ class _MyHomePageState extends State<MyHomePage> {
                       rowTextOverflow: TextOverflow.ellipsis,
                       headerColor: Colors.amber[400],
                       headerSortIconColor: const Color(0xFF6c59cf),
-                      rowColor: Colors.green,
                       evenRowColor: const Color(0xFFFFFFFF),
                       oddRowColor: Colors.amber[200],
+                      expandedBackgroundColor: const Color(0xe66c59cf),
                       paginationSize: 48,
                       headerBorder: const BorderSide(
                         color: Colors.black,

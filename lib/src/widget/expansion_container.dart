@@ -17,10 +17,11 @@ class ExpansionContainer extends StatelessWidget {
       children: [
         ...expansionCells.map(
           (element) {
-            var edgeInsets = EdgeInsets.symmetric(
-              horizontal: context.normalValue,
-              vertical: context.lowValue,
-            );
+            var edgeInsets = context.expandableTheme.expansionCellPadding ??
+                EdgeInsets.symmetric(
+                  horizontal: context.normalValue,
+                  vertical: context.lowValue,
+                );
 
             return Padding(
               padding: edgeInsets,

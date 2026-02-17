@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
@@ -10,7 +9,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
 import '../../expandable_datatable.dart';
-
 
 const Duration _kExpand = Duration(milliseconds: 200);
 
@@ -58,11 +56,6 @@ const Duration _kExpand = Duration(milliseconds: 200);
 /// [ExpansionTile] to save and restore its expanded state when it is scrolled
 /// in and out of view.
 ///
-/// This class overrides the [ListTileThemeData.iconColor] and [ListTileThemeData.textColor]
-/// theme properties for its [ListTile]. These colors animate between values when
-/// the tile is expanded and collapsed: between [iconColor], [collapsedIconColor] and
-/// between [textColor] and [collapsedTextColor].
-///
 /// The expansion arrow icon is shown on the right by default in left-to-right languages
 /// (i.e. the trailing edge). This can be changed using [controlAffinity]. This maps
 /// to the [leading] and [trailing] properties of [ExpansionTile].
@@ -95,6 +88,8 @@ class ExpansionTile extends StatefulWidget {
     super.key,
     this.leading,
     required this.title,
+    required this.backgroundColor,
+    required this.collapsedBackgroundColor,
     this.subtitle,
     this.onExpansionChanged,
     this.children = const <Widget>[],
@@ -103,13 +98,7 @@ class ExpansionTile extends StatefulWidget {
     this.initiallyExpanded = false,
     this.maintainState = false,
     this.tilePadding,
-    this.expandedCrossAxisAlignment,
-    this.expandedAlignment,
     this.childrenPadding,
-    this.backgroundColor,
-    this.collapsedBackgroundColor,
-    this.textColor,
-    this.collapsedTextColor,
     this.iconColor,
     this.collapsedIconColor,
     this.shape,
@@ -125,11 +114,7 @@ class ExpansionTile extends StatefulWidget {
     this.internalAddSemanticForOnTap = false,
     this.secondTrailing,
     this.trailingWidth,
-  }) : assert(
-  expandedCrossAxisAlignment != CrossAxisAlignment.baseline,
-  'CrossAxisAlignment.baseline is not supported since the expanded children '
-      'are aligned in a column, not a row. Try to use another constant.',
-  );
+  });
 
   final double? trailingWidth;
   final Widget? secondTrailing;
@@ -168,26 +153,10 @@ class ExpansionTile extends StatefulWidget {
   final List<Widget> children;
 
   /// The color to display behind the sublist when expanded.
-  ///
-  /// If this property is null then [ExpansionTileThemeData.backgroundColor] is used. If that
-  /// is also null then Colors.transparent is used.
-  ///
-  /// See also:
-  ///
-  /// * [ExpansionTileTheme.of], which returns the nearest [ExpansionTileTheme]'s
-  ///   [ExpansionTileThemeData].
-  final Color? backgroundColor;
+  final Color backgroundColor;
 
-  /// When not null, defines the background color of tile when the sublist is collapsed.
-  ///
-  /// If this property is null then [ExpansionTileThemeData.collapsedBackgroundColor] is used.
-  /// If that is also null then Colors.transparent is used.
-  ///
-  /// See also:
-  ///
-  /// * [ExpansionTileTheme.of], which returns the nearest [ExpansionTileTheme]'s
-  ///   [ExpansionTileThemeData].
-  final Color? collapsedBackgroundColor;
+  /// Defines the background color of tile when the sublist is collapsed.
+  final Color collapsedBackgroundColor;
 
   /// A widget to display after the title.
   ///
@@ -215,46 +184,6 @@ class ExpansionTile extends StatefulWidget {
 
   /// If this property is null then [ExpandableThemeData.contentPadding] is used.
   final EdgeInsetsGeometry? tilePadding;
-
-  /// Specifies the alignment of [children], which are arranged in a column when
-  /// the tile is expanded.
-  ///
-  /// The internals of the expanded tile make use of a [Column] widget for
-  /// [children], and [Align] widget to align the column. The [expandedAlignment]
-  /// parameter is passed directly into the [Align].
-  ///
-  /// Modifying this property controls the alignment of the column within the
-  /// expanded tile, not the alignment of [children] widgets within the column.
-  /// To align each child within [children], see [expandedCrossAxisAlignment].
-  ///
-  /// The width of the column is the width of the widest child widget in [children].
-  ///
-  /// If this property is null then [ExpansionTileThemeData.expandedAlignment]is used. If that
-  /// is also null then the value of [expandedAlignment] is [Alignment.center].
-  ///
-  /// See also:
-  ///
-  /// * [ExpansionTileTheme.of], which returns the nearest [ExpansionTileTheme]'s
-  ///   [ExpansionTileThemeData].
-  final Alignment? expandedAlignment;
-
-  /// Specifies the alignment of each child within [children] when the tile is expanded.
-  ///
-  /// The internals of the expanded tile make use of a [Column] widget for
-  /// [children], and the `crossAxisAlignment` parameter is passed directly into
-  /// the [Column].
-  ///
-  /// Modifying this property controls the cross axis alignment of each child
-  /// within its [Column]. The width of the [Column] that houses [children] will
-  /// be the same as the widest child widget in [children]. The width of the
-  /// [Column] might not be equal to the width of the expanded tile.
-  ///
-  /// To align the [Column] along the expanded tile, use the [expandedAlignment]
-  /// property instead.
-  ///
-  /// When the value is null, the value of [expandedCrossAxisAlignment] is
-  /// [CrossAxisAlignment.center].
-  final CrossAxisAlignment? expandedCrossAxisAlignment;
 
   /// Specifies padding for [children].
   ///
@@ -293,35 +222,6 @@ class ExpansionTile extends StatefulWidget {
   /// * [ExpansionTileTheme.of], which returns the nearest [ExpansionTileTheme]'s
   ///   [ExpansionTileThemeData].
   final Color? collapsedIconColor;
-
-  /// The color of the tile's titles when the sublist is expanded.
-  ///
-  /// Used to override to the [ListTileThemeData.textColor].
-  ///
-  /// If this property is null then [ExpansionTileThemeData.textColor] is used. If that
-  /// is also null then and [ThemeData.useMaterial3] is true, color of the [TextTheme.bodyLarge]
-  /// will be used for the [title] and [subtitle]. Otherwise, defaults to [ColorScheme.primary] color.
-  ///
-  /// See also:
-  ///
-  /// * [ExpansionTileTheme.of], which returns the nearest [ExpansionTileTheme]'s
-  ///   [ExpansionTileThemeData].
-  final Color? textColor;
-
-  /// The color of the tile's titles when the sublist is collapsed.
-  ///
-  /// Used to override to the [ListTileThemeData.textColor].
-  ///
-  /// If this property is null then [ExpansionTileThemeData.collapsedTextColor] is used.
-  /// If that is also null and [ThemeData.useMaterial3] is true, color of the
-  /// [TextTheme.bodyLarge] will be used for the [title] and [subtitle]. Otherwise,
-  /// defaults to color of the [TextTheme.titleMedium].
-  ///
-  /// See also:
-  ///
-  /// * [ExpansionTileTheme.of], which returns the nearest [ExpansionTileTheme]'s
-  ///   [ExpansionTileThemeData].
-  final Color? collapsedTextColor;
 
   /// The tile's border shape when the sublist is expanded.
   ///
@@ -431,22 +331,22 @@ class ExpansionTile extends StatefulWidget {
 }
 
 class _ExpansionTileState extends State<ExpansionTile> {
-  static final Animatable<double> _easeInTween = CurveTween(curve: Curves.easeIn);
-  static final Animatable<double> _easeOutTween = CurveTween(curve: Curves.easeOut);
-  static final Animatable<double> _halfTween = Tween<double>(begin: 0.0, end: 0.5);
+  static final Animatable<double> _easeInTween =
+      CurveTween(curve: Curves.easeIn);
+  static final Animatable<double> _easeOutTween =
+      CurveTween(curve: Curves.easeOut);
+  static final Animatable<double> _halfTween =
+      Tween<double>(begin: 0.0, end: 0.5);
 
   final ShapeBorderTween _borderTween = ShapeBorderTween();
-  final ColorTween _headerColorTween = ColorTween();
   final ColorTween _iconColorTween = ColorTween();
   final ColorTween _backgroundColorTween = ColorTween();
 
   late Animation<double> _iconTurns;
   late Animation<ShapeBorder?> _border;
-  late Animation<Color?> _headerColor;
   late Animation<Color?> _iconColor;
   late Animation<Color?> _backgroundColor;
 
-  late ExpansionTileThemeData _expansionTileTheme;
   late ExpandableThemeData _expandableTheme;
   late ExpansibleController _expansibleController;
   Timer? _timer;
@@ -478,8 +378,10 @@ class _ExpansionTileState extends State<ExpansionTile> {
   }
 
   void _onExpansionChanged() {
-    final TextDirection textDirection = WidgetsLocalizations.of(context).textDirection;
-    final MaterialLocalizations localizations = MaterialLocalizations.of(context);
+    final TextDirection textDirection =
+        WidgetsLocalizations.of(context).textDirection;
+    final MaterialLocalizations localizations =
+        MaterialLocalizations.of(context);
     final String stateHint = _expansibleController.isExpanded
         ? localizations.collapsedHint
         : localizations.expandedHint;
@@ -502,8 +404,9 @@ class _ExpansionTileState extends State<ExpansionTile> {
   // Platform or null affinity defaults to trailing.
   ListTileControlAffinity _effectiveAffinity() {
     final ListTileThemeData listTileTheme = ListTileTheme.of(context);
-    final ListTileControlAffinity affinity =
-        widget.controlAffinity ?? listTileTheme.controlAffinity ?? ListTileControlAffinity.trailing;
+    final ListTileControlAffinity affinity = widget.controlAffinity ??
+        listTileTheme.controlAffinity ??
+        ListTileControlAffinity.trailing;
     switch (affinity) {
       case ListTileControlAffinity.leading:
         return ListTileControlAffinity.leading;
@@ -515,31 +418,26 @@ class _ExpansionTileState extends State<ExpansionTile> {
 
   Widget? _buildIcon(BuildContext context, Animation<double> animation) {
     _iconTurns = animation.drive(_halfTween.chain(_easeInTween));
-    return
-      GestureDetector(
-          onTap: widget.enabled
-              ? (_expansibleController.isExpanded
-              ? _expansibleController.collapse
-              : _expansibleController.expand)
-              : null,
-          child: RotationTransition(
-              turns: _iconTurns,
-              child: _expandableTheme.expansionIcon ??
-                  Icon(
-                    Icons.expand_more,
-                    color: Theme.of(context).unselectedWidgetColor,
-                    size: 20,
-                  )
-          )
-      );
+    return GestureDetector(
+        onTap: widget.enabled
+            ? (_expansibleController.isExpanded
+                ? _expansibleController.collapse
+                : _expansibleController.expand)
+            : null,
+        child: RotationTransition(
+            turns: _iconTurns,
+            child: _expandableTheme.expansionIcon ??
+                Icon(
+                  Icons.expand_more,
+                  size: 20,
+                )));
   }
-
 
   Widget _buildHeader(BuildContext context, Animation<double> animation) {
     _iconColor = animation.drive(_iconColorTween.chain(_easeInTween));
-    _headerColor = animation.drive(_headerColorTween.chain(_easeInTween));
     final ThemeData theme = Theme.of(context);
-    final MaterialLocalizations localizations = MaterialLocalizations.of(context);
+    final MaterialLocalizations localizations =
+        MaterialLocalizations.of(context);
     final String onTapHint = _expansibleController.isExpanded
         ? localizations.expansionTileExpandedTapHint
         : localizations.expansionTileCollapsedTapHint;
@@ -559,18 +457,18 @@ class _ExpansionTileState extends State<ExpansionTile> {
     }
 
     final ListTileControlAffinity affinity = _effectiveAffinity();
-    final Widget? expansionArrowIcon = widget.showTrailingIcon
-        ? _buildIcon(context, animation)
-        : null;
+    final Widget? expansionArrowIcon =
+        widget.showTrailingIcon ? _buildIcon(context, animation) : null;
 
     Widget? effectiveLeading;
     Widget? effectiveTrailing;
 
-
-    if (expansionArrowIcon != null && affinity == ListTileControlAffinity.leading) {
+    if (expansionArrowIcon != null &&
+        affinity == ListTileControlAffinity.leading) {
       effectiveLeading = expansionArrowIcon;
       effectiveTrailing = widget.trailing;
-    } else if (expansionArrowIcon != null && affinity == ListTileControlAffinity.trailing) {
+    } else if (expansionArrowIcon != null &&
+        affinity == ListTileControlAffinity.trailing) {
       effectiveLeading = widget.leading;
       effectiveTrailing = expansionArrowIcon;
     } else {
@@ -596,39 +494,31 @@ class _ExpansionTileState extends State<ExpansionTile> {
         constraints: widget.minTileHeight != null
             ? BoxConstraints(minHeight: widget.minTileHeight!)
             : null,
-        color: (_expansibleController.isExpanded
-            ? widget.backgroundColor ?? _expansionTileTheme.backgroundColor
-            : widget.collapsedBackgroundColor ?? _expansionTileTheme.collapsedBackgroundColor) ??
-            Colors.transparent,
         child: IconTheme.merge(
           data: IconThemeData(
-            color: _iconColor.value ?? _expansionTileTheme.iconColor,
+            color: _iconColor.value,
           ),
-          child: DefaultTextStyle.merge(
-            style: TextStyle(
-              color: _headerColor.value,
-            ),
-            child: Row(
-              children: <Widget>[
-                if (effectiveLeading != null)
-                  Padding(
-                    padding: const EdgeInsets.only(right: 16.0),
-                    child: effectiveLeading,
-                  ),
-                Expanded(
-                  child: titleSection,
+          child: Row(
+            children: <Widget>[
+              if (effectiveLeading != null)
+                Padding(
+                  padding: const EdgeInsets.only(right: 16.0),
+                  child: effectiveLeading,
                 ),
-                SizedBox(
-                  width: widget.trailingWidth,
-                  child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              Expanded(
+                child: titleSection,
+              ),
+              SizedBox(
+                width: widget.trailingWidth,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     widget.secondTrailing ?? SizedBox(),
                     effectiveTrailing ?? SizedBox(),
                   ],
-                  ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
@@ -637,12 +527,11 @@ class _ExpansionTileState extends State<ExpansionTile> {
 
   Widget _buildBody(BuildContext context, Animation<double> animation) {
     return Align(
-      alignment:
-      widget.expandedAlignment ?? _expansionTileTheme.expandedAlignment ?? Alignment.center,
       child: Padding(
-        padding: widget.childrenPadding ?? _expansionTileTheme.childrenPadding ?? EdgeInsets.zero,
+        padding: widget.childrenPadding ??
+            _expandableTheme.expansionChildrenPadding ??
+            EdgeInsets.zero,
         child: Column(
-          crossAxisAlignment: widget.expandedCrossAxisAlignment ?? CrossAxisAlignment.center,
           children: widget.children,
         ),
       ),
@@ -650,23 +539,23 @@ class _ExpansionTileState extends State<ExpansionTile> {
   }
 
   Widget _buildExpansible(
-      BuildContext context,
-      Widget header,
-      Widget body,
-      Animation<double> animation,
-      ) {
-    _backgroundColor = animation.drive(_backgroundColorTween.chain(_easeOutTween));
+    BuildContext context,
+    Widget header,
+    Widget body,
+    Animation<double> animation,
+  ) {
+    _backgroundColor =
+        animation.drive(_backgroundColorTween.chain(_easeOutTween));
     _border = animation.drive(_borderTween.chain(_easeOutTween));
-    final Color backgroundColor =
-        _backgroundColor.value ?? _expansionTileTheme.backgroundColor ?? Colors.transparent;
-    final ShapeBorder expansionTileBorder =
-        _border.value ??
-            const Border(
-              top: BorderSide(color: Colors.transparent),
-              bottom: BorderSide(color: Colors.transparent),
-            );
-    final Clip clipBehavior =
-        widget.clipBehavior ?? _expansionTileTheme.clipBehavior ?? Clip.antiAlias;
+    final Color backgroundColor = _backgroundColor.value ??
+        _expandableTheme.rowColor ??
+        Colors.transparent;
+    final ShapeBorder expansionTileBorder = _border.value ??
+        const Border(
+          top: BorderSide(color: Colors.transparent),
+          bottom: BorderSide(color: Colors.transparent),
+        );
+    final Clip clipBehavior = widget.clipBehavior ?? Clip.antiAlias;
 
     final Decoration decoration = ShapeDecoration(
       color: backgroundColor,
@@ -675,14 +564,14 @@ class _ExpansionTileState extends State<ExpansionTile> {
 
     final Widget tile = Padding(
       padding: decoration.padding,
-      child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[header, body]),
+      child: Column(
+          mainAxisSize: MainAxisSize.min, children: <Widget>[header, body]),
     );
 
-    final bool isShapeProvided =
-        widget.shape != null ||
-            _expandableTheme.expandedShape != null ||
-            widget.collapsedShape != null ||
-            _expandableTheme.shape != null;
+    final bool isShapeProvided = widget.shape != null ||
+        _expandableTheme.expandedShape != null ||
+        widget.collapsedShape != null ||
+        _expandableTheme.shape != null;
 
     if (isShapeProvided) {
       return Material(
@@ -700,17 +589,12 @@ class _ExpansionTileState extends State<ExpansionTile> {
   void didUpdateWidget(covariant ExpansionTile oldWidget) {
     super.didUpdateWidget(oldWidget);
     final ThemeData theme = Theme.of(context);
-    _expansionTileTheme = ExpansionTileTheme.of(context);
 
     _expandableTheme = ExpandableTheme.of(context);
 
-    // defaults ?
-    final ExpansionTileThemeData defaults = theme.useMaterial3
-        ? _ExpansionTileDefaultsM3(context)
-        : _ExpansionTileDefaultsM2(context);
-
     // Handle dynamic changes to initiallyExpanded property if no external controller is provided.
-    if (widget.controller == null && widget.initiallyExpanded != oldWidget.initiallyExpanded) {
+    if (widget.controller == null &&
+        widget.initiallyExpanded != oldWidget.initiallyExpanded) {
       if (widget.initiallyExpanded) {
         _expansibleController.expand();
       } else {
@@ -718,16 +602,13 @@ class _ExpansionTileState extends State<ExpansionTile> {
       }
     }
 
-    if (widget.collapsedShape != oldWidget.collapsedShape || widget.shape != oldWidget.shape) {
+    if (widget.collapsedShape != oldWidget.collapsedShape ||
+        widget.shape != oldWidget.shape) {
       _updateShapeBorder(theme);
-    }
-    if (widget.collapsedTextColor != oldWidget.collapsedTextColor ||
-        widget.textColor != oldWidget.textColor) {
-      _updateHeaderColor(defaults);
     }
     if (widget.collapsedIconColor != oldWidget.collapsedIconColor ||
         widget.iconColor != oldWidget.iconColor) {
-      _updateIconColor(defaults);
+      _updateIconColor(theme);
     }
     if (widget.backgroundColor != oldWidget.backgroundColor ||
         widget.collapsedBackgroundColor != oldWidget.collapsedBackgroundColor) {
@@ -742,82 +623,61 @@ class _ExpansionTileState extends State<ExpansionTile> {
   @override
   void didChangeDependencies() {
     final ThemeData theme = Theme.of(context);
-    _expansionTileTheme = ExpansionTileTheme.of(context);
 
     _expandableTheme = ExpandableTheme.of(context);
 
-    // defaults ?
-    final ExpansionTileThemeData defaults = theme.useMaterial3
-        ? _ExpansionTileDefaultsM3(context)
-        : _ExpansionTileDefaultsM2(context);
     _updateAnimationDuration();
     _updateShapeBorder(theme);
-    _updateHeaderColor(defaults);
-    _updateIconColor(defaults);
+    _updateIconColor(theme);
     _updateBackgroundColor();
     _updateHeightFactorCurve();
     super.didChangeDependencies();
   }
 
-  // Completed
   void _updateAnimationDuration() {
-    _duration =
-        widget.expansionAnimationStyle?.duration ??
-            _expandableTheme.expansionAnimationStyle?.duration ??
-            const Duration(milliseconds: 200);
+    _duration = widget.expansionAnimationStyle?.duration ??
+        _expandableTheme.expansionAnimationStyle?.duration ??
+        const Duration(milliseconds: 200);
   }
 
-  // Completed
   void _updateShapeBorder(ThemeData theme) {
     _borderTween
-      ..begin =
-          widget.collapsedShape ??
-              _expandableTheme.shape ??
-              const Border(
-                top: BorderSide(color: Colors.transparent),
-                bottom: BorderSide(color: Colors.transparent),
-              )
-      ..end =
-          widget.shape ??
-              _expandableTheme.expandedShape ??
-              Border(
-                top: BorderSide(color: theme.dividerColor),
-                bottom: BorderSide(color: theme.dividerColor),
-              );
+      ..begin = widget.collapsedShape ??
+          _expandableTheme.shape ??
+          const Border(
+            top: BorderSide(color: Colors.transparent),
+            bottom: BorderSide(color: Colors.transparent),
+          )
+      ..end = widget.shape ??
+          _expandableTheme.expandedShape ??
+          Border(
+            top: BorderSide(color: theme.dividerColor),
+            bottom: BorderSide(color: theme.dividerColor),
+          );
   }
 
-  void _updateHeaderColor(ExpansionTileThemeData defaults) {
-    _headerColorTween
-      ..begin =
-          widget.collapsedTextColor ??
-              _expansionTileTheme.collapsedTextColor ??
-              defaults.collapsedTextColor
-      ..end = widget.textColor ?? _expansionTileTheme.textColor ?? defaults.textColor;
-  }
-
-  void _updateIconColor(ExpansionTileThemeData defaults) {
+  void _updateIconColor(ThemeData theme) {
     _iconColorTween
-      ..begin =
-          widget.collapsedIconColor ??
-              _expansionTileTheme.collapsedIconColor ??
-              defaults.collapsedIconColor
-      ..end = widget.iconColor ?? _expansionTileTheme.iconColor ?? defaults.iconColor;
+      ..begin = widget.collapsedIconColor ??
+          _expandableTheme.iconColor ??
+          theme.colorScheme.onSurfaceVariant
+      ..end = widget.iconColor ??
+          _expandableTheme.expandedIconColor ??
+          theme.colorScheme.onSurface;
   }
 
   void _updateBackgroundColor() {
     _backgroundColorTween
-      ..begin = widget.collapsedBackgroundColor ?? _expansionTileTheme.collapsedBackgroundColor
-      ..end = widget.backgroundColor ?? _expansionTileTheme.backgroundColor;
+      ..begin = widget.collapsedBackgroundColor
+      ..end = widget.backgroundColor;
   }
 
   void _updateHeightFactorCurve() {
-    _curve =
-        widget.expansionAnimationStyle?.curve ??
-            _expansionTileTheme.expansionAnimationStyle?.curve ??
-            Curves.easeIn;
-    _reverseCurve =
-        widget.expansionAnimationStyle?.reverseCurve ??
-            _expansionTileTheme.expansionAnimationStyle?.reverseCurve;
+    _curve = widget.expansionAnimationStyle?.curve ??
+        _expandableTheme.expansionAnimationStyle?.curve ??
+        Curves.easeIn;
+    _reverseCurve = widget.expansionAnimationStyle?.reverseCurve ??
+        _expandableTheme.expansionAnimationStyle?.reverseCurve;
   }
 
   @override
@@ -834,54 +694,3 @@ class _ExpansionTileState extends State<ExpansionTile> {
     );
   }
 }
-
-class _ExpansionTileDefaultsM2 extends ExpansionTileThemeData {
-  _ExpansionTileDefaultsM2(this.context);
-
-  final BuildContext context;
-  late final ThemeData _theme = Theme.of(context);
-  late final ColorScheme _colorScheme = _theme.colorScheme;
-
-  @override
-  Color? get textColor => _colorScheme.primary;
-
-  @override
-  Color? get iconColor => _colorScheme.primary;
-
-  @override
-  Color? get collapsedTextColor => _theme.textTheme.titleMedium!.color;
-
-  @override
-  Color? get collapsedIconColor => _theme.unselectedWidgetColor;
-}
-
-// BEGIN GENERATED TOKEN PROPERTIES - ExpansionTile
-
-// Do not edit by hand. The code between the "BEGIN GENERATED" and
-// "END GENERATED" comments are generated from data in the Material
-// Design token database by the script:
-//   dev/tools/gen_defaults/bin/gen_defaults.dart.
-
-// dart format off
-class _ExpansionTileDefaultsM3 extends ExpansionTileThemeData {
-  _ExpansionTileDefaultsM3(this.context);
-
-  final BuildContext context;
-  late final ThemeData _theme = Theme.of(context);
-  late final ColorScheme _colors = _theme.colorScheme;
-
-  @override
-  Color? get textColor => _colors.onSurface;
-
-  @override
-  Color? get iconColor => _colors.primary;
-
-  @override
-  Color? get collapsedTextColor => _colors.onSurface;
-
-  @override
-  Color? get collapsedIconColor => _colors.onSurfaceVariant;
-}
-// dart format on
-
-// END GENERATED TOKEN PROPERTIES - ExpansionTile

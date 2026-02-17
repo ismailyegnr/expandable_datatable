@@ -89,6 +89,12 @@ class ExpandableThemeData {
   /// It is used only if both [evenRowColor] and [oddRowColor] are not null.
   final Color? oddRowColor;
 
+  /// Background color applied to a row when its expandable content is visible.
+  ///
+  /// If this property is null, the row retains its current background color
+  /// (either [rowColor], [evenRowColor], or [oddRowColor]) upon expansion.
+  final Color? expandedBackgroundColor;
+
   /// Border style of header row.
   ///
   /// If this property is null, the following default border is used:
@@ -128,7 +134,6 @@ class ExpandableThemeData {
   /// ```dart
   /// Icon(
   ///   Icons.edit,
-  ///   color: Theme.of(context).unselectedWidgetColor,
   ///   size: 16,
   /// )
   /// ```
@@ -141,13 +146,33 @@ class ExpandableThemeData {
   /// ```dart
   /// Icon(
   ///   Icons.expand_more,
-  ///   color: Theme.of(context).unselectedWidgetColor,
   ///   size: 20,
   /// )
   /// ```
   final Icon? expansionIcon;
 
-  /// Overrides the default 200ms expansion animation duration.
+  /// Color of icons when the expandable content is collapsed.
+  ///
+  /// If null, the theme's [ColorScheme.onSurfaceVariant] is used.
+  final Color? iconColor;
+
+  /// Color of icons when the expandable content is expanded.
+  ///
+  /// If null, the theme's [ColorScheme.onSurface] is used.
+  final Color? expandedIconColor;
+
+  /// Expansion animation curve and duration.
+  ///
+  /// If [AnimationStyle.duration] is provided, it will be used to override
+  /// the expansion animation duration, otherwise defaults to 200ms.
+  ///
+  /// If [AnimationStyle.curve] is provided, it will be used to override
+  /// the expansion animation curve, otherwise defaults to [Curves.easeIn].
+  ///
+  /// If [AnimationStyle.reverseCurve] is provided, it will be used to override
+  /// the collapse animation curve, otherwise the same curve will be used as for expansion.
+  ///
+  /// To disable the theme animation, use [AnimationStyle.noAnimation].
   final AnimationStyle? expansionAnimationStyle;
 
   /// Height of the rows
@@ -179,6 +204,16 @@ class ExpandableThemeData {
   /// The width of the border applied to the page number buttons.
   final double? paginationBorderWidth;
 
+  /// Padding for the children content inside an expanded row.
+  ///
+  /// If null, defaults to `EdgeInsets.zero`.
+  final EdgeInsetsGeometry? expansionChildrenPadding;
+
+  /// Padding for individual cells in the expansion content container.
+  ///
+  /// If null, defaults to `EdgeInsets.symmetric(horizontal: 0.02 * screenHeight, vertical: 0.01 * screenHeight)`.
+  final EdgeInsetsGeometry? expansionCellPadding;
+
   const ExpandableThemeData({
     this.contentPadding,
     this.headerTextStyle,
@@ -193,16 +228,17 @@ class ExpandableThemeData {
     this.rowColor,
     this.evenRowColor,
     this.oddRowColor,
+    this.expandedBackgroundColor,
     this.headerBorder,
-    @Deprecated('Use shape instead')
-    this.rowBorder,
-    @Deprecated('Use expandedShape instead')
-    this.expandedBorderColor,
+    @Deprecated('Use shape instead') this.rowBorder,
+    @Deprecated('Use expandedShape instead') this.expandedBorderColor,
     this.shape,
     this.expandedShape,
     this.rowHeight,
     this.editIcon,
     this.expansionIcon,
+    this.iconColor,
+    this.expandedIconColor,
     this.expansionAnimationStyle,
     this.paginationSize,
     this.paginationTextStyle,
@@ -212,5 +248,7 @@ class ExpandableThemeData {
     this.paginationBorderColor,
     this.paginationBorderRadius,
     this.paginationBorderWidth,
+    this.expansionChildrenPadding,
+    this.expansionCellPadding,
   });
 }
