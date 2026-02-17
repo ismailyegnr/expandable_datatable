@@ -204,6 +204,16 @@ class ExpandableThemeData {
   /// The width of the border applied to the page number buttons.
   final double? paginationBorderWidth;
 
+  /// Padding for the children content inside an expanded row.
+  ///
+  /// If null, defaults to `EdgeInsets.zero`.
+  final EdgeInsetsGeometry? expansionChildrenPadding;
+
+  /// Padding for individual cells in the expansion content container.
+  ///
+  /// If null, defaults to `EdgeInsets.symmetric(horizontal: 0.02 * screenHeight, vertical: 0.01 * screenHeight)`.
+  final EdgeInsetsGeometry? expansionCellPadding;
+
   const ExpandableThemeData({
     this.contentPadding,
     this.headerTextStyle,
@@ -220,10 +230,8 @@ class ExpandableThemeData {
     this.oddRowColor,
     this.expandedBackgroundColor,
     this.headerBorder,
-    @Deprecated('Use shape instead')
-    this.rowBorder,
-    @Deprecated('Use expandedShape instead')
-    this.expandedBorderColor,
+    @Deprecated('Use shape instead') this.rowBorder,
+    @Deprecated('Use expandedShape instead') this.expandedBorderColor,
     this.shape,
     this.expandedShape,
     this.rowHeight,
@@ -240,5 +248,7 @@ class ExpandableThemeData {
     this.paginationBorderColor,
     this.paginationBorderRadius,
     this.paginationBorderWidth,
+    this.expansionChildrenPadding,
+    this.expansionCellPadding,
   });
 }

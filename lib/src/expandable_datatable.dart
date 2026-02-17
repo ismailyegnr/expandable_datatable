@@ -456,7 +456,6 @@ class _ExpandableDataTableState extends State<ExpandableDataTable> {
       onExpansionChanged: (value) => _onExpansionChanged(value, index),
       initiallyExpanded: _selectedRow == index,
       title: buildRowTitleContent(titleCells),
-      childrenPadding: EdgeInsets.symmetric(vertical: context.lowValue),
       secondTrailing: widget.isEditable ? buildEditIcon(context, index) : null,
       trailingWidth: _trailingWidth,
       children: buildExpansionContent(context, row, expansionCells),
