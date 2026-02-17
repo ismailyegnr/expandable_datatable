@@ -1,4 +1,10 @@
-# 0.2.0 - 07/02/2026
+# 0.2.1 - 18/02/2026
+
+- Added new theme properties `expandedBackgroundColor`, `expansionChildrenPadding`, `expansionCellPadding`, `iconColor`, and `expandedIconColor`.
+- Fixed `expansionAnimationStyle` curve now correctly applies to animations.
+- Updated README composition.
+
+## 0.2.0 - 07/02/2026
 
 - Enhanced the `onRowChanged` callback to include the `originalIndex` to improve external state management. ([#19](https://github.com/ismailyegnr/expandable_datatable/pull/19))
 - **Major Refactoring:** Restructured the ExpandableThemeData constructor and improved docs. ([#20](https://github.com/ismailyegnr/expandable_datatable/pull/20))
