@@ -224,6 +224,97 @@ void main() {
     });
   });
 
+  group('visibleColumnCount prop update', () {
+    testWidgets('increasing visibleColumnCount shows previously hidden columns',
+        (tester) async {
+      var visibleCount = 1;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: StatefulBuilder(
+              builder: (context, setState) {
+                return Column(
+                  children: [
+                    TextButton(
+                      onPressed: () => setState(() => visibleCount = 2),
+                      child: const Text('INCREASE'),
+                    ),
+                    Expanded(
+                      child: ExpandableDataTable(
+                        headers: _headers(3),
+                        rows: _rows(2, 3),
+                        visibleColumnCount: visibleCount,
+                        pageSize: 10,
+                      ),
+                    ),
+                  ],
+                );
+              },
+            ),
+          ),
+        ),
+      );
+
+      // Only H0 visible; H1 is in expansion
+      expect(find.text('H0'), findsOneWidget);
+      expect(find.text('H1'), findsNothing);
+
+      await tester.tap(find.text('INCREASE'));
+      await tester.pumpAndSettle();
+
+      // Both H0 and H1 now visible in the header
+      expect(find.text('H0'), findsOneWidget);
+      expect(find.text('H1'), findsOneWidget);
+    });
+
+    testWidgets(
+        'visibleColumnCount exceeding headers.length shows all columns without crash',
+        (tester) async {
+      var visibleCount = 2;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: StatefulBuilder(
+              builder: (context, setState) {
+                return Column(
+                  children: [
+                    TextButton(
+                      onPressed: () => setState(() => visibleCount = 99),
+                      child: const Text('EXCEED'),
+                    ),
+                    Expanded(
+                      child: ExpandableDataTable(
+                        headers: _headers(3),
+                        rows: _rows(2, 3),
+                        visibleColumnCount: visibleCount,
+                        pageSize: 10,
+                      ),
+                    ),
+                  ],
+                );
+              },
+            ),
+          ),
+        ),
+      );
+
+      // Initially 2 of 3 headers visible
+      expect(find.text('H0'), findsOneWidget);
+      expect(find.text('H2'), findsNothing);
+
+      // Set visibleColumnCount way beyond headers.length — should not crash
+      await tester.tap(find.text('EXCEED'));
+      await tester.pumpAndSettle();
+
+      // All 3 headers now visible, clamped by headers.length
+      expect(find.text('H0'), findsOneWidget);
+      expect(find.text('H1'), findsOneWidget);
+      expect(find.text('H2'), findsOneWidget);
+    });
+  });
+
   group('headers prop update', () {
     testWidgets('updating headers replaces visible column titles',
         (tester) async {
