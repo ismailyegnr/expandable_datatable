@@ -200,6 +200,14 @@ class _ExpandableDataTableState extends State<ExpandableDataTable> {
   int _currentPage = 0;
   int _selectedRow = -1;
 
+  /// Incremented every time all rows should collapse.
+  ///
+  /// Used as part of each tile's [Key] so that Flutter recreates the tile
+  /// widget (and its internal [ExpansibleController]) in the collapsed state
+  /// whenever the epoch changes. This ensures both [multipleExpansion] modes
+  /// collapse rows consistently on page change, sort, or data update.
+  int _expansionEpoch = 0;
+
   int get pageLength =>
       _sortedRowsList.isNotEmpty ? _sortedRowsList[_currentPage].length : 0;
 
@@ -330,9 +338,8 @@ class _ExpandableDataTableState extends State<ExpandableDataTable> {
   }
 
   void _shrinkAllRows() {
-    if (_selectedRow != -1) {
-      _selectedRow = -1;
-    }
+    _selectedRow = -1;
+    _expansionEpoch++;
   }
 
   /// Close expanded rows while page is changing.
@@ -449,6 +456,7 @@ class _ExpandableDataTableState extends State<ExpandableDataTable> {
     }
 
     return custom_expansible.ExpansionTile(
+      key: ValueKey('$_expansionEpoch-$index'),
       showTrailingIcon: expansionCells.isNotEmpty,
       collapsedBackgroundColor: currentRowColor,
       backgroundColor:

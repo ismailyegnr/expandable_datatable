@@ -153,7 +153,6 @@ class _MyHomePageState extends State<MyHomePage> {
                     child: ExpandableDataTable(
                       headers: headers,
                       rows: rows,
-                      multipleExpansion: false,
                       isEditable: true,
                       pageSize: 8,
                       onRowChanged: (newRow, originalIndex) {
