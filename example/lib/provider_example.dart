@@ -66,48 +66,41 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 
-  ExpandableTheme buildExpandableDataTable(
+  ExpandableDataTable buildExpandableDataTable(
     BuildContext context,
     MainViewModel viewModel,
   ) {
-    return ExpandableTheme(
-      data: ExpandableThemeData(
-        rowBorder: const BorderSide(color: Colors.amber),
-        expandedBorderColor: Colors.transparent,
-        paginationSize: 48,
-      ),
-      child: ExpandableDataTable(
-        rows: rows(viewModel.users),
-        headers: headers,
-        visibleColumnCount: 2,
-        pageSize: 5,
-        isEditable: true,
-        onRowChanged: (newRow, originalIndex) {
-          User editedUser = viewModel.users[originalIndex];
+    return ExpandableDataTable(
+      rows: rows(viewModel.users),
+      headers: headers,
+      visibleColumnCount: 2,
+      pageSize: 5,
+      isEditable: true,
+      onRowChanged: (newRow, originalIndex) {
+        User editedUser = viewModel.users[originalIndex];
 
-          for (var cell in newRow.cells) {
-            switch (cell.columnTitle) {
-              case "name":
-                {
-                  editedUser.name = cell.value;
-                  break;
-                }
-              case "email":
-                {
-                  editedUser.email = cell.value;
-                  break;
-                }
-              case "password":
-                {
-                  editedUser.password = cell.value;
-                  break;
-                }
-            }
+        for (var cell in newRow.cells) {
+          switch (cell.columnTitle) {
+            case "name":
+              {
+                editedUser.name = cell.value;
+                break;
+              }
+            case "email":
+              {
+                editedUser.email = cell.value;
+                break;
+              }
+            case "password":
+              {
+                editedUser.password = cell.value;
+                break;
+              }
           }
+        }
 
-          viewModel.editUser(editedUser, originalIndex);
-        },
-      ),
+        viewModel.editUser(editedUser, originalIndex);
+      },
     );
   }
 
