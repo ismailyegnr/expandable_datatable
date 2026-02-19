@@ -296,7 +296,12 @@ class _ExpandableDataTableState extends State<ExpandableDataTable> {
     List<CellItem> titleCells,
     List<CellItem> expansionCells,
   ) {
+    final String placeholder =
+        context.expandableTheme.nullValuePlaceholder ?? '';
+
     for (var element in rowData.cells) {
+      final String displayValue = element.value?.toString() ?? placeholder;
+
       if (headerNames.contains(element.columnTitle)) {
         int headerInd = _headerTitles
             .indexWhere((val) => val.columnTitle == element.columnTitle);
@@ -304,7 +309,7 @@ class _ExpandableDataTableState extends State<ExpandableDataTable> {
         titleCells.add(
           CellItem(
             columnName: element.columnTitle,
-            value: element.value,
+            value: displayValue,
             flex: _headerTitles[headerInd].columnFlex,
           ),
         );
@@ -312,7 +317,7 @@ class _ExpandableDataTableState extends State<ExpandableDataTable> {
         expansionCells.add(
           CellItem(
             columnName: element.columnTitle,
-            value: element.value,
+            value: displayValue,
           ),
         );
       }
