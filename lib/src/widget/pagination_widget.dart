@@ -83,7 +83,7 @@ class _PaginationWidgetState extends State<PaginationWidget> {
 
       // Adjust the midpoint based on the current page if necessary.
       _changeMidPoint(widget.currentPage);
-      
+
       _setButtons(widget.currentPage);
     }
   }
@@ -160,6 +160,10 @@ class _PaginationWidgetState extends State<PaginationWidget> {
 
   @override
   Widget build(BuildContext context) {
+    if (_totalPageCount <= 1) {
+      return const SizedBox.shrink();
+    }
+
     final ExpandableThemeData theme = context.expandableTheme;
     final double size = theme.paginationSize ?? 48;
 
@@ -188,10 +192,6 @@ class _PaginationWidgetState extends State<PaginationWidget> {
   }
 
   List<Widget> buildButtons() {
-    if (_totalPageCount == 0 || _totalPageCount == 1) {
-      return [];
-    }
-
     return [
       const Icon(Icons.keyboard_arrow_left),
       ...List.generate(
