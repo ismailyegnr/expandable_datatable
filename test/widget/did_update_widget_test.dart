@@ -158,17 +158,14 @@ void main() {
         ),
       );
 
-      // With pageSize=10 and 3 rows → 1 page → ToggleButtons has empty children
-      ToggleButtons toggle =
-          tester.widget<ToggleButtons>(find.byType(ToggleButtons));
-      expect(toggle.children, isEmpty);
+      // With pageSize=10 and 3 rows → 1 page → PaginationWidget returns SizedBox.shrink()
+      expect(find.byType(ToggleButtons), findsNothing);
 
-      // Reduce to pageSize=1 → 3 pages → pagination has buttons
+      // Reduce to pageSize=1 → 3 pages → pagination appears
       await tester.tap(find.text('REDUCE'));
       await tester.pumpAndSettle();
 
-      toggle = tester.widget<ToggleButtons>(find.byType(ToggleButtons));
-      expect(toggle.children, isNotEmpty);
+      expect(find.byType(ToggleButtons), findsOneWidget);
     });
   });
 
