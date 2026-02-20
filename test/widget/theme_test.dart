@@ -2,25 +2,33 @@ import 'package:expandable_datatable/expandable_datatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-List<ExpandableColumn<String>> _buildHeaders(int count) => List.generate(
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+List<ExpandableColumn<String>> _headers(int count) => List.generate(
       count,
       (i) => ExpandableColumn<String>(columnTitle: 'Col $i', columnFlex: 1),
     );
 
-List<ExpandableRow> _buildRows(int rows, int columns) => List.generate(
-    rows,
-    (r) => ExpandableRow(
+List<ExpandableRow> _rows(int rowCount, int colCount) => List.generate(
+      rowCount,
+      (r) => ExpandableRow(
         cells: List.generate(
-            columns,
-            (c) => ExpandableCell<String>(
-                columnTitle: 'Col $c', value: 'r${r}c${c}'))));
+          colCount,
+          (c) =>
+              ExpandableCell<String>(columnTitle: 'Col $c', value: 'r${r}c$c'),
+        ),
+      ),
+    );
+
+// ---------------------------------------------------------------------------
+// Tests
+// ---------------------------------------------------------------------------
 
 void main() {
   testWidgets('ExpandableTheme editIcon is used by edit button',
       (tester) async {
-    final headers = _buildHeaders(3);
-    final rows = _buildRows(1, 3);
-
     await tester.pumpWidget(
       MaterialApp(
         home: Scaffold(
@@ -29,8 +37,8 @@ void main() {
               editIcon: Icon(Icons.add),
             ),
             child: ExpandableDataTable(
-              headers: headers,
-              rows: rows,
+              headers: _headers(3),
+              rows: _rows(1, 3),
               visibleColumnCount: 3,
               pageSize: 10,
               isEditable: true,
@@ -41,15 +49,11 @@ void main() {
       ),
     );
 
-    // Edit icon should come from theme (Icons.add)
     expect(find.byIcon(Icons.add), findsOneWidget);
   });
 
   testWidgets('ExpandableTheme expansionIcon and headerColor are applied',
       (tester) async {
-    final headers = _buildHeaders(3);
-    final rows = _buildRows(1, 3);
-
     const headerColor = Colors.amber;
 
     await tester.pumpWidget(
@@ -61,8 +65,8 @@ void main() {
               headerColor: headerColor,
             ),
             child: ExpandableDataTable(
-              headers: headers,
-              rows: rows,
+              headers: _headers(3),
+              rows: _rows(1, 3),
               visibleColumnCount: 2, // leave one column to expansion area
               pageSize: 10,
             ),
@@ -71,10 +75,8 @@ void main() {
       ),
     );
 
-    // Expansion icon should be the themed one
     expect(find.byIcon(Icons.arrow_downward), findsOneWidget);
 
-    // TableHeader should use headerColor in its root Container decoration
     final containerWithColor = find.byWidgetPredicate((w) {
       if (w is Container && w.decoration is BoxDecoration) {
         final BoxDecoration d = w.decoration as BoxDecoration;
@@ -89,17 +91,14 @@ void main() {
   testWidgets(
       'ExpandableTheme paginationSize affects PaginationWidget constraints',
       (tester) async {
-    final headers = _buildHeaders(3);
-    final rows = _buildRows(2, 3);
-
     await tester.pumpWidget(
       MaterialApp(
         home: Scaffold(
           body: ExpandableTheme(
             data: const ExpandableThemeData(paginationSize: 30),
             child: ExpandableDataTable(
-              headers: headers,
-              rows: rows,
+              headers: _headers(3),
+              rows: _rows(2, 3),
               visibleColumnCount: 3,
               pageSize: 1, // force pagination to appear
             ),
@@ -108,7 +107,6 @@ void main() {
       ),
     );
 
-    // Find ToggleButtons (used by PaginationWidget) and assert constraints
     final toggleFinder = find.byType(ToggleButtons);
     expect(toggleFinder, findsOneWidget);
 
@@ -119,9 +117,6 @@ void main() {
 
   testWidgets('ExpandableTheme contentPadding is applied to table header',
       (tester) async {
-    final headers = _buildHeaders(3);
-    final rows = _buildRows(1, 3);
-
     const customPadding =
         EdgeInsets.only(left: 20, right: 20, top: 8, bottom: 8);
 
@@ -131,8 +126,8 @@ void main() {
           body: ExpandableTheme(
             data: const ExpandableThemeData(contentPadding: customPadding),
             child: ExpandableDataTable(
-              headers: headers,
-              rows: rows,
+              headers: _headers(3),
+              rows: _rows(1, 3),
               visibleColumnCount: 3,
               pageSize: 10,
             ),
@@ -141,7 +136,6 @@ void main() {
       ),
     );
 
-    // Find the TableHeader container and verify it has the custom padding and decoration
     final headerContainerFinder = find.byWidgetPredicate((w) {
       if (w is Container && w.decoration is BoxDecoration) {
         return w.padding == customPadding;
@@ -155,9 +149,6 @@ void main() {
   testWidgets(
       'ExpandableTheme contentPadding is applied to expansion row content',
       (tester) async {
-    final headers = _buildHeaders(3);
-    final rows = _buildRows(2, 3);
-
     const customPadding =
         EdgeInsets.only(left: 24, right: 24, top: 12, bottom: 12);
 
@@ -167,8 +158,8 @@ void main() {
           body: ExpandableTheme(
             data: const ExpandableThemeData(contentPadding: customPadding),
             child: ExpandableDataTable(
-              headers: headers,
-              rows: rows,
+              headers: _headers(3),
+              rows: _rows(2, 3),
               visibleColumnCount: 2, // leave space for expansion column
               pageSize: 10,
             ),
@@ -177,31 +168,53 @@ void main() {
       ),
     );
 
-    // Get initial count of containers with custom padding (should include header)
-    final initialPaddingContainers = find.byWidgetPredicate((w) {
-      if (w is Container && w.padding == customPadding) {
-        return true;
-      }
-      return false;
-    });
-    final initialCount = initialPaddingContainers.evaluate().length;
+    final initialCount = find
+        .byWidgetPredicate((w) => w is Container && w.padding == customPadding)
+        .evaluate()
+        .length;
 
-    // Tap the expansion icon to expand the first row
     await tester.tap(find.byIcon(Icons.expand_more).first);
     await tester.pumpAndSettle();
 
-    // Find all containers with the custom padding again
-    final expandedPaddingContainers = find.byWidgetPredicate((w) {
-      if (w is Container && w.padding == customPadding) {
-        return true;
-      }
-      return false;
-    });
-
-    // Should have more or equal containers with contentPadding (header + expanded content)
     expect(
-      expandedPaddingContainers.evaluate().length,
+      find
+          .byWidgetPredicate(
+              (w) => w is Container && w.padding == customPadding)
+          .evaluate()
+          .length,
       greaterThanOrEqualTo(initialCount),
     );
+  });
+
+  testWidgets('nullValuePlaceholder is rendered for null cell values',
+      (tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: ExpandableTheme(
+            data: const ExpandableThemeData(nullValuePlaceholder: '-'),
+            child: ExpandableDataTable(
+              headers: _headers(2),
+              rows: [
+                ExpandableRow(
+                  cells: [
+                    ExpandableCell<String>(columnTitle: 'Col 0', value: null),
+                    ExpandableCell<String>(columnTitle: 'Col 1', value: null),
+                  ],
+                ),
+              ],
+              visibleColumnCount: 1,
+              pageSize: 10,
+            ),
+          ),
+        ),
+      ),
+    );
+
+    await tester.tap(find.byIcon(Icons.expand_more).first);
+    await tester.pumpAndSettle();
+
+    expect(find.text('-'), findsWidgets);
+    expect(find.text('null'), findsNothing);
   });
 }

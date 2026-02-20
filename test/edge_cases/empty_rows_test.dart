@@ -172,38 +172,5 @@ void main() {
       // Default placeholder is '' — the literal string "null" must never appear
       expect(find.text('null'), findsNothing);
     });
-
-    testWidgets('null values render custom nullValuePlaceholder',
-        (tester) async {
-      await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: ExpandableTheme(
-              data: const ExpandableThemeData(nullValuePlaceholder: '-'),
-              child: ExpandableDataTable(
-                headers: headers,
-                rows: [
-                  ExpandableRow(
-                    cells: [
-                      ExpandableCell<String>(columnTitle: 'Col 0', value: null),
-                      ExpandableCell<String>(columnTitle: 'Col 1', value: null),
-                    ],
-                  ),
-                ],
-                visibleColumnCount: 1,
-                pageSize: 10,
-              ),
-            ),
-          ),
-        ),
-      );
-
-      await tester.tap(find.byIcon(Icons.expand_more).first);
-      await tester.pumpAndSettle();
-
-      // Custom placeholder '-' should appear, "null" string must not
-      expect(find.text('-'), findsWidgets);
-      expect(find.text('null'), findsNothing);
-    });
   });
 }
