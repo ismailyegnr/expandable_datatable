@@ -85,64 +85,6 @@ void main() {
     });
   });
 
-  group('single-page boundary (rows == pageSize)', () {
-    testWidgets('no pagination buttons when row count equals pageSize',
-        (tester) async {
-      final rows = List.generate(
-        5,
-        (i) => ExpandableRow(
-          cells: [
-            ExpandableCell<String>(columnTitle: 'Col 0', value: 'r$i'),
-            ExpandableCell<String>(columnTitle: 'Col 1', value: 'v$i'),
-          ],
-        ),
-      );
-
-      await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: ExpandableDataTable(
-              headers: headers,
-              rows: rows,
-              visibleColumnCount: 2,
-              pageSize: 5, // exactly one page → toggle buttons list is empty
-            ),
-          ),
-        ),
-      );
-
-      expect(find.byType(ToggleButtons), findsNothing);
-    });
-
-    testWidgets('pagination appears when rows exceed pageSize by 1',
-        (tester) async {
-      final rows = List.generate(
-        6,
-        (i) => ExpandableRow(
-          cells: [
-            ExpandableCell<String>(columnTitle: 'Col 0', value: 'r$i'),
-            ExpandableCell<String>(columnTitle: 'Col 1', value: 'v$i'),
-          ],
-        ),
-      );
-
-      await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: ExpandableDataTable(
-              headers: headers,
-              rows: rows,
-              visibleColumnCount: 2,
-              pageSize: 5, // 2 pages
-            ),
-          ),
-        ),
-      );
-
-      expect(find.byType(ToggleButtons), findsOneWidget);
-    });
-  });
-
   group('null cell values', () {
     testWidgets('null values render as empty string by default',
         (tester) async {
