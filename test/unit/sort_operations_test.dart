@@ -71,6 +71,82 @@ void main() {
 
       expect(indices, [0, 1, 2]);
     });
+
+    test('ASC sorts empty strings before non-empty strings', () {
+      ops.changeSortDirection(col); // NORMAL → ASC
+
+      final emptyRows = _wrap([
+        _row(0, {'name': 'Charlie'}),
+        _row(1, {'name': ''}),
+        _row(2, {'name': 'Alice'}),
+      ]);
+
+      final result = ops.sortAllRows(col, emptyRows);
+      final names = result.map((r) => r.row.cells.first.value).toList();
+
+      expect(names, ['', 'Alice', 'Charlie']);
+    });
+
+    test('DESC sorts empty strings after non-empty strings', () {
+      ops.changeSortDirection(col); // ASC
+      ops.changeSortDirection(col); // DESC
+
+      final emptyRows = _wrap([
+        _row(0, {'name': 'Charlie'}),
+        _row(1, {'name': ''}),
+        _row(2, {'name': 'Alice'}),
+      ]);
+
+      final result = ops.sortAllRows(col, emptyRows);
+      final names = result.map((r) => r.row.cells.first.value).toList();
+
+      expect(names, ['Charlie', 'Alice', '']);
+    });
+
+    test('ASC sorts null before non-null (null treated as empty string)', () {
+      ops.changeSortDirection(col); // ASC
+
+      final nullRows = _wrap([
+        _row(0, {'name': 'Alice'}),
+        _row(1, {'name': null}),
+        _row(2, {'name': 'Bob'}),
+      ]);
+
+      final result = ops.sortAllRows(col, nullRows);
+      expect(
+        result.map((r) => r.row.cells.first.value).toList(),
+        [null, 'Alice', 'Bob'],
+      );
+    });
+
+    test('DESC sorts null after non-null', () {
+      ops.changeSortDirection(col); // ASC
+      ops.changeSortDirection(col); // DESC
+
+      final nullRows = _wrap([
+        _row(0, {'name': 'Alice'}),
+        _row(1, {'name': null}),
+        _row(2, {'name': 'Bob'}),
+      ]);
+
+      final result = ops.sortAllRows(col, nullRows);
+      expect(
+        result.map((r) => r.row.cells.first.value).toList(),
+        ['Bob', 'Alice', null],
+      );
+    });
+
+    test('NORMAL unsort is unaffected by null values', () {
+      final nullRows = _wrap([
+        _row(0, {'name': 'Alice'}),
+        _row(1, {'name': null}),
+        _row(2, {'name': 'Bob'}),
+      ]);
+
+      // NORMAL path only compares index integers → null values are never touched.
+      final result = ops.sortAllRows(col, nullRows);
+      expect(result.map((r) => r.index).toList(), [0, 1, 2]);
+    });
   });
 
   // -------------------------------------------------------------------------
@@ -104,6 +180,39 @@ void main() {
 
       expect(scores, [30, 10, -5]);
     });
+
+    test('ASC sorts null before non-null values', () {
+      ops.changeSortDirection(col); // ASC
+
+      final nullRows = _wrap([
+        _row(0, {'score': 10}),
+        _row(1, {'score': null}),
+        _row(2, {'score': 5}),
+      ]);
+
+      final result = ops.sortAllRows(col, nullRows);
+      expect(
+        result.map((r) => r.row.cells.first.value).toList(),
+        [null, 5, 10],
+      );
+    });
+
+    test('DESC sorts null after non-null values', () {
+      ops.changeSortDirection(col); // ASC
+      ops.changeSortDirection(col); // DESC
+
+      final nullRows = _wrap([
+        _row(0, {'score': 10}),
+        _row(1, {'score': null}),
+        _row(2, {'score': 5}),
+      ]);
+
+      final result = ops.sortAllRows(col, nullRows);
+      expect(
+        result.map((r) => r.row.cells.first.value).toList(),
+        [10, 5, null],
+      );
+    });
   });
 
   group('numeric sort (double)', () {
@@ -122,6 +231,15 @@ void main() {
       expect(
           result.map((r) => r.row.cells.first.value).toList(), [0.2, 1.5, 3.0]);
     });
+
+    test('DESC sorts doubles in reverse order', () {
+      ops.changeSortDirection(col); // ASC
+      ops.changeSortDirection(col); // DESC
+
+      final result = ops.sortAllRows(col, rows);
+      expect(
+          result.map((r) => r.row.cells.first.value).toList(), [3.0, 1.5, 0.2]);
+    });
   });
 
   // -------------------------------------------------------------------------
@@ -137,8 +255,7 @@ void main() {
       _row(2, {'active': true}),
     ]);
 
-    test('ASC places false before true (string comparison: "false" < "true")',
-        () {
+    test('ASC places false before true', () {
       ops.changeSortDirection(col);
 
       final result = ops.sortAllRows(col, rows);
@@ -151,6 +268,39 @@ void main() {
 
       final result = ops.sortAllRows(col, rows);
       expect(result.first.row.cells.first.value, true);
+    });
+
+    test('ASC sorts null before false and true', () {
+      ops.changeSortDirection(col); // ASC
+
+      final nullRows = _wrap([
+        _row(0, {'active': true}),
+        _row(1, {'active': null}),
+        _row(2, {'active': false}),
+      ]);
+
+      final result = ops.sortAllRows(col, nullRows);
+      expect(
+        result.map((r) => r.row.cells.first.value).toList(),
+        [null, false, true],
+      );
+    });
+
+    test('DESC sorts null after false and true', () {
+      ops.changeSortDirection(col); // ASC
+      ops.changeSortDirection(col); // DESC
+
+      final nullRows = _wrap([
+        _row(0, {'active': true}),
+        _row(1, {'active': null}),
+        _row(2, {'active': false}),
+      ]);
+
+      final result = ops.sortAllRows(col, nullRows);
+      expect(
+        result.map((r) => r.row.cells.first.value).toList(),
+        [true, false, null],
+      );
     });
   });
 
