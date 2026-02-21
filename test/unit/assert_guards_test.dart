@@ -71,5 +71,41 @@ void main() {
         throwsAssertionError,
       );
     });
+
+    test('assert fires when pageSize is 0', () {
+      expect(
+        () => ExpandableDataTable(
+          headers: _headers(3),
+          rows: _rows(1, 3),
+          visibleColumnCount: 3,
+          pageSize: 0,
+        ),
+        throwsAssertionError,
+      );
+    });
+
+    test('assert fires when visibleColumnCount is negative', () {
+      expect(
+        () => ExpandableDataTable(
+          headers: _headers(3),
+          rows: _rows(1, 3),
+          visibleColumnCount: -1,
+          pageSize: 10,
+        ),
+        throwsAssertionError,
+      );
+    });
+
+    test('assert fires when pageSize is negative', () {
+      expect(
+        () => ExpandableDataTable(
+          headers: _headers(3),
+          rows: _rows(1, 3),
+          visibleColumnCount: 3,
+          pageSize: -5,
+        ),
+        throwsAssertionError,
+      );
+    });
   });
 }
