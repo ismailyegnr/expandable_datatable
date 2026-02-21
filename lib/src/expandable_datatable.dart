@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 
 import 'constants/constants.dart';
@@ -171,6 +173,7 @@ class ExpandableDataTable extends StatefulWidget {
     this.renderCustomPagination,
     this.renderExpansionContent,
   })  : assert(visibleColumnCount > 0),
+        assert(pageSize > 0),
         assert(
           rows.isNotEmpty ? headers.length == rows.first.cells.length : true,
         ),
@@ -200,6 +203,14 @@ class _ExpandableDataTableState extends State<ExpandableDataTable> {
   int _currentPage = 0;
   int _selectedRow = -1;
 
+  /// Incremented every time all rows should collapse.
+  ///
+  /// Used as part of each tile's [Key] so that Flutter recreates the tile
+  /// widget (and its internal [ExpansibleController]) in the collapsed state
+  /// whenever the epoch changes. This ensures both [multipleExpansion] modes
+  /// collapse rows consistently on page change, sort, or data update.
+  int _expansionEpoch = 0;
+
   int get pageLength =>
       _sortedRowsList.isNotEmpty ? _sortedRowsList[_currentPage].length : 0;
 
@@ -208,7 +219,7 @@ class _ExpandableDataTableState extends State<ExpandableDataTable> {
     super.initState();
 
     _updateTrailingWidth();
-
+    _updateHeaderTitles();
     _composeRowsList(widget.rows, isInit: true);
   }
 
@@ -224,11 +235,14 @@ class _ExpandableDataTableState extends State<ExpandableDataTable> {
       shouldSetState = true;
     }
 
-    // Re-compose the internal row list if the data source (rows), or the pagination
-    // configuration (pageSize) or columns (headers) changes.
+    // Re-compose the internal row list if the data source (rows), pagination
+    // configuration (pageSize), columns (headers), or visible column count changes.
     if (widget.rows != oldWidget.rows ||
         widget.pageSize != oldWidget.pageSize ||
-        widget.headers != oldWidget.headers) {
+        widget.headers != oldWidget.headers ||
+        widget.visibleColumnCount != oldWidget.visibleColumnCount) {
+      _updateHeaderTitles();
+
       // Rebuild internal data structure for pagination
       _composeRowsList(widget.rows, isInit: true);
 
@@ -249,6 +263,13 @@ class _ExpandableDataTableState extends State<ExpandableDataTable> {
     _trailingWidth = widget.isEditable
         ? GeneralConstants.minEditableTrailing
         : GeneralConstants.minNonEditableTrailing;
+  }
+
+  void _updateHeaderTitles() {
+    if (widget.headers.isNotEmpty) {
+      _headerTitles = widget.headers
+          .sublist(0, min(widget.visibleColumnCount, widget.headers.length));
+    }
   }
 
   /// Create or update two dimension sorted rows list
@@ -276,7 +297,12 @@ class _ExpandableDataTableState extends State<ExpandableDataTable> {
     List<CellItem> titleCells,
     List<CellItem> expansionCells,
   ) {
+    final String placeholder =
+        context.expandableTheme.nullValuePlaceholder ?? '';
+
     for (var element in rowData.cells) {
+      final String displayValue = element.value?.toString() ?? placeholder;
+
       if (headerNames.contains(element.columnTitle)) {
         int headerInd = _headerTitles
             .indexWhere((val) => val.columnTitle == element.columnTitle);
@@ -284,7 +310,7 @@ class _ExpandableDataTableState extends State<ExpandableDataTable> {
         titleCells.add(
           CellItem(
             columnName: element.columnTitle,
-            value: element.value,
+            value: displayValue,
             flex: _headerTitles[headerInd].columnFlex,
           ),
         );
@@ -292,7 +318,7 @@ class _ExpandableDataTableState extends State<ExpandableDataTable> {
         expansionCells.add(
           CellItem(
             columnName: element.columnTitle,
-            value: element.value,
+            value: displayValue,
           ),
         );
       }
@@ -330,9 +356,8 @@ class _ExpandableDataTableState extends State<ExpandableDataTable> {
   }
 
   void _shrinkAllRows() {
-    if (_selectedRow != -1) {
-      _selectedRow = -1;
-    }
+    _selectedRow = -1;
+    _expansionEpoch++;
   }
 
   /// Close expanded rows while page is changing.
@@ -449,6 +474,7 @@ class _ExpandableDataTableState extends State<ExpandableDataTable> {
     }
 
     return custom_expansible.ExpansionTile(
+      key: ValueKey('$_expansionEpoch-$index'),
       showTrailingIcon: expansionCells.isNotEmpty,
       collapsedBackgroundColor: currentRowColor,
       backgroundColor:
@@ -463,10 +489,6 @@ class _ExpandableDataTableState extends State<ExpandableDataTable> {
   }
 
   Widget buildHeader() {
-    if (widget.headers.isNotEmpty) {
-      _headerTitles = widget.headers.sublist(0, widget.visibleColumnCount);
-    }
-
     return TableHeader(
       headerRow: _headerTitles,
       currentSort: _sortOperations.sortInformation,

@@ -178,6 +178,25 @@ class ExpandableThemeData {
   /// Height of the rows
   final double? rowHeight;
 
+  /// Padding for the children content inside an expanded row.
+  ///
+  /// If null, defaults to `EdgeInsets.zero`.
+  final EdgeInsetsGeometry? expansionChildrenPadding;
+
+  /// Padding for individual cells in the expansion content container.
+  ///
+  /// If null, defaults to `EdgeInsets.symmetric(horizontal: 0.02 * screenHeight, vertical: 0.01 * screenHeight)`.
+  final EdgeInsetsGeometry? expansionCellPadding;
+
+  /// Placeholder string to display when a cell's value is null.
+  ///
+  /// Defaults to an empty string ("") if not provided.
+  final String? nullValuePlaceholder;
+
+  /// --------------------------------------------------------------------------
+  /// Pagination properties
+  /// --------------------------------------------------------------------------
+
   /// Size of the default pagination widget.
   ///
   /// Default size is 48.0.
@@ -203,16 +222,6 @@ class ExpandableThemeData {
 
   /// The width of the border applied to the page number buttons.
   final double? paginationBorderWidth;
-
-  /// Padding for the children content inside an expanded row.
-  ///
-  /// If null, defaults to `EdgeInsets.zero`.
-  final EdgeInsetsGeometry? expansionChildrenPadding;
-
-  /// Padding for individual cells in the expansion content container.
-  ///
-  /// If null, defaults to `EdgeInsets.symmetric(horizontal: 0.02 * screenHeight, vertical: 0.01 * screenHeight)`.
-  final EdgeInsetsGeometry? expansionCellPadding;
 
   const ExpandableThemeData({
     this.contentPadding,
@@ -240,6 +249,9 @@ class ExpandableThemeData {
     this.iconColor,
     this.expandedIconColor,
     this.expansionAnimationStyle,
+    this.expansionChildrenPadding,
+    this.expansionCellPadding,
+    this.nullValuePlaceholder,
     this.paginationSize,
     this.paginationTextStyle,
     this.paginationSelectedTextColor,
@@ -248,7 +260,5 @@ class ExpandableThemeData {
     this.paginationBorderColor,
     this.paginationBorderRadius,
     this.paginationBorderWidth,
-    this.expansionChildrenPadding,
-    this.expansionCellPadding,
   });
 }
