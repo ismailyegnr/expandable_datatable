@@ -173,6 +173,7 @@ class ExpandableDataTable extends StatefulWidget {
     this.renderCustomPagination,
     this.renderExpansionContent,
   })  : assert(visibleColumnCount > 0),
+        assert(pageSize > 0),
         assert(
           rows.isNotEmpty ? headers.length == rows.first.cells.length : true,
         ),
