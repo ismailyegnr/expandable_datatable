@@ -204,4 +204,46 @@ void main() {
       expect(find.byIcon(Icons.expand_more), findsNothing);
     });
   });
+
+  group('visibleColumnCount > headers.length (clamped to headers.length)', () {
+    testWidgets('no expansion icon when visibleColumnCount exceeds header count',
+        (tester) async {
+      // headers has 3 columns but visibleColumnCount is 99
+      // → clamped to 3 → all columns are visible → no expansion icon
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: ExpandableDataTable(
+              headers: _headers(3),
+              rows: _rows(2, 3),
+              visibleColumnCount: 99,
+              pageSize: 10,
+            ),
+          ),
+        ),
+      );
+
+      expect(find.byIcon(Icons.expand_more), findsNothing);
+    });
+
+    testWidgets('all header titles are rendered when visibleColumnCount exceeds header count',
+        (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: ExpandableDataTable(
+              headers: _headers(3),
+              rows: _rows(1, 3),
+              visibleColumnCount: 99,
+              pageSize: 10,
+            ),
+          ),
+        ),
+      );
+
+      expect(find.text('Col 0'), findsWidgets);
+      expect(find.text('Col 1'), findsWidgets);
+      expect(find.text('Col 2'), findsWidgets);
+    });
+  });
 }
