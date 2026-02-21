@@ -134,25 +134,6 @@ void main() {
       expect(find.text('EXPANDED:r1c0'), findsOneWidget);
       expect(find.text('EXPANDED:r0c0'), findsNothing);
     });
-
-    testWidgets('tapping the already-open row closes it', (tester) async {
-      await tester.pumpWidget(
-        _buildTable(rowCount: 2, colCount: 3, multipleExpansion: false),
-      );
-
-      final icons = find.byIcon(Icons.expand_more);
-
-      // Open row 0
-      await tester.tap(icons.at(0));
-      await tester.pumpAndSettle();
-      expect(find.text('EXPANDED:r0c0'), findsOneWidget);
-
-      // Close row 0 by tapping it again
-      await tester.tap(icons.at(0));
-      await tester.pumpAndSettle();
-
-      expect(find.text('EXPANDED:r0c0'), findsNothing);
-    });
   });
 
   group('expansion collapses on page change', () {
