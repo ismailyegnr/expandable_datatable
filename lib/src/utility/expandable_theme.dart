@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
 
-import '../../expandable_datatable.dart';
-
 class ExpandableTheme extends InheritedWidget {
   final ExpandableThemeData data;
 
   const ExpandableTheme({
     super.key,
     required this.data,
-    required ExpandableDataTable super.child,
+    required super.child,
   });
 
   static ExpandableThemeData of(BuildContext context) {
@@ -194,6 +192,42 @@ class ExpandableThemeData {
   final String? nullValuePlaceholder;
 
   /// --------------------------------------------------------------------------
+  /// Edit dialog properties
+  /// --------------------------------------------------------------------------
+
+  /// Text style of the edit dialog title.
+  ///
+  /// If null, the [AlertDialog] default title style is used.
+  final TextStyle? editDialogTitleStyle;
+
+  /// Background color of the edit dialog.
+  ///
+  /// If null, the theme's [DialogTheme.backgroundColor] is used.
+  final Color? editDialogBackgroundColor;
+
+  /// Shape of the edit dialog.
+  ///
+  /// If null, the theme's [DialogTheme.shape] is used.
+  final ShapeBorder? editDialogShape;
+
+  /// Text style of the SAVE button in the edit dialog.
+  ///
+  /// If null, defaults to `TextStyle(color: Colors.cyan, fontWeight: FontWeight.bold)`.
+  final TextStyle? editSaveButtonTextStyle;
+
+  /// Text style of the CANCEL button in the edit dialog.
+  ///
+  /// If null, defaults to `TextStyle(color: Colors.cyan)`.
+  final TextStyle? editCancelButtonTextStyle;
+
+  /// Base [InputDecoration] applied to every text field in the edit dialog.
+  ///
+  /// Per-column [ExpandableColumn.hintText] is merged on top via
+  /// [InputDecoration.copyWith], so it always takes precedence over any
+  /// [hintText] set here.
+  final InputDecoration? editInputDecoration;
+
+  /// --------------------------------------------------------------------------
   /// Pagination properties
   /// --------------------------------------------------------------------------
 
@@ -252,6 +286,12 @@ class ExpandableThemeData {
     this.expansionChildrenPadding,
     this.expansionCellPadding,
     this.nullValuePlaceholder,
+    this.editDialogTitleStyle,
+    this.editDialogBackgroundColor,
+    this.editDialogShape,
+    this.editSaveButtonTextStyle,
+    this.editCancelButtonTextStyle,
+    this.editInputDecoration,
     this.paginationSize,
     this.paginationTextStyle,
     this.paginationSelectedTextColor,

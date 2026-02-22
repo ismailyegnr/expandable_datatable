@@ -3,17 +3,39 @@ import 'package:flutter/services.dart';
 
 import '../constants/constants.dart';
 import '../exception/no_support_exception.dart';
+import '../extension/context_extension.dart';
 import '../extension/string_extension.dart';
+import '../model/expandable_column.dart';
 import '../model/expandable_row.dart';
 
 class EditDialog extends StatefulWidget {
   final ExpandableRow row;
+  final List<ExpandableColumn> columns;
   final Function(ExpandableRow newRow) onSuccess;
+
+  /// Title displayed at the top of the dialog.
+  ///
+  /// Defaults to `'Edit Details'`.
+  final String title;
+
+  /// Label for the save action button.
+  ///
+  /// Defaults to `'SAVE'`.
+  final String saveLabel;
+
+  /// Label for the cancel action button.
+  ///
+  /// Defaults to `'CANCEL'`.
+  final String cancelLabel;
 
   const EditDialog({
     super.key,
     required this.row,
+    required this.columns,
     required this.onSuccess,
+    this.title = 'Edit Details',
+    this.saveLabel = 'SAVE',
+    this.cancelLabel = 'CANCEL',
   });
 
   @override
@@ -53,12 +75,34 @@ class _EditDialogState extends State<EditDialog> {
     super.dispose();
   }
 
+  ExpandableColumn? _columnFor(ExpandableCell<dynamic> cell) {
+    try {
+      return widget.columns
+          .firstWhere((col) => col.columnTitle == cell.columnTitle);
+    } catch (_) {
+      return null;
+    }
+  }
+
   void _processCellUpdate() {
     if (_formKey.currentState!.validate()) {
       List<ExpandableCell> resultCellList = [];
 
       for (int i = 0; i < rowCells.length; i++) {
-        ExpandableCell oldCell = rowCells[i];
+        final ExpandableCell oldCell = rowCells[i];
+        final ExpandableColumn? col = _columnFor(oldCell);
+        final bool editable = col?.isEditable ?? true;
+
+        if (!editable) {
+          // Preserve the original cell value unchanged.
+          resultCellList.add(
+            ExpandableCell(
+              columnTitle: oldCell.columnTitle,
+              value: oldCell.value,
+            ),
+          );
+          continue;
+        }
 
         if (oldCell.value is String) {
           resultCellList.add(
@@ -93,11 +137,7 @@ class _EditDialogState extends State<EditDialog> {
         }
       }
 
-      ExpandableRow result = ExpandableRow(
-        cells: resultCellList,
-      );
-
-      widget.onSuccess(result);
+      widget.onSuccess(ExpandableRow(cells: resultCellList));
 
       Navigator.pop(context);
     }
@@ -105,56 +145,68 @@ class _EditDialogState extends State<EditDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = context.expandableTheme;
+
     return AlertDialog(
       scrollable: true,
-      title: const Text('Edit Details'),
-      actions: buildActionButtons(),
+      backgroundColor: theme.editDialogBackgroundColor,
+      shape: theme.editDialogShape,
+      title: Text(
+        widget.title,
+        style: theme.editDialogTitleStyle,
+      ),
+      actions: _buildActionButtons(theme),
       content: Scrollbar(
         child: SingleChildScrollView(
           child: Form(
             key: _formKey,
-            child: buildAlertDialogContent(),
+            child: _buildContent(theme),
           ),
         ),
       ),
     );
   }
 
-  List<Widget> buildActionButtons() {
+  List<Widget> _buildActionButtons(dynamic theme) {
     return <Widget>[
       TextButton(
-        onPressed: () => _processCellUpdate(),
-        child: const Text(
-          'SAVE',
-          style: TextStyle(color: Colors.cyan),
+        onPressed: _processCellUpdate,
+        child: Text(
+          widget.saveLabel,
+          style: theme.editSaveButtonTextStyle ??
+              const TextStyle(color: Colors.cyan, fontWeight: FontWeight.bold),
         ),
       ),
       TextButton(
         onPressed: () => Navigator.pop(context),
-        child: const Text(
-          'CANCEL',
-          style: TextStyle(color: Colors.cyan),
+        child: Text(
+          widget.cancelLabel,
+          style: theme.editCancelButtonTextStyle ??
+              const TextStyle(color: Colors.cyan),
         ),
       ),
     ];
   }
 
-  Widget buildAlertDialogContent() {
-    List<Widget> widgets = [];
+  Widget _buildContent(dynamic theme) {
+    final List<Widget> widgets = [];
 
     for (int i = 0; i < rowCells.length; i++) {
+      final ExpandableColumn? col = _columnFor(rowCells[i]);
+
       widgets.add(
         EditRow(
           controller: controllers[i],
           columnName: rowCells[i].columnTitle,
           valueType: rowCells[i].value.runtimeType,
+          isEditable: col?.isEditable ?? true,
+          hintText: col?.hintText,
+          baseDecoration: theme.editInputDecoration,
         ),
       );
     }
 
-    return Column(
-      children: widgets,
-    );
+    return Column(children: widgets);
   }
 }
 
@@ -163,11 +215,25 @@ class EditRow extends StatefulWidget {
   final String columnName;
   final Type valueType;
 
-  const EditRow(
-      {super.key,
-      required this.controller,
-      required this.columnName,
-      required this.valueType});
+  /// Whether this field is interactive. Disabled fields show the current value
+  /// but cannot be modified.
+  final bool isEditable;
+
+  /// Optional hint text shown inside the input field.
+  final String? hintText;
+
+  /// Base [InputDecoration] from the theme, merged with [hintText].
+  final InputDecoration? baseDecoration;
+
+  const EditRow({
+    super.key,
+    required this.controller,
+    required this.columnName,
+    required this.valueType,
+    this.isEditable = true,
+    this.hintText,
+    this.baseDecoration,
+  });
 
   @override
   State<EditRow> createState() => _EditRowState();
@@ -187,17 +253,22 @@ class _EditRowState extends State<EditRow> {
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 3),
             child: widget.valueType == bool
-                ? buildBoolInput(widget.controller)
-                : buildTextInput(
-                    widget.controller,
-                  ),
+                ? _buildBoolInput(widget.controller)
+                : _buildTextInput(widget.controller),
           ),
-        )
+        ),
       ],
     );
   }
 
-  Widget buildTextInput(TextEditingController controller) {
+  InputDecoration _resolvedDecoration() {
+    final base = widget.baseDecoration ?? const InputDecoration();
+    return widget.hintText != null
+        ? base.copyWith(hintText: widget.hintText)
+        : base;
+  }
+
+  Widget _buildTextInput(TextEditingController controller) {
     List<TextInputFormatter>? formatters;
     if (widget.valueType == int) {
       formatters = [FilteringTextInputFormatter.digitsOnly];
@@ -212,29 +283,31 @@ class _EditRowState extends State<EditRow> {
     return TextFormField(
       keyboardType: formatters != null ? TextInputType.number : null,
       inputFormatters: formatters,
-      enabled: widget.columnName != "ID",
+      enabled: widget.isEditable,
+      decoration: _resolvedDecoration(),
       validator: (String? value) {
-        if (value!.isEmpty) {
-          return 'Field must not be empty';
-        }
+        if (!widget.isEditable) return null;
+        if (value!.isEmpty) return 'Field must not be empty';
         return null;
       },
       controller: controller,
     );
   }
 
-  Widget buildBoolInput(TextEditingController controller) {
+  Widget _buildBoolInput(TextEditingController controller) {
     String dropdownVal = controller.text;
 
     return DropdownButtonHideUnderline(
       child: DropdownButton<String>(
         value: dropdownVal,
-        onChanged: (String? newValue) {
-          setState(() {
-            controller.text = newValue!;
-            dropdownVal = controller.text;
-          });
-        },
+        onChanged: widget.isEditable
+            ? (String? newValue) {
+                setState(() {
+                  controller.text = newValue!;
+                  dropdownVal = controller.text;
+                });
+              }
+            : null,
         items: <String>['true', 'false'].map<DropdownMenuItem<String>>(
           (String value) {
             return DropdownMenuItem<String>(

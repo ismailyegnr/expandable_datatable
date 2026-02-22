@@ -80,8 +80,16 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void createDataSource() {
     headers = [
-      ExpandableColumn<int>(columnTitle: "ID", columnFlex: 1),
-      ExpandableColumn<String>(columnTitle: "First name", columnFlex: 2),
+      ExpandableColumn<int>(
+        columnTitle: "ID",
+        columnFlex: 1,
+        isEditable: false,
+      ),
+      ExpandableColumn<String>(
+        columnTitle: "First name",
+        columnFlex: 2,
+        hintText: "Enter first name",
+      ),
       ExpandableColumn<String>(columnTitle: "Last name", columnFlex: 2),
       ExpandableColumn<String>(columnTitle: "Maiden name", columnFlex: 2),
       ExpandableColumn<int>(columnTitle: "Age", columnFlex: 1),
@@ -136,7 +144,6 @@ class _MyHomePageState extends State<MyHomePage> {
                       evenRowColor: const Color(0xFFFFFFFF),
                       oddRowColor: Colors.amber[200],
                       expandedBackgroundColor: const Color(0xe66c59cf),
-                      paginationSize: 48,
                       headerBorder: const BorderSide(
                         color: Colors.black,
                         width: 1,
@@ -147,46 +154,53 @@ class _MyHomePageState extends State<MyHomePage> {
                       expandedShape: const RoundedRectangleBorder(
                         side: BorderSide(color: Colors.amber),
                       ),
+
+                      // Pagination theme
+                      paginationSize: 48,
                       paginationSelectedFillColor: const Color(0xFF6c59cf),
                       paginationSelectedTextColor: Colors.white,
+
+                      // Edit dialog theme
+                      editDialogTitleStyle: const TextStyle(
+                        color: Color(0xe66c59cf),
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      editDialogShape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      editCancelButtonTextStyle: const TextStyle(
+                        color: Colors.red,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      editInputDecoration: InputDecoration(
+                        border: OutlineInputBorder(),
+                      ),
                     ),
                     child: ExpandableDataTable(
                       headers: headers,
                       rows: rows,
                       isEditable: true,
                       pageSize: 8,
+                      visibleColumnCount: visibleCount,
+
+                      // Optional parameters for the default edit dialog
+                      editDialogTitle: 'Edit User',
+                      editSaveLabel: 'Save User',
+                      editCancelLabel: 'Cancel',
+
+                      // Callbacks
                       onRowChanged: (newRow, originalIndex) {
-                        print(newRow.cells[01].value);
+                        print(newRow.cells[1].value);
                       },
                       onPageChanged: (page) {
                         print(page);
                       },
-                      renderEditDialog: (row, onSuccess) =>
-                          _buildEditDialog(row, onSuccess),
-                      visibleColumnCount: visibleCount,
                     ),
                   );
                 },
               )
             : const Center(child: CircularProgressIndicator()),
-      ),
-    );
-  }
-
-  Widget _buildEditDialog(
-    ExpandableRow row,
-    Function(ExpandableRow) onSuccess,
-  ) {
-    return AlertDialog(
-      title: SizedBox(
-        height: 300,
-        child: TextButton(
-          child: const Text("Change name"),
-          onPressed: () {
-            row.cells[1].value = "x3";
-            onSuccess(row);
-          },
-        ),
       ),
     );
   }
