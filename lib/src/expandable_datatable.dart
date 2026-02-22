@@ -93,6 +93,11 @@ class ExpandableDataTable extends StatefulWidget {
   /// Defaults to `'CANCEL'`.
   final String? editCancelLabel;
 
+  /// Placeholder string to display when a cell's value is null.
+  ///
+  /// Defaults to an empty string ("") if not provided.
+  final String nullValuePlaceholder;
+
   /// Renders a custom edit dialog widget with two parameters.
   ///
   /// First parameter, row, gives the current selected row information.
@@ -188,6 +193,7 @@ class ExpandableDataTable extends StatefulWidget {
     this.editDialogTitle,
     this.editSaveLabel,
     this.editCancelLabel,
+    this.nullValuePlaceholder = '',
     this.renderEditDialog,
     this.renderCustomPagination,
     this.renderExpansionContent,
@@ -316,8 +322,7 @@ class _ExpandableDataTableState extends State<ExpandableDataTable> {
     List<CellItem> titleCells,
     List<CellItem> expansionCells,
   ) {
-    final String placeholder =
-        context.expandableTheme.nullValuePlaceholder ?? '';
+    final String placeholder = widget.nullValuePlaceholder;
 
     for (var element in rowData.cells) {
       final String displayValue = element.value?.toString() ?? placeholder;

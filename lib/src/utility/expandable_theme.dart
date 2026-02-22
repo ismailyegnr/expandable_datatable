@@ -186,11 +186,6 @@ class ExpandableThemeData {
   /// If null, defaults to `EdgeInsets.symmetric(horizontal: 0.02 * screenHeight, vertical: 0.01 * screenHeight)`.
   final EdgeInsetsGeometry? expansionCellPadding;
 
-  /// Placeholder string to display when a cell's value is null.
-  ///
-  /// Defaults to an empty string ("") if not provided.
-  final String? nullValuePlaceholder;
-
   /// --------------------------------------------------------------------------
   /// Edit dialog properties
   /// --------------------------------------------------------------------------
@@ -285,7 +280,6 @@ class ExpandableThemeData {
     this.expansionAnimationStyle,
     this.expansionChildrenPadding,
     this.expansionCellPadding,
-    this.nullValuePlaceholder,
     this.editDialogTitleStyle,
     this.editDialogBackgroundColor,
     this.editDialogShape,
