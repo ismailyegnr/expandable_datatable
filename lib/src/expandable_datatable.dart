@@ -8,6 +8,7 @@ import 'model/cell_item.dart';
 import 'model/expandable_column.dart';
 import 'model/expandable_row.dart';
 import 'model/sortable_row.dart';
+import 'utility/expandable_theme.dart';
 import 'utility/sort_operations.dart';
 import 'widget/custom_expansible.dart' as custom_expansible;
 import 'widget/edit_dialog.dart';
@@ -76,6 +77,26 @@ class ExpandableDataTable extends StatefulWidget {
   ///
   /// It defaults to 10.
   final int pageSize;
+
+  /// Title text shown at the top of the default [EditDialog].
+  ///
+  /// Defaults to `'Edit Details'`.
+  final String? editDialogTitle;
+
+  /// Label for the save action button in the default [EditDialog].
+  ///
+  /// Defaults to `'SAVE'`.
+  final String? editSaveLabel;
+
+  /// Label for the cancel action button in the default [EditDialog].
+  ///
+  /// Defaults to `'CANCEL'`.
+  final String? editCancelLabel;
+
+  /// Placeholder string to display when a cell's value is null.
+  ///
+  /// Defaults to an empty string ("") if not provided.
+  final String nullValuePlaceholder;
 
   /// Renders a custom edit dialog widget with two parameters.
   ///
@@ -169,6 +190,10 @@ class ExpandableDataTable extends StatefulWidget {
     this.isEditable = false,
     this.onRowChanged,
     this.onPageChanged,
+    this.editDialogTitle,
+    this.editSaveLabel,
+    this.editCancelLabel,
+    this.nullValuePlaceholder = '',
     this.renderEditDialog,
     this.renderCustomPagination,
     this.renderExpansionContent,
@@ -297,8 +322,7 @@ class _ExpandableDataTableState extends State<ExpandableDataTable> {
     List<CellItem> titleCells,
     List<CellItem> expansionCells,
   ) {
-    final String placeholder =
-        context.expandableTheme.nullValuePlaceholder ?? '';
+    final String placeholder = widget.nullValuePlaceholder;
 
     for (var element in rowData.cells) {
       final String displayValue = element.value?.toString() ?? placeholder;
@@ -534,17 +558,30 @@ class _ExpandableDataTableState extends State<ExpandableDataTable> {
   }
 
   Future<dynamic> showEditDialog(BuildContext context, int rowInd) {
+    // Capture the theme from the current (state) context before the dialog
+    // opens, so it is accessible inside the dialog's overlay context.
+    final themeData = context.expandableTheme;
+    final row = _sortedRowsList[_currentPage][rowInd].row;
+
     return showDialog(
       context: context,
-      builder: (context) => widget.renderEditDialog != null
-          ? widget.renderEditDialog!(
-              _sortedRowsList[_currentPage][rowInd].row,
-              (newRow) => _updateRow(newRow, rowInd),
-            )
-          : EditDialog(
-              row: _sortedRowsList[_currentPage][rowInd].row,
-              onSuccess: (newRow) => _updateRow(newRow, rowInd),
-            ),
+      builder: (dialogContext) {
+        final content = widget.renderEditDialog != null
+            ? widget.renderEditDialog!(
+                row,
+                (newRow) => _updateRow(newRow, rowInd),
+              )
+            : EditDialog(
+                row: row,
+                columns: widget.headers,
+                onSuccess: (newRow) => _updateRow(newRow, rowInd),
+                title: widget.editDialogTitle ?? 'Edit Details',
+                saveLabel: widget.editSaveLabel ?? 'SAVE',
+                cancelLabel: widget.editCancelLabel ?? 'CANCEL',
+              );
+
+        return ExpandableTheme(data: themeData, child: content);
+      },
     );
   }
 }

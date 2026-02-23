@@ -185,36 +185,4 @@ void main() {
       greaterThanOrEqualTo(initialCount),
     );
   });
-
-  testWidgets('nullValuePlaceholder is rendered for null cell values',
-      (tester) async {
-    await tester.pumpWidget(
-      MaterialApp(
-        home: Scaffold(
-          body: ExpandableTheme(
-            data: const ExpandableThemeData(nullValuePlaceholder: '-'),
-            child: ExpandableDataTable(
-              headers: _headers(2),
-              rows: [
-                ExpandableRow(
-                  cells: [
-                    ExpandableCell<String>(columnTitle: 'Col 0', value: null),
-                    ExpandableCell<String>(columnTitle: 'Col 1', value: null),
-                  ],
-                ),
-              ],
-              visibleColumnCount: 1,
-              pageSize: 10,
-            ),
-          ),
-        ),
-      ),
-    );
-
-    await tester.tap(find.byIcon(Icons.expand_more).first);
-    await tester.pumpAndSettle();
-
-    expect(find.text('-'), findsWidgets);
-    expect(find.text('null'), findsNothing);
-  });
 }

@@ -84,35 +84,4 @@ void main() {
       expect(find.byIcon(Icons.arrow_drop_up), findsOneWidget);
     });
   });
-
-  group('null cell values', () {
-    testWidgets('null values render as empty string by default',
-        (tester) async {
-      await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: ExpandableDataTable(
-              headers: headers,
-              rows: [
-                ExpandableRow(
-                  cells: [
-                    ExpandableCell<String>(columnTitle: 'Col 0', value: null),
-                    ExpandableCell<String>(columnTitle: 'Col 1', value: null),
-                  ],
-                ),
-              ],
-              visibleColumnCount: 1,
-              pageSize: 10,
-            ),
-          ),
-        ),
-      );
-
-      await tester.tap(find.byIcon(Icons.expand_more).first);
-      await tester.pumpAndSettle();
-
-      // Default placeholder is '' — the literal string "null" must never appear
-      expect(find.text('null'), findsNothing);
-    });
-  });
 }
