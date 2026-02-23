@@ -1,237 +1,484 @@
-# ExpandableDataTable
+# expandable_datatable
 
-ExpandableDataTable is a Flutter library for dealing with displaying and editing data in tabular view.
+[![pub.dev](https://img.shields.io/pub/v/expandable_datatable.svg)](https://pub.dev/packages/expandable_datatable)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Flutter](https://img.shields.io/badge/platform-Flutter-blue.svg)](https://flutter.dev)
 
-## Features
+A Flutter package for displaying and editing tabular data with expandable rows. Overflow columns collapse into a tappable expansion panel, keeping the table clean on any screen size.
 
-- Row sorting
-- Flexible column sizes
-- Expandable rows
-- Row pagination
-- Editable rows
-- Customizable edit dialogs
-- Customizable pagination widget
-- Customizable expansion content
-- Styling rows and header columns
+---
 
-## Architecture Overview
+## Table of Contents
 
-ExpandableDataTable provides a composable API with two main configuration layers:
+1. [What it does](#what-it-does)
+2. [Why it's useful — Features](#why-its-useful--features)
+3. [Core API (Start Here)](#core-api-start-here)
+4. [Getting started](#getting-started)
+5. [Quick example](#quick-example)
+6. [Theming with `ExpandableTheme`](#theming-with-expandabletheme)
+7. [Row expansion](#row-expansion)
+8. [Editing](#editing)
+9. [API reference](#api-reference)
+10. [Help & support](#help--support)
+11. [Contributing](#contributing)
+12. [License](#license)
 
-1. **ExpandableDataTable** - Core functionality for data display, sorting, pagination, and editing
-2. **ExpandableThemeData** - Centralized styling and appearance customization
+---
 
-Simply wrap your `ExpandableDataTable` with `ExpandableTheme` to apply consistent styling across your table and its components.
+## What it does
 
-<br />
+`expandable_datatable` renders a data table where you control how many columns are **visible**. Columns that exceed `visibleColumnCount` are hidden from the row and instead displayed inside a collapsible expansion panel. This lets you show a clean, narrow table on phones while surfacing all data on demand — without writing custom layout code.
 
-**ExpandableDataTable Parameters:**
+## Why it's useful — Features
 
-| Name                   | Description                                                              |
-| ---------------------- | ------------------------------------------------------------------------ |
-| headers                | Header list of data columns                                              |
-| rows                   | List of the data rows                                                    |
-| pageSize               | Number of rows to be used on a single page                               |
-| visibleColumnCount     | Number of columns to show in the headers                                 |
-| multipleExpansion      | Flag indicating that multiple expansions are enabled for rows            |
-| isEditable             | Flag indicating whether the rows are editable                            |
-| onRowChanged           | The callback that is called when a row is changed with edit dialog       |
-| onPageChanged          | The callback that is called when the page changed with pagination widget |
-| renderEditDialog       | Render function that builds a custom edit dialog widget                  |
-| renderCustomPagination | Render function that builds a custom pagination widget                   |
-| renderExpansionContent | Render function that builds custom expansion container for all rows      |
+- **Expandable rows** — hidden columns fold into a tappable expansion panel per row
+- **Responsive column count** — drive `visibleColumnCount` from `LayoutBuilder` to adapt automatically to screen width
+- **Column sorting** — tap any header to toggle ascending / descending sort
+- **Pagination** — built-in page controls, fully replaceable with a custom widget
+- **Editable rows** — built-in edit dialog pre-filled from cell values; or supply your own via `renderEditDialog`
+- **Per-column edit guard** — mark individual `ExpandableColumn`s as `isEditable: false` to make them read-only inside the dialog
+- **Custom expansion content** — replace the default expansion panel body via `renderExpansionContent`
+- **Multiple or single row expansion** — control via `multipleExpansion`
+- **Comprehensive theming** — colors, text styles, borders, shapes, icons, animation and more via `ExpandableTheme` / `ExpandableThemeData`
 
-<br />
+## Screenshots
 
-**ExpandableThemeData Parameters:**
+| Sorting                             | Expansion                               |
+| ----------------------------------- | --------------------------------------- |
+| ![Sorting](screenshots/sorting.png) | ![Expansion](screenshots/expansion.png) |
 
-The `ExpandableThemeData` provides comprehensive styling and customization options organized into logical categories:
+| Editing                             | Styling                             |
+| ----------------------------------- | ----------------------------------- |
+| ![Editing](screenshots/editing.png) | ![Styling](screenshots/styling.png) |
 
-##### Text & Content Styling
+---
 
-| Name               | Description                                     |
-| ------------------ | ----------------------------------------------- |
-| headerTextStyle    | Text style of header row                        |
-| rowTextStyle       | Text style of all rows                          |
-| expandedTextStyle  | Text style of expansion content                 |
-| headerTextMaxLines | Maximum number of lines for header text to span |
-| rowTextMaxLines    | Maximum number of lines for row text to span    |
-| rowTextOverflow    | Visual overflow of the row's cell text          |
+## Core API (Start Here)
 
-##### Dimensions
+> **TL;DR** — place an `ExpandableDataTable(...)` widget in your tree, wrap it in `ExpandableTheme(data: ExpandableThemeData(...), child: ...)` to style it.
 
-| Name         | Description                 |
-| ------------ | --------------------------- |
-| rowHeight    | Height of the rows          |
-| headerHeight | Height of the header widget |
+### What is `ExpandableDataTable`?
 
-##### Spacing & Padding
+`ExpandableDataTable` is the **main widget** of this library. It renders the full table UI including the header row, data rows, expansion panels, sort indicators, pagination, and (optionally) the edit dialog. Everything else in the library — `ExpandableColumn`, `ExpandableRow`, `ExpandableCell`, `ExpandableTheme` — exists to configure and feed data into this widget.
 
-| Name                     | Description                                                                                                                     |
-| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------- |
-| contentPadding           | Padding for all header and data rows                                                                                            |
-| expansionChildrenPadding | Padding for the children content inside an expanded row. If null, defaults to `EdgeInsets.zero`                                 |
-| expansionCellPadding     | Padding for individual cells in the expansion content container. If null, defaults to responsive padding based on screen height |
+### When should I use it?
 
-##### Row Appearance
+Use `ExpandableDataTable` whenever you need a data table that:
 
-| Name                    | Description                                                              |
-| ----------------------- | ------------------------------------------------------------------------ |
-| rowColor                | Background color of rows                                                 |
-| evenRowColor            | Background color of the even indexed rows                                |
-| oddRowColor             | Background color of the odd indexed rows                                 |
-| shape                   | The rows' border shape when the expandable content is collapsed          |
-| expandedShape           | The rows' border shape when the expandable content is expanded           |
-| expandedBackgroundColor | Background color applied to a row when its expandable content is visible |
+- has more columns than fit on the current screen, and
+- you want the extra columns to be accessible without horizontal scrolling.
 
-##### Header Styling
+### Key properties of `ExpandableDataTable`
 
-| Name                | Description                         |
-| ------------------- | ----------------------------------- |
-| headerColor         | Background color of header row      |
-| headerBorder        | Border style of header row          |
-| headerSortIconColor | Color of the header sort arrow icon |
+| Property                          | Type                                                                          | Default          | What it controls                                                                                                                                 |
+| --------------------------------- | ----------------------------------------------------------------------------- | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `headers` _(required)_            | `List<ExpandableColumn>`                                                      | —                | Column definitions (title, flex, editability). Must align with `rows[i].cells`.                                                                  |
+| `rows` _(required)_               | `List<ExpandableRow>`                                                         | —                | The data. Each `ExpandableRow` holds one `ExpandableCell` per header.                                                                            |
+| `visibleColumnCount` _(required)_ | `int`                                                                         | —                | How many columns are shown in the row; the rest go into the expansion panel. Must be `> 0`.                                                      |
+| `pageSize`                        | `int`                                                                         | `10`             | Rows per page. Must be `> 0`.                                                                                                                    |
+| `multipleExpansion`               | `bool`                                                                        | `true`           | `true` = multiple rows can be open at once; `false` = opening one closes others.                                                                 |
+| `isEditable`                      | `bool`                                                                        | `false`          | Shows an edit icon on each row. Requires `onRowChanged` to be provided.                                                                          |
+| `onRowChanged`                    | `void Function(ExpandableRow newRow, int originalIndex)?`                     | `null`           | Called when the user saves an edit. `originalIndex` is the row's position in the `rows` list you provided. Required when `isEditable` is `true`. |
+| `onPageChanged`                   | `void Function(int page)?`                                                    | `null`           | Called whenever the current page changes.                                                                                                        |
+| `editDialogTitle`                 | `String?`                                                                     | `'Edit Details'` | Title text of the built-in edit dialog.                                                                                                          |
+| `editSaveLabel`                   | `String?`                                                                     | `'SAVE'`         | Label of the save button in the built-in edit dialog.                                                                                            |
+| `editCancelLabel`                 | `String?`                                                                     | `'CANCEL'`       | Label of the cancel button in the built-in edit dialog.                                                                                          |
+| `nullValuePlaceholder`            | `String`                                                                      | `''`             | Text shown when a cell's value is `null`.                                                                                                        |
+| `renderEditDialog`                | `Widget Function(ExpandableRow row, void Function(ExpandableRow) onSuccess)?` | `null`           | Replaces the built-in edit dialog with a custom widget. Call `onSuccess(newRow)` to commit.                                                      |
+| `renderCustomPagination`          | `Widget Function(int count, int page, void Function(int) onChange)?`          | `null`           | Replaces the built-in pagination widget.                                                                                                         |
+| `renderExpansionContent`          | `Widget Function(ExpandableRow row)?`                                         | `null`           | Replaces the default expansion panel content for each row.                                                                                       |
 
-##### Icons & Visual Elements
+> More properties and full documentation: [pub.dev API reference](https://pub.dev/documentation/expandable_datatable/latest/).
 
-| Name              | Description                                             |
-| ----------------- | ------------------------------------------------------- |
-| editIcon          | Icon image showing editing feature                      |
-| expansionIcon     | Icon image expanding expansion content                  |
-| iconColor         | Color of icons when the expandable content is collapsed |
-| expandedIconColor | Color of icons when the expandable content is expanded  |
+### How do I theme it with `ExpandableTheme`?
 
-##### Animation
-
-| Name                    | Description                            |
-| ----------------------- | -------------------------------------- |
-| expansionAnimationStyle | Expansion animation curve and duration |
-
-##### Pagination Customization
-
-| Name                          | Description                                                              |
-| ----------------------------- | ------------------------------------------------------------------------ |
-| paginationSize                | Size of the default pagination widget                                    |
-| paginationTextStyle           | TextStyle of the page numbers for default pagination widget              |
-| paginationSelectedTextColor   | Color of the selected cell's page number for default pagination widget   |
-| paginationUnselectedTextColor | Color of the unselected cells' page number for default pagination widget |
-| paginationSelectedFillColor   | Background fill color of the selected cell for default pagination widget |
-| paginationBorderColor         | Border color for default pagination widget                               |
-| paginationBorderRadius        | Border radius value for default pagination widget                        |
-| paginationBorderWidth         | Border width value for default pagination widget                         |
-
-## Usage
-
-1. To use this package, add expandable_datatable as a dependency in your pubspec.yaml file.
-
-2. Import the package
+`ExpandableTheme` is an `InheritedWidget`. Wrap `ExpandableDataTable` with it and pass an `ExpandableThemeData` instance:
 
 ```dart
-import ‘package:expandable_datatable/expandable_datatable.dart’;
+ExpandableTheme(
+  data: ExpandableThemeData(
+    headerColor: Colors.amber,
+    evenRowColor: Colors.white,
+    oddRowColor: Colors.amber[100],
+  ),
+  child: ExpandableDataTable(
+    headers: headers,
+    rows: rows,
+    visibleColumnCount: 3,
+  ),
+)
 ```
 
-3. Create data to use in the data table
+If no `ExpandableTheme` is present in the tree, `ExpandableThemeData` defaults are used automatically.
 
-Create the list of the headers to be used in data table with types. Header list should be in a prioritized order, all columns have a flex value that all cells inside that column will be used.
+### Key properties of `ExpandableThemeData`
 
-```dart
-  List<ExpandableColumn<dynamic>> headers = [
-    ExpandableColumn<int>(columnTitle: "ID", columnFlex: 1),
-    ExpandableColumn<String>(columnTitle: "First name", columnFlex: 2),
-    ExpandableColumn<String>(columnTitle: "Last name", columnFlex: 2),
-    ExpandableColumn<String>(columnTitle: "Maiden name", columnFlex: 2),
-    ExpandableColumn<int>(columnTitle: "Age", columnFlex: 1),
-    ExpandableColumn<String>(columnTitle: "Gender", columnFlex: 2),
-    ExpandableColumn<String>(columnTitle: "Email", columnFlex: 4),
-  ];
+Properties are grouped by the part of the table they affect.
+
+#### Header
+
+| Property              | Type          | Default                                            | What it controls                            |
+| --------------------- | ------------- | -------------------------------------------------- | ------------------------------------------- |
+| `headerColor`         | `Color?`      | `ColorScheme.surface`                              | Header row background color.                |
+| `headerTextStyle`     | `TextStyle?`  | `TextTheme.titleMedium`                            | Text style for header cells.                |
+| `headerTextMaxLines`  | `int?`        | `2`                                                | Max lines before clipping in a header cell. |
+| `headerSortIconColor` | `Color?`      | `null`                                             | Color of the sort arrow icon.               |
+| `headerHeight`        | `double?`     | `null`                                             | Fixed height for the header row.            |
+| `headerBorder`        | `BorderSide?` | `BorderSide(width: 2.5, color: Color(0xffeeeeee))` | Border drawn below the header row.          |
+
+#### Rows
+
+| Property                  | Type            | Default                 | What it controls                                                                     |
+| ------------------------- | --------------- | ----------------------- | ------------------------------------------------------------------------------------ |
+| `contentPadding`          | `EdgeInsets?`   | `EdgeInsets.all(16)`    | Padding inside every header and data row cell.                                       |
+| `rowColor`                | `Color?`        | `ColorScheme.surface`   | Background for all rows. Ignored when both `evenRowColor` and `oddRowColor` are set. |
+| `evenRowColor`            | `Color?`        | `null`                  | Background for even-indexed rows. Both `evenRowColor` and `oddRowColor` must be set. |
+| `oddRowColor`             | `Color?`        | `null`                  | Background for odd-indexed rows. Both `evenRowColor` and `oddRowColor` must be set.  |
+| `expandedBackgroundColor` | `Color?`        | `null`                  | Background applied to a row when its expansion panel is open.                        |
+| `rowTextStyle`            | `TextStyle?`    | `TextTheme.bodyMedium`  | Text style for data row cells.                                                       |
+| `rowTextMaxLines`         | `int?`          | `3`                     | Max lines before clipping/ellipsis in a data cell.                                   |
+| `rowTextOverflow`         | `TextOverflow?` | `TextOverflow.ellipsis` | Overflow behavior for data cell text.                                                |
+| `rowHeight`               | `double?`       | `null`                  | Fixed height for data rows.                                                          |
+| `shape`                   | `ShapeBorder?`  | Transparent border      | Border shape of a **collapsed** row.                                                 |
+| `expandedShape`           | `ShapeBorder?`  | Divider-color border    | Border shape of an **expanded** row.                                                 |
+
+#### Expansion panel & icons
+
+| Property                   | Type                  | Default                             | What it controls                                                                           |
+| -------------------------- | --------------------- | ----------------------------------- | ------------------------------------------------------------------------------------------ |
+| `expansionIcon`            | `Icon?`               | `Icon(Icons.expand_more, size: 20)` | Icon on each row that toggles the expansion panel.                                         |
+| `editIcon`                 | `Icon?`               | `Icon(Icons.edit, size: 16)`        | Edit icon shown on each row when `isEditable` is `true`.                                   |
+| `iconColor`                | `Color?`              | `ColorScheme.onSurfaceVariant`      | Icon color when the row is **collapsed**.                                                  |
+| `expandedIconColor`        | `Color?`              | `ColorScheme.onSurface`             | Icon color when the row is **expanded**.                                                   |
+| `expandedTextStyle`        | `TextStyle?`          | `TextTheme.bodyMedium`              | Text style used inside the expansion panel.                                                |
+| `expansionAnimationStyle`  | `AnimationStyle?`     | 200 ms / `Curves.easeIn`            | Duration and curve of the open/close animation. Pass `AnimationStyle.noAnimation` to skip. |
+| `expansionChildrenPadding` | `EdgeInsetsGeometry?` | `EdgeInsets.zero`                   | Padding that wraps the expansion panel child widget.                                       |
+| `expansionCellPadding`     | `EdgeInsetsGeometry?` | Screen-relative default             | Padding around each key–value cell inside the expansion panel.                             |
+
+#### Edit dialog
+
+| Property                    | Type               | Default                       | What it controls                                                                        |
+| --------------------------- | ------------------ | ----------------------------- | --------------------------------------------------------------------------------------- |
+| `editDialogTitleStyle`      | `TextStyle?`       | `AlertDialog` default         | Text style for the dialog title.                                                        |
+| `editDialogBackgroundColor` | `Color?`           | `DialogTheme.backgroundColor` | Edit dialog background color.                                                           |
+| `editDialogShape`           | `ShapeBorder?`     | `DialogTheme.shape`           | Shape (e.g. rounded corners) of the edit dialog.                                        |
+| `editSaveButtonTextStyle`   | `TextStyle?`       | Cyan bold                     | Text style for the SAVE button.                                                         |
+| `editCancelButtonTextStyle` | `TextStyle?`       | Cyan                          | Text style for the CANCEL button.                                                       |
+| `editInputDecoration`       | `InputDecoration?` | `null`                        | Base `InputDecoration` for all text fields. Per-column `hintText` overrides `hintText`. |
+
+#### Pagination
+
+| Property                        | Type            | Default | What it controls                      |
+| ------------------------------- | --------------- | ------- | ------------------------------------- |
+| `paginationSize`                | `double?`       | `48.0`  | Size of the page number buttons.      |
+| `paginationSelectedFillColor`   | `Color?`        | `null`  | Fill color of the active page button. |
+| `paginationSelectedTextColor`   | `Color?`        | `null`  | Text color of the active page number. |
+| `paginationUnselectedTextColor` | `Color?`        | `null`  | Text color of inactive page numbers.  |
+| `paginationBorderColor`         | `Color?`        | `null`  | Border color applied to page buttons. |
+| `paginationBorderRadius`        | `BorderRadius?` | `null`  | Corner radius of page buttons.        |
+| `paginationBorderWidth`         | `double?`       | `null`  | Border width of page buttons.         |
+
+> Full constructor and all properties: [pub.dev API reference](https://pub.dev/documentation/expandable_datatable/latest/).
+
+---
+
+## Getting started
+
+**Install:**
+
+```bash
+flutter pub add expandable_datatable
 ```
 
-Create the list of the rows to be used in data table. All row list elements must contain all columns for lists.
+Or add manually to `pubspec.yaml`:
 
-```dart
-  List<ExpandableRow> rows = userList.map<ExpandableRow>((e) {
-    return ExpandableRow(cells: [
-      ExpandableCell<int>(columnTitle: "ID", value: e.id),
-      ExpandableCell<String>(columnTitle: "First name", value: e.firstName),
-      ExpandableCell<String>(columnTitle: "Last name", value: e.lastName),
-      ExpandableCell<String>(columnTitle: "Maiden name", value: e.maidenName),
-      ExpandableCell<int>(columnTitle: "Age", value: e.age),
-      ExpandableCell<String>(columnTitle: "Gender", value: e.gender),
-      ExpandableCell<String>(columnTitle: "Email", value: e.email),
-    ]);
-  }).toList();
+```yaml
+dependencies:
+  expandable_datatable: ^0.2.2
 ```
 
-4. Code
+**Minimum SDK constraints:**
+
+- Dart `>=2.17.6 <4.0.0`
+- Flutter `>=1.17.0`
+
+**Import:**
 
 ```dart
-  void createDataSource() {...}
+import 'package:expandable_datatable/expandable_datatable.dart';
+```
+
+---
+
+## Quick example
+
+Below is a minimal working snippet. See [example/lib/main.dart](example/lib/main.dart) for a complete runnable app.
+
+```dart
+import 'package:expandable_datatable/expandable_datatable.dart';
+import 'package:flutter/material.dart';
+
+class UsersTable extends StatelessWidget {
+  const UsersTable({super.key});
 
   @override
   Widget build(BuildContext context) {
+    // 1. Define columns (headers).
+    final headers = [
+      ExpandableColumn<int>(columnTitle: 'ID', columnFlex: 1),
+      ExpandableColumn<String>(columnTitle: 'First name', columnFlex: 2),
+      ExpandableColumn<String>(columnTitle: 'Last name', columnFlex: 2),
+      ExpandableColumn<int>(columnTitle: 'Age', columnFlex: 1),
+      ExpandableColumn<String>(columnTitle: 'Email', columnFlex: 4),
+    ];
+
+    // 2. Map your data to ExpandableRow / ExpandableCell.
+    //    columnTitle in each cell MUST match the corresponding header.
+    final rows = [
+      ExpandableRow(cells: [
+        ExpandableCell<int>(columnTitle: 'ID', value: 1),
+        ExpandableCell<String>(columnTitle: 'First name', value: 'Jane'),
+        ExpandableCell<String>(columnTitle: 'Last name', value: 'Doe'),
+        ExpandableCell<int>(columnTitle: 'Age', value: 30),
+        ExpandableCell<String>(
+            columnTitle: 'Email', value: 'jane@example.com'),
+      ]),
+    ];
+
+    // 3. Wrap with ExpandableTheme (optional but recommended),
+    //    then place ExpandableDataTable.
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Expandable Datatable Example"),
-      ),
       body: ExpandableTheme(
-        data: ExpandableThemeData(
-          // Content and Layout
-          contentPadding: const EdgeInsets.all(10),
-          rowHeight: 60,
-
-          // Row Styling
-          rowColor: Colors.white,
-          evenRowColor: Colors.grey.shade50,
-          oddRowColor: Colors.white,
-          shape: const RoundedRectangleBorder(
-            side: BorderSide(color: Colors.transparent),
-          ),
-          expandedShape: const RoundedRectangleBorder(
-            side: BorderSide(color: Colors.amber),
-          ),
-
-          // Expansion Content Padding
-          expansionChildrenPadding: const EdgeInsets.symmetric(
-            vertical: 12,
-          ),
-          expansionCellPadding: const EdgeInsets.symmetric(
-            horizontal: 12,
-            vertical: 8,
-          ),
-
-          // Text Styling
-          headerTextStyle: Theme.of(context).textTheme.titleMedium,
-          rowTextStyle: Theme.of(context).textTheme.bodyMedium,
-          expandedTextStyle: Theme.of(context).textTheme.bodySmall,
+        data: const ExpandableThemeData(
+          contentPadding: EdgeInsets.all(10),
+          headerColor: Colors.amber,
         ),
-        child: ExpandableDataTable(
-          headers: headers,
-          rows: rows,
-          visibleColumnCount: 4,
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            // 4. Adjust visibleColumnCount to screen width.
+            final visibleCount = constraints.maxWidth < 600 ? 3 : 5;
+
+            return ExpandableDataTable(
+              headers: headers,
+              rows: rows,
+              visibleColumnCount: visibleCount, // required
+            );
+          },
         ),
       ),
     );
   }
+}
 ```
 
-## Screenshots
+> **Tip:** `ExpandableColumn` is generic — pass the Dart type of the data (`int`, `String`, etc.) so the library can handle sorting and editing correctly.
 
-#### Sorting the rows
+---
 
-<img src="https://raw.githubusercontent.com/ismailyegnr/expandable_datatable/master/screenshots/sorting.png" height="400" alt="Sort Screenshot"/>
+## Theming with `ExpandableTheme`
 
-#### Expansion feature
+Wrap `ExpandableDataTable` with `ExpandableTheme` anywhere in the tree above the table. The table reads it automatically via `ExpandableTheme.of(context)`. If no `ExpandableTheme` is present, sensible defaults from `ExpandableThemeData()` are used.
 
-<img src="https://raw.githubusercontent.com/ismailyegnr/expandable_datatable/master/screenshots/expansion.png" height="400" alt="Expansion Screenshot"/>
+```dart
+ExpandableTheme(
+  data: ExpandableThemeData(
+    // ── Header ──────────────────────────────────────────────────────────
+    headerColor: Colors.amber[400],
+    headerSortIconColor: Colors.deepPurple,
+    headerBorder: const BorderSide(color: Colors.black, width: 1),
+    headerTextMaxLines: 2,
 
-#### Edit rows dialog (Customizable)
+    // ── Rows ────────────────────────────────────────────────────────────
+    evenRowColor: Colors.white,
+    oddRowColor: Colors.amber[200],
+    expandedBackgroundColor: Colors.deepPurple.withOpacity(0.15),
+    rowTextMaxLines: 2,
+    rowTextOverflow: TextOverflow.ellipsis,
+    shape: const RoundedRectangleBorder(
+      side: BorderSide(color: Colors.transparent),
+    ),
+    expandedShape: const RoundedRectangleBorder(
+      side: BorderSide(color: Colors.amber),
+    ),
 
-<img src="https://raw.githubusercontent.com/ismailyegnr/expandable_datatable/master/screenshots/editing.png" height="400" alt="Editing Screenshot"/>
+    // ── Animation ───────────────────────────────────────────────────────
+    expansionAnimationStyle: AnimationStyle(
+      curve: Curves.easeInOut,
+      duration: const Duration(milliseconds: 300),
+    ),
 
-#### Styling
+    // ── Pagination ──────────────────────────────────────────────────────
+    paginationSize: 48,
+    paginationSelectedFillColor: Colors.deepPurple,
+    paginationSelectedTextColor: Colors.white,
 
-<img src="https://raw.githubusercontent.com/ismailyegnr/expandable_datatable/master/screenshots/styling.png" height="400" alt="Styling Screenshot"/>
+    // ── Edit dialog ─────────────────────────────────────────────────────
+    editDialogShape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(12),
+    ),
+    editInputDecoration: const InputDecoration(
+      border: OutlineInputBorder(),
+    ),
+    editCancelButtonTextStyle: const TextStyle(
+      color: Colors.red,
+      fontWeight: FontWeight.bold,
+    ),
+  ),
+  child: ExpandableDataTable(
+    headers: headers,
+    rows: rows,
+    visibleColumnCount: 3,
+    pageSize: 8,
+  ),
+)
+```
+
+---
+
+## Row expansion
+
+By default the expansion panel lists every hidden column and its value. Replace it with `renderExpansionContent` to build any custom widget:
+
+```dart
+ExpandableDataTable(
+  headers: headers,
+  rows: rows,
+  visibleColumnCount: 3,
+  renderExpansionContent: (row) {
+    // row.cells contains ALL cells, including visible ones.
+    return Padding(
+      padding: const EdgeInsets.all(12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Age: ${row.cells[3].value}'),
+          Text('Email: ${row.cells[4].value}'),
+        ],
+      ),
+    );
+  },
+)
+```
+
+Allow only one row open at a time:
+
+```dart
+ExpandableDataTable(
+  ...
+  multipleExpansion: false,
+)
+```
+
+---
+
+## Editing
+
+Set `isEditable: true` to show an edit icon on every row. The built-in dialog pre-fills each field from the current cell values. You **must** provide `onRowChanged` when editing is enabled:
+
+```dart
+ExpandableDataTable(
+  headers: headers,
+  rows: rows,
+  visibleColumnCount: 3,
+  isEditable: true,
+  editDialogTitle: 'Edit User',
+  editSaveLabel: 'Save',
+  editCancelLabel: 'Cancel',
+  onRowChanged: (newRow, originalIndex) {
+    // Update your external state here.
+    setState(() => myRows[originalIndex] = newRow);
+  },
+)
+```
+
+Mark a column **read-only** inside the dialog:
+
+```dart
+ExpandableColumn<int>(
+  columnTitle: 'ID',
+  columnFlex: 1,
+  isEditable: false, // shown in dialog but cannot be edited
+)
+```
+
+Add a per-column **hint text** for the input field:
+
+```dart
+ExpandableColumn<String>(
+  columnTitle: 'First name',
+  columnFlex: 2,
+  hintText: 'Enter first name',
+)
+```
+
+Provide a **fully custom edit dialog**:
+
+```dart
+ExpandableDataTable(
+  ...
+  renderEditDialog: (row, onSuccess) {
+    return AlertDialog(
+      title: const Text('Custom edit'),
+      content: TextButton(
+        child: const Text('Apply change'),
+        onPressed: () {
+          row.cells[1].value = 'Updated name';
+          onSuccess(row); // commits changes and triggers onRowChanged
+        },
+      ),
+    );
+  },
+)
+```
+
+Replace the **pagination widget**:
+
+```dart
+ExpandableDataTable(
+  ...
+  renderCustomPagination: (count, page, onChange) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: [
+        TextButton(
+          onPressed: page > 0 ? () => onChange(page - 1) : null,
+          child: const Text('Previous'),
+        ),
+        Text('Page ${page + 1} of $count'),
+        TextButton(
+          onPressed: page < count - 1 ? () => onChange(page + 1) : null,
+          child: const Text('Next'),
+        ),
+      ],
+    );
+  },
+)
+```
+
+---
+
+## API reference
+
+Full API documentation — all classes, properties and their signatures — is available on pub.dev:
+
+[https://pub.dev/documentation/expandable_datatable/latest/](https://pub.dev/documentation/expandable_datatable/latest/)
+
+---
+
+## Help & support
+
+Found a bug or want a new feature? Open an issue on GitHub:
+
+[https://github.com/ismailyegnr/expandable_datatable/issues](https://github.com/ismailyegnr/expandable_datatable/issues)
+
+---
+
+## Contributing
+
+Contributions are welcome! Please open a pull request on [GitHub](https://github.com/ismailyegnr/expandable_datatable). A `CONTRIBUTING.md` with branch naming and testing guidelines does not yet exist — feel free to propose one.
+
+---
 
 ## License
 
-[MIT](https://choosealicense.com/licenses/mit/)
+[MIT](LICENSE) © ismailyegnr
