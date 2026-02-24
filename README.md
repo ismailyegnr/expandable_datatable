@@ -6,8 +6,6 @@
 
 A Flutter package for displaying and editing tabular data with expandable rows. Overflow columns collapse into a tappable expansion panel, keeping the table clean on any screen size.
 
----
-
 ## What it does
 
 `expandable_datatable` renders a data table where you control how many columns are **visible**. Columns that exceed `visibleColumnCount` are hidden from the row and instead displayed inside a collapsible expansion panel. This lets you show a clean, narrow table on phones while surfacing all data on demand - without writing custom layout code.
@@ -148,8 +146,6 @@ Properties are grouped by the part of the table they affect.
 | `editSaveButtonTextStyle`   | Text style for the SAVE button.                                                     |
 | `editCancelButtonTextStyle` | Text style for the CANCEL button.                                                   |
 | `editInputDecoration`       | Base `InputDecoration` for all text fields. Per-column `hintText` takes precedence. |
-
----
 
 #### **Pagination**
 
