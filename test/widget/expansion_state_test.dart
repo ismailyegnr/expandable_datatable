@@ -17,8 +17,8 @@ List<ExpandableRow> _rows(int rowCount, int colCount) => List.generate(
       (r) => ExpandableRow(
         cells: List.generate(
           colCount,
-          (c) => ExpandableCell<String>(
-              columnTitle: 'Col $c', value: 'r${r}c${c}'),
+          (c) =>
+              ExpandableCell<String>(columnTitle: 'Col $c', value: 'r${r}c$c'),
         ),
       ),
     );
