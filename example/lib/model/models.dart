@@ -50,34 +50,35 @@ class Users {
   String? ssn;
   String? userAgent;
 
-  Users(
-      {this.id,
-      this.firstName,
-      this.lastName,
-      this.maidenName,
-      this.age,
-      this.gender,
-      this.email,
-      this.phone,
-      this.username,
-      this.password,
-      this.birthDate,
-      this.image,
-      this.bloodGroup,
-      this.height,
-      this.weight,
-      this.eyeColor,
-      this.hair,
-      this.domain,
-      this.ip,
-      this.address,
-      this.macAddress,
-      this.university,
-      this.bank,
-      this.company,
-      this.ein,
-      this.ssn,
-      this.userAgent});
+  Users({
+    this.id,
+    this.firstName,
+    this.lastName,
+    this.maidenName,
+    this.age,
+    this.gender,
+    this.email,
+    this.phone,
+    this.username,
+    this.password,
+    this.birthDate,
+    this.image,
+    this.bloodGroup,
+    this.height,
+    this.weight,
+    this.eyeColor,
+    this.hair,
+    this.domain,
+    this.ip,
+    this.address,
+    this.macAddress,
+    this.university,
+    this.bank,
+    this.company,
+    this.ein,
+    this.ssn,
+    this.userAgent,
+  });
 
   Users.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -99,13 +100,15 @@ class Users {
     hair = json['hair'] != null ? Hair.fromJson(json['hair']) : null;
     domain = json['domain'];
     ip = json['ip'];
-    address =
-        json['address'] != null ? Address.fromJson(json['address']) : null;
+    address = json['address'] != null
+        ? Address.fromJson(json['address'])
+        : null;
     macAddress = json['macAddress'];
     university = json['university'];
     bank = json['bank'] != null ? Bank.fromJson(json['bank']) : null;
-    company =
-        json['company'] != null ? Company.fromJson(json['company']) : null;
+    company = json['company'] != null
+        ? Company.fromJson(json['company'])
+        : null;
     ein = json['ein'];
     ssn = json['ssn'];
     userAgent = json['userAgent'];
@@ -178,8 +181,13 @@ class Address {
   String? postalCode;
   String? state;
 
-  Address(
-      {this.address, this.city, this.coordinates, this.postalCode, this.state});
+  Address({
+    this.address,
+    this.city,
+    this.coordinates,
+    this.postalCode,
+    this.state,
+  });
 
   Address.fromJson(Map<String, dynamic> json) {
     address = json['address'];
@@ -230,12 +238,13 @@ class Bank {
   String? currency;
   String? iban;
 
-  Bank(
-      {this.cardExpire,
-      this.cardNumber,
-      this.cardType,
-      this.currency,
-      this.iban});
+  Bank({
+    this.cardExpire,
+    this.cardNumber,
+    this.cardType,
+    this.currency,
+    this.iban,
+  });
 
   Bank.fromJson(Map<String, dynamic> json) {
     cardExpire = json['cardExpire'];
@@ -265,8 +274,9 @@ class Company {
   Company({this.address, this.department, this.name, this.title});
 
   Company.fromJson(Map<String, dynamic> json) {
-    address =
-        json['address'] != null ? Address.fromJson(json['address']) : null;
+    address = json['address'] != null
+        ? Address.fromJson(json['address'])
+        : null;
     department = json['department'];
     name = json['name'];
     title = json['title'];
