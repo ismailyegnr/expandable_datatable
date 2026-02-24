@@ -1,4 +1,4 @@
-# 0.2.2 - 23/02/2026
+# 0.2.2 - 24/02/2026
 
 - Improved edit dialog customization, making it easier to tailor the edit UI and its behavior to app needs.
 - Added automated tests to improve stability and prevent regressions.
