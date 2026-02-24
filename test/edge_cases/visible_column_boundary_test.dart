@@ -206,7 +206,8 @@ void main() {
   });
 
   group('visibleColumnCount > headers.length (clamped to headers.length)', () {
-    testWidgets('no expansion icon when visibleColumnCount exceeds header count',
+    testWidgets(
+        'no expansion icon when visibleColumnCount exceeds header count',
         (tester) async {
       // headers has 3 columns but visibleColumnCount is 99
       // → clamped to 3 → all columns are visible → no expansion icon
@@ -226,7 +227,8 @@ void main() {
       expect(find.byIcon(Icons.expand_more), findsNothing);
     });
 
-    testWidgets('all header titles are rendered when visibleColumnCount exceeds header count',
+    testWidgets(
+        'all header titles are rendered when visibleColumnCount exceeds header count',
         (tester) async {
       await tester.pumpWidget(
         MaterialApp(
