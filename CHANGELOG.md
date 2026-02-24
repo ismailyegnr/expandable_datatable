@@ -1,4 +1,10 @@
-# 0.2.1 - 18/02/2026
+# 0.2.2 - 24/02/2026
+
+- Improved edit dialog customization, making it easier to tailor the edit UI and its behavior to app needs.
+- Added automated tests to improve stability and prevent regressions.
+- Updated README.
+
+## 0.2.1 - 18/02/2026
 
 - Added new theme properties `expandedBackgroundColor`, `expansionChildrenPadding`, `expansionCellPadding`, `iconColor`, and `expandedIconColor`.
 - Fixed `expansionAnimationStyle` curve now correctly applies to animations.
