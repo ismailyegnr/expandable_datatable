@@ -1,4 +1,4 @@
-# expandable_datatable
+# Expandable DataTable
 
 [![pub.dev](https://img.shields.io/pub/v/expandable_datatable.svg)](https://pub.dev/packages/expandable_datatable)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
@@ -24,13 +24,13 @@ A Flutter package for displaying and editing tabular data with expandable rows. 
 
 ## Screenshots
 
-| Sorting                             | Expansion                               |
-| ----------------------------------- | --------------------------------------- |
-| ![Sorting](screenshots/sorting.png) | ![Expansion](screenshots/expansion.png) |
+| Sorting                                                                                                       | Expansion                                                                                                         |
+| ------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| ![Sorting](https://raw.githubusercontent.com/ismailyegnr/expandable_datatable/master/screenshots/sorting.png) | ![Expansion](https://raw.githubusercontent.com/ismailyegnr/expandable_datatable/master/screenshots/expansion.png) |
 
-| Editing                             | Styling                             |
-| ----------------------------------- | ----------------------------------- |
-| ![Editing](screenshots/editing.png) | ![Styling](screenshots/styling.png) |
+| Editing                                                                                                       | Styling                                                                                                       |
+| ------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| ![Editing](https://raw.githubusercontent.com/ismailyegnr/expandable_datatable/master/screenshots/editing.png) | ![Styling](https://raw.githubusercontent.com/ismailyegnr/expandable_datatable/master/screenshots/styling.png) |
 
 ---
 
