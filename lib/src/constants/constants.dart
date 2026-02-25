@@ -4,4 +4,8 @@ class GeneralConstants {
   static const DOUBLE_REGEXP = r'^\d+\.?\d+';
 
   static const double titlePadding = 8;
+
+  static const double defaultEditIconSize = 16;
+  static const double defaultExpansionIconSize = 20;
+  static const double leadingRightPadding = 16;
 }

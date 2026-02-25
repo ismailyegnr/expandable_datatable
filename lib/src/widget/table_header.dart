@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 
 import '../constants/constants.dart';
@@ -28,42 +30,53 @@ class TableHeader extends StatelessWidget {
     required this.isLeadingExpansion,
   });
 
-  /// Builds an invisible copy of the leading expansion icon so header columns
-  /// stay aligned when the expansion icon sits on the leading side.
-  Widget _buildLeadingGhost(BuildContext context) {
-    return IgnorePointer(
-      child: Opacity(
-        opacity: 0,
-        child: Padding(
-          padding: const EdgeInsets.only(right: 16.0),
-          child: context.expandableTheme.expansionIcon ??
-              const Icon(Icons.expand_more, size: 20),
-        ),
-      ),
-    );
+  double _resolveIconSize(Widget? icon, {required double fallback}) {
+    return icon is Icon ? (icon.size ?? fallback) : fallback;
   }
 
-  /// Builds an invisible copy of the trailing icons (edit and/or expansion)
-  /// so header columns stay aligned with row content.
+  /// Returns the effective width of an [IconButton] with [padding: EdgeInsets.zero].
+  ///
+  /// Flutter clamps the touch target to at least [kMinInteractiveDimension]
+  /// (adjusted by [VisualDensity]), or the raw icon size – whichever is larger.
+  double _iconButtonWidth(BuildContext context, {required double iconSize}) {
+    final double densityAdjustment =
+        Theme.of(context).visualDensity.baseSizeAdjustment.dx;
+    return max(kMinInteractiveDimension + densityAdjustment, iconSize);
+  }
+
+  /// Builds an invisible placeholder matching the leading expansion icon so
+  /// header columns stay aligned with row content.
+  Widget _buildLeadingGhost(BuildContext context) {
+    final double iconSize = _resolveIconSize(
+      context.expandableTheme.expansionIcon,
+      fallback: GeneralConstants.defaultExpansionIconSize,
+    );
+
+    return SizedBox(width: iconSize + GeneralConstants.leadingRightPadding);
+  }
+
+  /// Builds an invisible placeholder matching the trailing icons (edit and/or
+  /// expansion) so header columns stay aligned with row content.
   Widget _buildTrailingGhost(BuildContext context) {
     final theme = context.expandableTheme;
-    return IgnorePointer(
-      child: Opacity(
-        opacity: 0,
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (isEditable)
-              IconButton(
-                padding: EdgeInsets.zero,
-                icon: theme.editIcon ?? const Icon(Icons.edit, size: 16),
-                onPressed: null,
-              ),
-            if (!isLeadingExpansion)
-              theme.expansionIcon ?? const Icon(Icons.expand_more, size: 20),
-          ],
-        ),
-      ),
+
+    final double editButtonWidth = _iconButtonWidth(
+      context,
+      iconSize: _resolveIconSize(theme.editIcon,
+          fallback: GeneralConstants.defaultEditIconSize),
+    );
+
+    final double expansionIconWidth = _resolveIconSize(
+      theme.expansionIcon,
+      fallback: GeneralConstants.defaultExpansionIconSize,
+    );
+
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (isEditable) SizedBox(width: editButtonWidth),
+        if (!isLeadingExpansion) SizedBox(width: expansionIconWidth),
+      ],
     );
   }
 

@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
+import 'constants/constants.dart';
 import 'extension/context_extension.dart';
 import 'model/cell_item.dart';
 import 'model/expandable_column.dart';
@@ -548,7 +549,7 @@ class _ExpandableDataTableState extends State<ExpandableDataTable> {
       icon: context.expandableTheme.editIcon ??
           Icon(
             Icons.edit,
-            size: 16,
+            size: GeneralConstants.defaultEditIconSize,
           ),
       onPressed: () => showEditDialog(context, rowInd),
     );

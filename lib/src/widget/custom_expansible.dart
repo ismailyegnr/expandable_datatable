@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
 import '../../expandable_datatable.dart';
+import '../constants/constants.dart';
 
 const Duration _kExpand = Duration(milliseconds: 200);
 
@@ -427,7 +428,7 @@ class _ExpansionTileState extends State<ExpansionTile> {
             child: _expandableTheme.expansionIcon ??
                 Icon(
                   Icons.expand_more,
-                  size: 20,
+                  size: GeneralConstants.defaultExpansionIconSize,
                 )));
   }
 
@@ -500,7 +501,8 @@ class _ExpansionTileState extends State<ExpansionTile> {
             children: <Widget>[
               if (effectiveLeading != null)
                 Padding(
-                  padding: const EdgeInsets.only(right: 16.0),
+                  padding: const EdgeInsets.only(
+                      right: GeneralConstants.leadingRightPadding),
                   child: effectiveLeading,
                 ),
               Expanded(
