@@ -2,7 +2,6 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
-import 'constants/constants.dart';
 import 'extension/context_extension.dart';
 import 'model/cell_item.dart';
 import 'model/expandable_column.dart';
@@ -51,6 +50,15 @@ class ExpandableDataTable extends StatefulWidget {
   /// ```
   ///
   final int visibleColumnCount;
+
+  /// Controls where the expansion arrow icon appears on each row.
+  ///
+  /// Use [ListTileControlAffinity.leading] to show the icon on the left side
+  /// and [ListTileControlAffinity.trailing] (the default) to show it on the
+  /// right side.
+  ///
+  /// It defaults to [ListTileControlAffinity.trailing].
+  final ListTileControlAffinity expansionIconAffinity;
 
   /// Flag indicating that multiple expansions are enabled for rows.
   ///
@@ -186,6 +194,7 @@ class ExpandableDataTable extends StatefulWidget {
     required this.rows,
     required this.visibleColumnCount,
     this.pageSize = 10,
+    this.expansionIconAffinity = ListTileControlAffinity.trailing,
     this.multipleExpansion = true,
     this.isEditable = false,
     this.onRowChanged,
@@ -222,8 +231,6 @@ class _ExpandableDataTableState extends State<ExpandableDataTable> {
   /// This helps for building.
   List<List<SortableRow>> _sortedRowsList = [];
 
-  late double _trailingWidth;
-
   int _totalPageCount = 0;
   int _currentPage = 0;
   int _selectedRow = -1;
@@ -243,7 +250,6 @@ class _ExpandableDataTableState extends State<ExpandableDataTable> {
   void initState() {
     super.initState();
 
-    _updateTrailingWidth();
     _updateHeaderTitles();
     _composeRowsList(widget.rows, isInit: true);
   }
@@ -254,11 +260,6 @@ class _ExpandableDataTableState extends State<ExpandableDataTable> {
 
     // Flag to control the single setState at the end
     bool shouldSetState = false;
-
-    if (widget.isEditable != oldWidget.isEditable) {
-      _updateTrailingWidth();
-      shouldSetState = true;
-    }
 
     // Re-compose the internal row list if the data source (rows), pagination
     // configuration (pageSize), columns (headers), or visible column count changes.
@@ -282,12 +283,6 @@ class _ExpandableDataTableState extends State<ExpandableDataTable> {
     if (shouldSetState) {
       setState(() {});
     }
-  }
-
-  void _updateTrailingWidth() {
-    _trailingWidth = widget.isEditable
-        ? GeneralConstants.minEditableTrailing
-        : GeneralConstants.minNonEditableTrailing;
   }
 
   void _updateHeaderTitles() {
@@ -505,9 +500,9 @@ class _ExpandableDataTableState extends State<ExpandableDataTable> {
           context.expandableTheme.expandedBackgroundColor ?? currentRowColor,
       onExpansionChanged: (value) => _onExpansionChanged(value, index),
       initiallyExpanded: _selectedRow == index,
+      controlAffinity: widget.expansionIconAffinity,
       title: buildRowTitleContent(titleCells),
       secondTrailing: widget.isEditable ? buildEditIcon(context, index) : null,
-      trailingWidth: _trailingWidth,
       children: buildExpansionContent(context, row, expansionCells),
     );
   }
@@ -517,7 +512,9 @@ class _ExpandableDataTableState extends State<ExpandableDataTable> {
       headerRow: _headerTitles,
       currentSort: _sortOperations.sortInformation,
       onTitleTap: _sortRowsByColumn,
-      trailingWidth: _trailingWidth,
+      isEditable: widget.isEditable,
+      isLeadingExpansion:
+          widget.expansionIconAffinity == ListTileControlAffinity.leading,
     );
   }
 

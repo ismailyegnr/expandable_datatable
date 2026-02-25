@@ -4,7 +4,4 @@ class GeneralConstants {
   static const DOUBLE_REGEXP = r'^\d+\.?\d+';
 
   static const double titlePadding = 8;
-
-  static const double minNonEditableTrailing = 24;
-  static const double minEditableTrailing = 72;
 }

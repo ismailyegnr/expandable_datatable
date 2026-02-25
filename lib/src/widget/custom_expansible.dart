@@ -113,10 +113,8 @@ class ExpansionTile extends StatefulWidget {
     this.expansionAnimationStyle,
     this.internalAddSemanticForOnTap = false,
     this.secondTrailing,
-    this.trailingWidth,
   });
 
-  final double? trailingWidth;
   final Widget? secondTrailing;
 
   /// A widget to display before the title.
@@ -508,15 +506,12 @@ class _ExpansionTileState extends State<ExpansionTile> {
               Expanded(
                 child: titleSection,
               ),
-              SizedBox(
-                width: widget.trailingWidth,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    widget.secondTrailing ?? SizedBox(),
-                    effectiveTrailing ?? SizedBox(),
-                  ],
-                ),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (widget.secondTrailing != null) widget.secondTrailing!,
+                  if (effectiveTrailing != null) effectiveTrailing,
+                ],
               ),
             ],
           ),

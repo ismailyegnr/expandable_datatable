@@ -10,15 +10,62 @@ class TableHeader extends StatelessWidget {
   final List<ExpandableColumn<dynamic>> headerRow;
   final Function(ExpandableColumn<dynamic>) onTitleTap;
 
-  final double trailingWidth;
+  /// Whether the table rows have an edit icon in the trailing area.
+  final bool isEditable;
+
+  /// Whether the expansion icon is shown on the leading side of each row.
+  ///
+  /// When true, an invisible leading ghost icon is inserted to keep header
+  /// columns aligned with row content.
+  final bool isLeadingExpansion;
 
   const TableHeader({
     super.key,
     required this.headerRow,
     required this.currentSort,
     required this.onTitleTap,
-    required this.trailingWidth,
+    required this.isEditable,
+    required this.isLeadingExpansion,
   });
+
+  /// Builds an invisible copy of the leading expansion icon so header columns
+  /// stay aligned when the expansion icon sits on the leading side.
+  Widget _buildLeadingGhost(BuildContext context) {
+    return IgnorePointer(
+      child: Opacity(
+        opacity: 0,
+        child: Padding(
+          padding: const EdgeInsets.only(right: 16.0),
+          child: context.expandableTheme.expansionIcon ??
+              const Icon(Icons.expand_more, size: 20),
+        ),
+      ),
+    );
+  }
+
+  /// Builds an invisible copy of the trailing icons (edit and/or expansion)
+  /// so header columns stay aligned with row content.
+  Widget _buildTrailingGhost(BuildContext context) {
+    final theme = context.expandableTheme;
+    return IgnorePointer(
+      child: Opacity(
+        opacity: 0,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (isEditable)
+              IconButton(
+                padding: EdgeInsets.zero,
+                icon: theme.editIcon ?? const Icon(Icons.edit, size: 16),
+                onPressed: null,
+              ),
+            if (!isLeadingExpansion)
+              theme.expansionIcon ?? const Icon(Icons.expand_more, size: 20),
+          ],
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -53,15 +100,14 @@ class TableHeader extends StatelessWidget {
       padding: padding,
       height: height,
       child: Row(children: [
+        if (isLeadingExpansion) _buildLeadingGhost(context),
         ...headerRow.map(
           (e) => Expanded(
             flex: e.columnFlex,
             child: buildHeaderTitle(context, e),
           ),
         ),
-        SizedBox(
-          width: trailingWidth,
-        )
+        if (isEditable || !isLeadingExpansion) _buildTrailingGhost(context),
       ]),
     );
   }
