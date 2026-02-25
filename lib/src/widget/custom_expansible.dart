@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
 import '../../expandable_datatable.dart';
+import '../constants/constants.dart';
 
 const Duration _kExpand = Duration(milliseconds: 200);
 
@@ -113,10 +114,8 @@ class ExpansionTile extends StatefulWidget {
     this.expansionAnimationStyle,
     this.internalAddSemanticForOnTap = false,
     this.secondTrailing,
-    this.trailingWidth,
   });
 
-  final double? trailingWidth;
   final Widget? secondTrailing;
 
   /// A widget to display before the title.
@@ -429,7 +428,7 @@ class _ExpansionTileState extends State<ExpansionTile> {
             child: _expandableTheme.expansionIcon ??
                 Icon(
                   Icons.expand_more,
-                  size: 20,
+                  size: GeneralConstants.defaultExpansionIconSize,
                 )));
   }
 
@@ -502,21 +501,19 @@ class _ExpansionTileState extends State<ExpansionTile> {
             children: <Widget>[
               if (effectiveLeading != null)
                 Padding(
-                  padding: const EdgeInsets.only(right: 16.0),
+                  padding: const EdgeInsets.only(
+                      right: GeneralConstants.leadingRightPadding),
                   child: effectiveLeading,
                 ),
               Expanded(
                 child: titleSection,
               ),
-              SizedBox(
-                width: widget.trailingWidth,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    widget.secondTrailing ?? SizedBox(),
-                    effectiveTrailing ?? SizedBox(),
-                  ],
-                ),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (widget.secondTrailing != null) widget.secondTrailing!,
+                  if (effectiveTrailing != null) effectiveTrailing,
+                ],
               ),
             ],
           ),
