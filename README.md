@@ -51,44 +51,24 @@ Use `ExpandableDataTable` whenever you need a data table that:
 
 ### Key properties of `ExpandableDataTable`
 
-| Property                          | Description                                                                                                |
-| --------------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| `headers` _(required)_            | Column definitions (title, flex, editability). Must align with `rows[i].cells`.                            |
-| `rows` _(required)_               | The data. Each `ExpandableRow` holds one `ExpandableCell` per header.                                      |
-| `visibleColumnCount` _(required)_ | How many columns are shown in the row; the rest go into the expansion panel.                               |
-| `pageSize`                        | Rows per page.                                                                                             |
-| `multipleExpansion`               | `true` = multiple rows can be open at once; `false` = opening one closes others.                           |
-| `isEditable`                      | Shows an edit icon on each row.                                                                            |
-| `onRowChanged`                    | Called when the user saves an edit. `originalIndex` is the row's position in the `rows` list you provided. |
-| `onPageChanged`                   | Called whenever the current page changes.                                                                  |
-| `editDialogTitle`                 | Title text of the built-in edit dialog.                                                                    |
-| `editSaveLabel`                   | Label of the save button in the built-in edit dialog.                                                      |
-| `editCancelLabel`                 | Label of the cancel button in the built-in edit dialog.                                                    |
-| `nullValuePlaceholder`            | Text shown when a cell's value is `null`.                                                                  |
-| `renderEditDialog`                | Replaces the built-in edit dialog with a custom widget. Call `onSuccess(newRow)` to commit.                |
-| `renderCustomPagination`          | Replaces the built-in pagination widget.                                                                   |
-| `renderExpansionContent`          | Replaces the default expansion panel content for each row.                                                 |
-
-### How do I theme it with `ExpandableTheme`?
-
-`ExpandableTheme` is an `InheritedWidget`. Wrap `ExpandableDataTable` with it and pass an `ExpandableThemeData` instance:
-
-```dart
-ExpandableTheme(
-  data: ExpandableThemeData(
-    headerColor: Colors.amber,
-    evenRowColor: Colors.white,
-    oddRowColor: Colors.amber[100],
-  ),
-  child: ExpandableDataTable(
-    headers: headers,
-    rows: rows,
-    visibleColumnCount: 3,
-  ),
-)
-```
-
-If no `ExpandableTheme` is present in the tree, `ExpandableThemeData` defaults are used automatically.
+| Property                          | Description                                                                          |
+| --------------------------------- | ------------------------------------------------------------------------------------ |
+| `headers` _(required)_            | Column definitions (title, flex, editability). Must align with the row cell list.    |
+| `rows` _(required)_               | The data. Each `ExpandableRow` holds one `ExpandableCell` per header.                |
+| `visibleColumnCount` _(required)_ | Number of columns shown in the row; the rest go into the expansion panel.            |
+| `pageSize`                        | Number of rows per page. Defaults to 10.                                             |
+| `expansionIconAffinity`           | Where the expansion icon appears (leading or trailing). Defaults to trailing.        |
+| `multipleExpansion`               | Whether multiple rows can be expanded at the same time.                              |
+| `isEditable`                      | Flag indicating whether rows are editable. Requires `onRowChanged`.                  |
+| `onRowChanged`                    | Called when a row is edited; `originalIndex` is the row's index in your `rows` list. |
+| `onPageChanged`                   | Called when the current page changes.                                                |
+| `editDialogTitle`                 | Title text of the built-in edit dialog. Defaults to `'Edit Details'`.                |
+| `editSaveLabel`                   | Label of the save button in the built-in edit dialog. Defaults to `'SAVE'`.          |
+| `editCancelLabel`                 | Label of the cancel button in the built-in edit dialog. Defaults to `'CANCEL'`.      |
+| `nullValuePlaceholder`            | Text shown when a cell's value is `null`. Defaults to an empty string.               |
+| `renderEditDialog`                | Replaces the built-in edit dialog. Use `onSuccess(newRow)` to commit.                |
+| `renderCustomPagination`          | Replaces the built-in pagination widget.                                             |
+| `renderExpansionContent`          | Replaces the default expansion panel content for each row.                           |
 
 ### Key properties of `ExpandableThemeData`
 
@@ -123,16 +103,16 @@ Properties are grouped by the part of the table they affect.
 
 #### **Expansion panel & icons**
 
-| Property                   | Description                                                                                |
-| -------------------------- | ------------------------------------------------------------------------------------------ |
-| `expansionIcon`            | Icon on each row that toggles the expansion panel.                                         |
-| `editIcon`                 | Edit icon shown on each row when `isEditable` is `true`.                                   |
-| `iconColor`                | Icon color when the row is **collapsed**.                                                  |
-| `expandedIconColor`        | Icon color when the row is **expanded**.                                                   |
-| `expandedTextStyle`        | Text style used inside the expansion panel.                                                |
-| `expansionAnimationStyle`  | Duration and curve of the open/close animation. Pass `AnimationStyle.noAnimation` to skip. |
-| `expansionChildrenPadding` | Padding that wraps the expansion panel child widget.                                       |
-| `expansionCellPadding`     | Padding around each key-value cell inside the expansion panel.                             |
+| Property                   | Description                                                    |
+| -------------------------- | -------------------------------------------------------------- |
+| `expansionIcon`            | Icon on each row that toggles the expansion panel.             |
+| `editIcon`                 | Edit icon shown on each row when `isEditable` is `true`.       |
+| `iconColor`                | Icon color when the row is **collapsed**.                      |
+| `expandedIconColor`        | Icon color when the row is **expanded**.                       |
+| `expandedTextStyle`        | Text style used inside the expansion panel.                    |
+| `expansionAnimationStyle`  | Duration and curve of the open/close animation.                |
+| `expansionChildrenPadding` | Padding that wraps the expansion panel child widget.           |
+| `expansionCellPadding`     | Padding around each key-value cell inside the expansion panel. |
 
 #### **Edit Dialog**
 
@@ -147,17 +127,16 @@ Properties are grouped by the part of the table they affect.
 
 #### **Pagination**
 
-| Property                        | Description                           |
-| ------------------------------- | ------------------------------------- |
-| `paginationSize`                | Size of the page number buttons.      |
-| `paginationSelectedFillColor`   | Fill color of the active page button. |
-| `paginationSelectedTextColor`   | Text color of the active page number. |
-| `paginationUnselectedTextColor` | Text color of inactive page numbers.  |
-| `paginationBorderColor`         | Border color applied to page buttons. |
-| `paginationBorderRadius`        | Corner radius of page buttons.        |
-| `paginationBorderWidth`         | Border width of page buttons.         |
-
----
+| Property                        | Description                                            |
+| ------------------------------- | ------------------------------------------------------ |
+| `paginationSize`                | Size of the page number buttons. Defaults to 48.       |
+| `paginationTextStyle`           | Text style for page numbers (selected and unselected). |
+| `paginationSelectedFillColor`   | Fill color of the active page button.                  |
+| `paginationSelectedTextColor`   | Text color of the active page number.                  |
+| `paginationUnselectedTextColor` | Text color of inactive page numbers.                   |
+| `paginationBorderColor`         | Border color applied to page buttons.                  |
+| `paginationBorderRadius`        | Corner radius of page buttons.                         |
+| `paginationBorderWidth`         | Border width of page buttons.                          |
 
 ## Getting started
 
@@ -284,8 +263,6 @@ ExpandableTheme(
 )
 ```
 
----
-
 ## Row expansion
 
 By default the expansion panel lists every hidden column and its value. Replace it with `renderExpansionContent` to build any custom widget:
@@ -319,8 +296,6 @@ ExpandableDataTable(
   multipleExpansion: false,
 )
 ```
-
----
 
 ## Editing
 
@@ -405,8 +380,6 @@ ExpandableDataTable(
   },
 )
 ```
-
----
 
 ## API reference
 
