@@ -24,13 +24,13 @@ A Flutter package for displaying and editing tabular data with expandable rows. 
 
 ## Screenshots
 
-| Sorting                                                                                                       | Expansion                                                                                                         |
-| ------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
-| ![Sorting](https://raw.githubusercontent.com/ismailyegnr/expandable_datatable/master/screenshots/sorting.png) | ![Expansion](https://raw.githubusercontent.com/ismailyegnr/expandable_datatable/master/screenshots/expansion.png) |
+| Sorting                                                                                                                  | Expansion                                                                                                                    |
+| ------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------- |
+| ![Sorting](https://raw.githubusercontent.com/ismailyegnr/expandable_datatable/master/screenshots/sorting.png){width=300} | ![Expansion](https://raw.githubusercontent.com/ismailyegnr/expandable_datatable/master/screenshots/expansion.png){width=300} |
 
-| Editing                                                                                                       | Styling                                                                                                       |
-| ------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
-| ![Editing](https://raw.githubusercontent.com/ismailyegnr/expandable_datatable/master/screenshots/editing.png) | ![Styling](https://raw.githubusercontent.com/ismailyegnr/expandable_datatable/master/screenshots/styling.png) |
+| Editing                                                                                                                  | Styling                                                                                                                  |
+| ------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------ |
+| ![Editing](https://raw.githubusercontent.com/ismailyegnr/expandable_datatable/master/screenshots/editing.png){width=300} | ![Styling](https://raw.githubusercontent.com/ismailyegnr/expandable_datatable/master/screenshots/styling.png){width=300} |
 
 ---
 
@@ -68,8 +68,6 @@ Use `ExpandableDataTable` whenever you need a data table that:
 | `renderEditDialog`                | Replaces the built-in edit dialog with a custom widget. Call `onSuccess(newRow)` to commit.                |
 | `renderCustomPagination`          | Replaces the built-in pagination widget.                                                                   |
 | `renderExpansionContent`          | Replaces the default expansion panel content for each row.                                                 |
-
-> More properties and full documentation: [pub.dev API reference](https://pub.dev/documentation/expandable_datatable/latest/).
 
 ### How do I theme it with `ExpandableTheme`?
 
@@ -159,15 +157,11 @@ Properties are grouped by the part of the table they affect.
 | `paginationBorderRadius`        | Corner radius of page buttons.        |
 | `paginationBorderWidth`         | Border width of page buttons.         |
 
-> Full constructor and all properties: [pub.dev API reference](https://pub.dev/documentation/expandable_datatable/latest/).
-
 ---
 
 ## Getting started
 
 Add `expandable_datatable` as a dependency in your `pubspec.yaml` file. See the [pub.dev install tab](https://pub.dev/packages/expandable_datatable/install) for details.
-
----
 
 ## Quick example
 
@@ -231,8 +225,6 @@ class UsersTable extends StatelessWidget {
 ```
 
 > **Tip:** `ExpandableColumn` is generic — pass the Dart type of the data (`int`, `String`, etc.) so the library can handle sorting and editing correctly.
-
----
 
 ## Theming with `ExpandableTheme`
 
@@ -422,21 +414,15 @@ Full API documentation — all classes, properties and their signatures — is a
 
 [https://pub.dev/documentation/expandable_datatable/latest/](https://pub.dev/documentation/expandable_datatable/latest/)
 
----
-
 ## Help & support
 
 Found a bug or want a new feature? Open an issue on GitHub:
 
 [https://github.com/ismailyegnr/expandable_datatable/issues](https://github.com/ismailyegnr/expandable_datatable/issues)
 
----
-
 ## Contributing
 
 Contributions are welcome! Please open a pull request on [GitHub](https://github.com/ismailyegnr/expandable_datatable). A `CONTRIBUTING.md` with branch naming and testing guidelines does not yet exist — feel free to propose one.
-
----
 
 ## License
 
