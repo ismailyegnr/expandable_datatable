@@ -24,13 +24,13 @@ A Flutter package for displaying and editing tabular data with expandable rows. 
 
 ## Screenshots
 
-| Sorting                                                                                                                  | Expansion                                                                                                                    |
-| ------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------- |
-| ![Sorting](https://raw.githubusercontent.com/ismailyegnr/expandable_datatable/master/screenshots/sorting.png){width=300} | ![Expansion](https://raw.githubusercontent.com/ismailyegnr/expandable_datatable/master/screenshots/expansion.png){width=300} |
+| Sorting                                                                                                                                           | Expansion                                                                                                                                             |
+| ------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <img src="https://raw.githubusercontent.com/ismailyegnr/expandable_datatable/master/screenshots/sorting.png" alt="Sorting" style="width: 300px;"> | <img src="https://raw.githubusercontent.com/ismailyegnr/expandable_datatable/master/screenshots/expansion.png" alt="Expansion" style="width: 300px;"> |
 
-| Editing                                                                                                                  | Styling                                                                                                                  |
-| ------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------ |
-| ![Editing](https://raw.githubusercontent.com/ismailyegnr/expandable_datatable/master/screenshots/editing.png){width=300} | ![Styling](https://raw.githubusercontent.com/ismailyegnr/expandable_datatable/master/screenshots/styling.png){width=300} |
+| Editing                                                                                                                                           | Styling                                                                                                                                           |
+| ------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <img src="https://raw.githubusercontent.com/ismailyegnr/expandable_datatable/master/screenshots/editing.png" alt="Editing" style="width: 300px;"> | <img src="https://raw.githubusercontent.com/ismailyegnr/expandable_datatable/master/screenshots/styling.png" alt="Styling" style="width: 300px;"> |
 
 ---
 
