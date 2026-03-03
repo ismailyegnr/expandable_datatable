@@ -110,7 +110,7 @@ class UsersTable extends StatelessWidget {
 
 ## Core API
 
-> **TL;DR** - place an `ExpandableDataTable(...)` widget in your tree, wrap it in `ExpandableTheme(data: ExpandableThemeData(...), child: ...)` to style it.
+> **TL;DR** - use `ExpandableDataTable(...)` as your main table widget; see the quick example above for setup and theming.
 
 ### What is `ExpandableDataTable`?
 
@@ -274,13 +274,19 @@ ExpandableDataTable(
   visibleColumnCount: 3,
   renderExpansionContent: (row) {
     // row.cells contains ALL cells, including visible ones.
+    final ageCell = row.cells.firstWhere(
+      (cell) => cell.columnTitle == 'Age',
+    );
+    final emailCell = row.cells.firstWhere(
+      (cell) => cell.columnTitle == 'Email',
+    );
     return Padding(
       padding: const EdgeInsets.all(12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Age: ${row.cells[3].value}'),
-          Text('Email: ${row.cells[4].value}'),
+          Text('Age: ${ageCell.value}'),
+          Text('Email: ${emailCell.value}'),
         ],
       ),
     );
