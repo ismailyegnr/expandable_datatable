@@ -1,6 +1,7 @@
 # Expandable DataTable
 
 [![pub.dev](https://img.shields.io/pub/v/expandable_datatable.svg)](https://pub.dev/packages/expandable_datatable)
+[![codecov](https://codecov.io/gh/ismailyegnr/expandable_datatable/graph/badge.svg)](https://app.codecov.io/gh/ismailyegnr/expandable_datatable)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Flutter](https://img.shields.io/badge/platform-Flutter-blue.svg)](https://flutter.dev)
 
