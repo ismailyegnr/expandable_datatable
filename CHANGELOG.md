@@ -1,4 +1,10 @@
-# 0.2.3 - 24/02/2026
+# 0.2.4 - 03/03/2026
+
+- Added `expansionIconAffinity` property for changing expansion icon place.
+- Added Codecov coverage analyzer.
+- Improved README for easier reading.
+
+## 0.2.3 - 24/02/2026
 
 - Fixed README screenshots.
 
