@@ -1,8 +1,11 @@
+import 'dart:typed_data';
+
 import 'package:expandable_datatable/src/model/expandable_column.dart';
 import 'package:expandable_datatable/src/model/expandable_row.dart';
 import 'package:expandable_datatable/src/model/sortable_row.dart';
 import 'package:expandable_datatable/src/utility/sort_information.dart';
 import 'package:expandable_datatable/src/utility/sort_operations.dart';
+import 'package:flutter/painting.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 // ---------------------------------------------------------------------------
@@ -364,6 +367,55 @@ void main() {
 
       final result = ops.sortAllRows(colScore, rows);
       expect(result.map((r) => r.row.cells[1].value).toList(), [10, 20, 50]);
+    });
+  });
+
+  // -------------------------------------------------------------------------
+  // ImageProvider sort (no-op — insertion order always preserved)
+  // -------------------------------------------------------------------------
+
+  group('ImageProvider sort (no-op)', () {
+    final col =
+        ExpandableColumn<ImageProvider>(columnTitle: 'pic', columnFlex: 1);
+
+    final img0 = MemoryImage(Uint8List(1));
+    final img1 = MemoryImage(Uint8List(2));
+    final img2 = MemoryImage(Uint8List(3));
+
+    final rows = _wrap([
+      _row(0, {'pic': img0}),
+      _row(1, {'pic': img1}),
+      _row(2, {'pic': img2}),
+    ]);
+
+    test('ASC leaves insertion order unchanged', () {
+      ops.changeSortDirection(col); // NORMAL → ASC
+
+      final result = ops.sortAllRows(col, rows);
+
+      expect(result.map((r) => r.index).toList(), [0, 1, 2]);
+    });
+
+    test('DESC reverses insertion order (no comparator, only reversal applied)',
+        () {
+      ops.changeSortDirection(col); // ASC
+      ops.changeSortDirection(col); // DESC
+
+      final result = ops.sortAllRows(col, rows);
+
+      // SortOperations always applies .reversed for DESC even when no
+      // comparator runs, so the result is the reverse of insertion order.
+      expect(result.map((r) => r.index).toList(), [2, 1, 0]);
+    });
+
+    test('NORMAL unsort leaves insertion order unchanged', () {
+      ops.changeSortDirection(col); // ASC
+      ops.changeSortDirection(col); // DESC
+      ops.changeSortDirection(col); // NORMAL
+
+      final result = ops.sortAllRows(col, rows);
+
+      expect(result.map((r) => r.index).toList(), [0, 1, 2]);
     });
   });
 }
