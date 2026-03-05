@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../constants/constants.dart';
 import '../extension/context_extension.dart';
 import '../model/cell_item.dart';
 
@@ -51,10 +52,21 @@ class ExpansionContainer extends StatelessWidget {
         ),
         Expanded(
           flex: 4,
-          child: Text(
-            "${element.value}",
-            style: expandedTextStyle,
-          ),
+          child: element.value is ImageProvider
+              ? Align(
+                  alignment: Alignment.centerLeft,
+                  child: SizedBox(
+                    height: GeneralConstants.imageColumnHeightExpansion,
+                    child: Image(
+                      image: element.value as ImageProvider,
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                )
+              : Text(
+                  "${element.value}",
+                  style: expandedTextStyle,
+                ),
         ),
       ],
     );

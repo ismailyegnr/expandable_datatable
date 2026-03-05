@@ -62,7 +62,11 @@ class _EditDialogState extends State<EditDialog> {
 
   void _initTextFields() {
     for (int i = 0; i < rowCells.length; i++) {
-      controllers[i].text = rowCells[i].value.toString();
+      // ImageProvider cannot be meaningfully serialized to text.
+      // Leave the controller empty; the field will be rendered read-only anyway.
+      controllers[i].text = rowCells[i].value is ImageProvider
+          ? ''
+          : rowCells[i].value.toString();
     }
   }
 
@@ -132,6 +136,14 @@ class _EditDialogState extends State<EditDialog> {
               value: double.parse(controllers[i].text),
             ),
           );
+        } else if (oldCell.value is ImageProvider) {
+          // ImageProvider is never editable; preserve original value unconditionally.
+          resultCellList.add(
+            ExpandableCell(
+              columnTitle: oldCell.columnTitle,
+              value: oldCell.value,
+            ),
+          );
         } else {
           throw NoSupportException(oldCell.value.runtimeType.toString());
         }
@@ -193,15 +205,17 @@ class _EditDialogState extends State<EditDialog> {
 
     for (int i = 0; i < rowCells.length; i++) {
       final ExpandableColumn? col = _columnFor(rowCells[i]);
+      final dynamic cellValue = rowCells[i].value;
 
       widgets.add(
         EditRow(
           controller: controllers[i],
           columnName: rowCells[i].columnTitle,
-          valueType: rowCells[i].value.runtimeType,
+          valueType: cellValue.runtimeType,
           isEditable: col?.isEditable ?? true,
           hintText: col?.hintText,
           baseDecoration: theme.editInputDecoration,
+          imageProvider: cellValue is ImageProvider ? cellValue : null,
         ),
       );
     }
@@ -225,6 +239,9 @@ class EditRow extends StatefulWidget {
   /// Base [InputDecoration] from the theme, merged with [hintText].
   final InputDecoration? baseDecoration;
 
+  /// When non-null, renders an image preview instead of a text input.
+  final ImageProvider? imageProvider;
+
   const EditRow({
     super.key,
     required this.controller,
@@ -233,6 +250,7 @@ class EditRow extends StatefulWidget {
     this.isEditable = true,
     this.hintText,
     this.baseDecoration,
+    this.imageProvider,
   });
 
   @override
@@ -252,12 +270,27 @@ class _EditRowState extends State<EditRow> {
           flex: 3,
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 3),
-            child: widget.valueType == bool
-                ? _buildBoolInput(widget.controller)
-                : _buildTextInput(widget.controller),
+            child: widget.imageProvider != null
+                ? _buildImagePreview(widget.imageProvider!)
+                : widget.valueType == bool
+                    ? _buildBoolInput(widget.controller)
+                    : _buildTextInput(widget.controller),
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildImagePreview(ImageProvider provider) {
+    return SizedBox(
+      height: GeneralConstants.imageColumnHeightExpansion,
+      child: Align(
+        alignment: Alignment.centerLeft,
+        child: Image(
+          image: provider,
+          fit: BoxFit.contain,
+        ),
+      ),
     );
   }
 

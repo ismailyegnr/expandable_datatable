@@ -85,6 +85,11 @@ class _MyHomePageState extends State<MyHomePage> {
         columnFlex: 1,
         isEditable: false,
       ),
+      ExpandableColumn<ImageProvider>(
+        columnTitle: "Profile Pic",
+        columnFlex: 2,
+        isEditable: false,
+      ),
       ExpandableColumn<String>(
         columnTitle: "First name",
         columnFlex: 2,
@@ -101,6 +106,10 @@ class _MyHomePageState extends State<MyHomePage> {
       return ExpandableRow(
         cells: [
           ExpandableCell<int>(columnTitle: "ID", value: e.id),
+          ExpandableCell<ImageProvider>(
+            columnTitle: "Profile Pic",
+            value: NetworkImage(e.image ?? ""),
+          ),
           ExpandableCell<String>(columnTitle: "First name", value: e.firstName),
           ExpandableCell<String>(columnTitle: "Last name", value: e.lastName),
           ExpandableCell<String>(
@@ -122,20 +131,20 @@ class _MyHomePageState extends State<MyHomePage> {
         child: !_isLoading
             ? LayoutBuilder(
                 builder: (context, constraints) {
-                  int visibleCount = 3;
+                  int visibleCount = 4;
                   if (constraints.maxWidth < 600) {
-                    visibleCount = 3;
-                  } else if (constraints.maxWidth < 800) {
                     visibleCount = 4;
-                  } else if (constraints.maxWidth < 1000) {
+                  } else if (constraints.maxWidth < 800) {
                     visibleCount = 5;
-                  } else {
+                  } else if (constraints.maxWidth < 1000) {
                     visibleCount = 6;
+                  } else {
+                    visibleCount = 7;
                   }
 
                   return ExpandableTheme(
                     data: ExpandableThemeData(
-                      contentPadding: const EdgeInsets.all(10),
+                      contentPadding: const EdgeInsets.all(0),
                       headerTextMaxLines: 2,
                       rowTextMaxLines: 2,
                       rowTextOverflow: TextOverflow.ellipsis,
