@@ -31,7 +31,8 @@ class TitleContainer extends StatelessWidget {
       ),
       child: element.value is ImageProvider
           ? SizedBox(
-              height: GeneralConstants.imageColumnHeightTitle,
+              height: context.expandableTheme.imageColumnHeightTitle ??
+                  GeneralConstants.imageColumnHeightTitle,
               child: Image(
                 image: element.value as ImageProvider,
                 frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {

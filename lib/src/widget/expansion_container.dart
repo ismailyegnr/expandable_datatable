@@ -56,7 +56,9 @@ class ExpansionContainer extends StatelessWidget {
               ? Align(
                   alignment: Alignment.centerLeft,
                   child: SizedBox(
-                    height: GeneralConstants.imageColumnHeightExpansion,
+                    height:
+                        context.expandableTheme.imageColumnHeightExpansion ??
+                            GeneralConstants.imageColumnHeightExpansion,
                     child: Image(
                       image: element.value as ImageProvider,
                       fit: BoxFit.contain,

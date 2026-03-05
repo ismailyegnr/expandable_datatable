@@ -144,7 +144,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
                   return ExpandableTheme(
                     data: ExpandableThemeData(
-                      contentPadding: const EdgeInsets.all(0),
+                      contentPadding: const EdgeInsets.all(10),
+                      headerHeight: 60,
                       headerTextMaxLines: 2,
                       rowTextMaxLines: 2,
                       rowTextOverflow: TextOverflow.ellipsis,

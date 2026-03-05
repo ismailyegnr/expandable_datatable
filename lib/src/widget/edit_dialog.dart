@@ -283,7 +283,8 @@ class _EditRowState extends State<EditRow> {
 
   Widget _buildImagePreview(ImageProvider provider) {
     return SizedBox(
-      height: GeneralConstants.imageColumnHeightExpansion,
+      height: context.expandableTheme.imageColumnHeightExpansion ??
+          GeneralConstants.imageColumnHeightExpansion,
       child: Align(
         alignment: Alignment.centerLeft,
         child: Image(
