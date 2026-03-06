@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:expandable_datatable/expandable_datatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -202,6 +204,256 @@ void main() {
       expect(find.text('Dave'), findsOneWidget);
       expect(find.text('Mike'), findsNothing);
       expect(find.text('Zara'), findsNothing);
+    });
+  });
+
+  // -------------------------------------------------------------------------
+  // isSortable = false behavior
+  // -------------------------------------------------------------------------
+
+  group('isSortable = false behavior', () {
+    testWidgets(
+        'tapping a column with isSortable:false never shows a sort icon',
+        (tester) async {
+      final headers = [
+        ExpandableColumn<String>(
+          columnTitle: 'Name',
+          columnFlex: 1,
+          isSortable: false,
+        ),
+        ExpandableColumn<String>(columnTitle: 'Score', columnFlex: 1),
+      ];
+
+      final rows = [
+        ExpandableRow(cells: [
+          ExpandableCell<String>(columnTitle: 'Name', value: 'Charlie'),
+          ExpandableCell<String>(columnTitle: 'Score', value: '30'),
+        ]),
+        ExpandableRow(cells: [
+          ExpandableCell<String>(columnTitle: 'Name', value: 'Alice'),
+          ExpandableCell<String>(columnTitle: 'Score', value: '10'),
+        ]),
+      ];
+
+      await tester.pumpWidget(MaterialApp(
+        home: Scaffold(
+          body: ExpandableDataTable(
+            headers: headers,
+            rows: rows,
+            visibleColumnCount: 2,
+            pageSize: 20,
+          ),
+        ),
+      ));
+
+      // Tap the non-sortable column three times — still no sort icon.
+      await tester.tap(find.text('Name').first);
+      await tester.pumpAndSettle();
+      expect(find.byIcon(Icons.arrow_drop_up), findsNothing);
+      expect(find.byIcon(Icons.arrow_drop_down), findsNothing);
+
+      await tester.tap(find.text('Name').first);
+      await tester.pumpAndSettle();
+      expect(find.byIcon(Icons.arrow_drop_up), findsNothing);
+      expect(find.byIcon(Icons.arrow_drop_down), findsNothing);
+    });
+
+    testWidgets('tapping a non-sortable column does not reorder rows',
+        (tester) async {
+      final headers = [
+        ExpandableColumn<String>(
+          columnTitle: 'Name',
+          columnFlex: 1,
+          isSortable: false,
+        ),
+      ];
+
+      final rows = [
+        ExpandableRow(cells: [
+          ExpandableCell<String>(columnTitle: 'Name', value: 'Charlie'),
+        ]),
+        ExpandableRow(cells: [
+          ExpandableCell<String>(columnTitle: 'Name', value: 'Alice'),
+        ]),
+        ExpandableRow(cells: [
+          ExpandableCell<String>(columnTitle: 'Name', value: 'Bob'),
+        ]),
+      ];
+
+      await tester.pumpWidget(MaterialApp(
+        home: Scaffold(
+          body: ExpandableDataTable(
+            headers: headers,
+            rows: rows,
+            visibleColumnCount: 1,
+            pageSize: 20,
+          ),
+        ),
+      ));
+
+      // Insertion order before tap: Charlie, Alice, Bob.
+      final charlieBefore = tester.getTopLeft(find.text('Charlie')).dy;
+      final aliceBefore = tester.getTopLeft(find.text('Alice')).dy;
+      final bobBefore = tester.getTopLeft(find.text('Bob')).dy;
+
+      expect(charlieBefore, lessThan(aliceBefore));
+      expect(aliceBefore, lessThan(bobBefore));
+
+      // Tap — order must be unchanged.
+      await tester.tap(find.text('Name').first);
+      await tester.pumpAndSettle();
+
+      expect(tester.getTopLeft(find.text('Charlie')).dy, charlieBefore);
+      expect(tester.getTopLeft(find.text('Alice')).dy, aliceBefore);
+      expect(tester.getTopLeft(find.text('Bob')).dy, bobBefore);
+    });
+
+    testWidgets(
+        'ImageProvider column (default isSortable:false) shows no sort icon on tap',
+        (tester) async {
+      final img = MemoryImage(Uint8List.fromList([
+        0x89,
+        0x50,
+        0x4E,
+        0x47,
+        0x0D,
+        0x0A,
+        0x1A,
+        0x0A,
+        0x00,
+        0x00,
+        0x00,
+        0x0D,
+        0x49,
+        0x48,
+        0x44,
+        0x52,
+        0x00,
+        0x00,
+        0x00,
+        0x01,
+        0x00,
+        0x00,
+        0x00,
+        0x01,
+        0x08,
+        0x06,
+        0x00,
+        0x00,
+        0x00,
+        0x1F,
+        0x15,
+        0xC4,
+        0x89,
+        0x00,
+        0x00,
+        0x00,
+        0x0A,
+        0x49,
+        0x44,
+        0x41,
+        0x54,
+        0x78,
+        0x9C,
+        0x62,
+        0x00,
+        0x01,
+        0x00,
+        0x00,
+        0x05,
+        0x00,
+        0x01,
+        0x0D,
+        0x0A,
+        0x2D,
+        0xB4,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x49,
+        0x45,
+        0x4E,
+        0x44,
+        0xAE,
+        0x42,
+        0x60,
+        0x82,
+      ]));
+
+      final headers = <ExpandableColumn<dynamic>>[
+        ExpandableColumn<String>(columnTitle: 'Name', columnFlex: 1),
+        ExpandableColumn<ImageProvider>(columnTitle: 'Photo', columnFlex: 1),
+      ];
+
+      final rows = [
+        ExpandableRow(cells: [
+          ExpandableCell<String>(columnTitle: 'Name', value: 'Alice'),
+          ExpandableCell<ImageProvider>(columnTitle: 'Photo', value: img),
+        ]),
+      ];
+
+      await tester.pumpWidget(MaterialApp(
+        home: Scaffold(
+          body: ExpandableDataTable(
+            headers: headers,
+            rows: rows,
+            visibleColumnCount: 2,
+            pageSize: 20,
+          ),
+        ),
+      ));
+
+      await tester.tap(find.text('Photo').first);
+      await tester.pumpAndSettle();
+
+      expect(find.byIcon(Icons.arrow_drop_up), findsNothing);
+      expect(find.byIcon(Icons.arrow_drop_down), findsNothing);
+    });
+
+    testWidgets(
+        'sortable column still works normally alongside a non-sortable column',
+        (tester) async {
+      final headers = <ExpandableColumn<dynamic>>[
+        ExpandableColumn<String>(
+          columnTitle: 'Name',
+          columnFlex: 1,
+          isSortable: false,
+        ),
+        ExpandableColumn<String>(columnTitle: 'Score', columnFlex: 1),
+      ];
+
+      final rows = [
+        ExpandableRow(cells: [
+          ExpandableCell<String>(columnTitle: 'Name', value: 'Charlie'),
+          ExpandableCell<String>(columnTitle: 'Score', value: '30'),
+        ]),
+        ExpandableRow(cells: [
+          ExpandableCell<String>(columnTitle: 'Name', value: 'Alice'),
+          ExpandableCell<String>(columnTitle: 'Score', value: '10'),
+        ]),
+        ExpandableRow(cells: [
+          ExpandableCell<String>(columnTitle: 'Name', value: 'Bob'),
+          ExpandableCell<String>(columnTitle: 'Score', value: '20'),
+        ]),
+      ];
+
+      await tester.pumpWidget(MaterialApp(
+        home: Scaffold(
+          body: ExpandableDataTable(
+            headers: headers,
+            rows: rows,
+            visibleColumnCount: 2,
+            pageSize: 20,
+          ),
+        ),
+      ));
+
+      // Tap the sortable Score column → ASC arrow should appear.
+      await tester.tap(find.text('Score').first);
+      await tester.pumpAndSettle();
+
+      expect(find.byIcon(Icons.arrow_drop_up), findsOneWidget);
     });
   });
 }
