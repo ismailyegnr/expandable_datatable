@@ -132,7 +132,7 @@ class TableHeader extends StatelessWidget {
 
     return GestureDetector(
       behavior: HitTestBehavior.translucent,
-      onTap: () => onTitleTap(column),
+      onTap: column.isSortable ? () => onTitleTap(column) : null,
       child: SizedBox(
         child: Padding(
           padding: const EdgeInsets.only(
@@ -151,7 +151,8 @@ class TableHeader extends StatelessWidget {
                 ),
               ),
               Visibility(
-                visible: currentSort.sortedColumn != null &&
+                visible: column.isSortable &&
+                    currentSort.sortedColumn != null &&
                     currentSort.sortedColumn == column,
                 child: currentSort.sortOption == SortOption.ASC
                     ? Icon(
