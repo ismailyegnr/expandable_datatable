@@ -321,7 +321,10 @@ class _ExpandableDataTableState extends State<ExpandableDataTable> {
     final String placeholder = widget.nullValuePlaceholder;
 
     for (var element in rowData.cells) {
-      final String displayValue = element.value?.toString() ?? placeholder;
+      // Preserve ImageProvider objects as-is; convert everything else to String.
+      final dynamic displayValue = element.value is ImageProvider
+          ? element.value
+          : (element.value?.toString() ?? placeholder);
 
       if (headerNames.contains(element.columnTitle)) {
         int headerInd = _headerTitles

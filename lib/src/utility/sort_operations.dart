@@ -1,3 +1,5 @@
+import 'package:flutter/painting.dart';
+
 import '../extension/sort_extension.dart';
 import '../model/expandable_column.dart';
 import '../model/sortable_row.dart';
@@ -45,6 +47,9 @@ class SortOperations {
         break;
       case bool:
         tempSortArray.sortBoolAscending(column.columnTitle);
+        break;
+      case ImageProvider:
+        // No scalar value to sort by — leave order unchanged.
         break;
       default:
         tempSortArray.sortNumAscending(column.columnTitle);

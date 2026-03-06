@@ -135,7 +135,7 @@ class TableHeader extends StatelessWidget {
       onTap: () => onTitleTap(column),
       child: SizedBox(
         child: Padding(
-          padding: EdgeInsets.symmetric(vertical: context.lowValue).copyWith(
+          padding: const EdgeInsets.only(
             right: GeneralConstants.titlePadding,
           ),
           child: Row(

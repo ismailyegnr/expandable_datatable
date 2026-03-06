@@ -186,6 +186,16 @@ class ExpandableThemeData {
   /// If null, defaults to `EdgeInsets.symmetric(horizontal: 0.02 * screenHeight, vertical: 0.01 * screenHeight)`.
   final EdgeInsetsGeometry? expansionCellPadding;
 
+  /// Height of image cells in the header/title row.
+  ///
+  /// If null, defaults to `36.0`.
+  final double? imageColumnHeightTitle;
+
+  /// Height of image cells in the expansion content and edit dialog.
+  ///
+  /// If null, defaults to `64.0`.
+  final double? imageColumnHeightExpansion;
+
   /// --------------------------------------------------------------------------
   /// Edit dialog properties
   /// --------------------------------------------------------------------------
@@ -280,6 +290,8 @@ class ExpandableThemeData {
     this.expansionAnimationStyle,
     this.expansionChildrenPadding,
     this.expansionCellPadding,
+    this.imageColumnHeightTitle,
+    this.imageColumnHeightExpansion,
     this.editDialogTitleStyle,
     this.editDialogBackgroundColor,
     this.editDialogShape,
