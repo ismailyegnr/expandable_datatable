@@ -86,7 +86,7 @@ class _MyHomePageState extends State<MyHomePage> {
         isEditable: false,
       ),
       ExpandableColumn<ImageProvider>(
-        columnTitle: "Profile Pic",
+        columnTitle: "Picture",
         columnFlex: 2,
         isEditable: false,
       ),
@@ -107,7 +107,7 @@ class _MyHomePageState extends State<MyHomePage> {
         cells: [
           ExpandableCell<int>(columnTitle: "ID", value: e.id),
           ExpandableCell<ImageProvider>(
-            columnTitle: "Profile Pic",
+            columnTitle: "Picture",
             value: NetworkImage(e.image ?? ""),
           ),
           ExpandableCell<String>(columnTitle: "First name", value: e.firstName),
