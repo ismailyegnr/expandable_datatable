@@ -1,4 +1,11 @@
-# 0.2.4 - 03/03/2026
+# 0.3.0 - 07/03/2026
+
+- Added `ImageProvider` as a new `ExpandableColumn` type to render images as cells.
+- Added image size properties to `ExpandableTheme`.
+- Added `isSortable` property to `ExpandableColumn`.
+- Added image screenshots to README.
+
+## 0.2.4 - 03/03/2026
 
 - Added `expansionIconAffinity` property for changing expansion icon place.
 - Added Codecov coverage analyzer.

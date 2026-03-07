@@ -251,6 +251,13 @@ Properties are grouped by the part of the table they affect.
 | `editCancelButtonTextStyle` | Text style for the CANCEL button.                                                   |
 | `editInputDecoration`       | Base `InputDecoration` for all text fields. Per-column `hintText` takes precedence. |
 
+#### **Images**
+
+| Property                     | Description                                                   |
+| ---------------------------- | ------------------------------------------------------------- |
+| `imageColumnHeightTitle`     | Height of image cells in the header row.                      |
+| `imageColumnHeightExpansion` | Height of image cells in the expansion panel and edit dialog. |
+
 #### **Pagination**
 
 | Property                        | Description                                            |
