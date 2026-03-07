@@ -350,6 +350,8 @@ class _ExpandableDataTableState extends State<ExpandableDataTable> {
 
   /// Sort rows by selected column.
   void _sortRowsByColumn(ExpandableColumn column) {
+    if (!column.isSortable) return;
+
     // Resets the page and go back to first page.
     _currentPage = 0;
 

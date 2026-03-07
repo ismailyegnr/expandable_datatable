@@ -418,4 +418,53 @@ void main() {
       expect(result.map((r) => r.index).toList(), [0, 1, 2]);
     });
   });
+
+  // -------------------------------------------------------------------------
+  // isSortable defaults
+  // -------------------------------------------------------------------------
+
+  group('isSortable defaults', () {
+    test('ExpandableColumn<ImageProvider> defaults isSortable to false', () {
+      final col = ExpandableColumn<ImageProvider>(
+        columnTitle: 'pic',
+        columnFlex: 1,
+      );
+      expect(col.isSortable, isFalse);
+    });
+
+    test('ExpandableColumn<String> defaults isSortable to true', () {
+      final col = ExpandableColumn<String>(columnTitle: 'name', columnFlex: 1);
+      expect(col.isSortable, isTrue);
+    });
+
+    test('ExpandableColumn<int> defaults isSortable to true', () {
+      final col = ExpandableColumn<int>(columnTitle: 'score', columnFlex: 1);
+      expect(col.isSortable, isTrue);
+    });
+
+    test('ExpandableColumn<bool> defaults isSortable to true', () {
+      final col = ExpandableColumn<bool>(columnTitle: 'active', columnFlex: 1);
+      expect(col.isSortable, isTrue);
+    });
+
+    test('isSortable can be explicitly overridden to true on ImageProvider',
+        () {
+      final col = ExpandableColumn<ImageProvider>(
+        columnTitle: 'pic',
+        columnFlex: 1,
+        isSortable: true,
+      );
+      expect(col.isSortable, isTrue);
+    });
+
+    test('isSortable can be explicitly overridden to false on non-image type',
+        () {
+      final col = ExpandableColumn<String>(
+        columnTitle: 'name',
+        columnFlex: 1,
+        isSortable: false,
+      );
+      expect(col.isSortable, isFalse);
+    });
+  });
 }
