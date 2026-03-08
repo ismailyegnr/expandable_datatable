@@ -225,7 +225,17 @@ class _ExpandableDataTableState extends State<ExpandableDataTable> {
   final ScrollController _scrollController = ScrollController();
   final SortOperations _sortOperations = SortOperations();
 
-  List<ExpandableColumn> _headerTitles = [];
+  /// List of currently visible columns, derived from [widget.headers] and
+  /// [widget.visibleColumnCount].
+  List<ExpandableColumn> _visibleColumns = [];
+
+  /// Maps column titles to their corresponding [ExpandableColumn] objects for
+  /// quick lookup when building rows. Updated in [_updateHeaderTitles] whenever headers or visible column count changes.
+  Map<String, ExpandableColumn> _columnsByTitle = {};
+
+  /// Titles of visible columns, kept as a [Set] for O(1) membership checks
+  /// in [_createRowCells].
+  Set<String> _visibleColumnTitles = {};
 
   /// Stores the sorted state data of the data table.
   ///
@@ -288,9 +298,11 @@ class _ExpandableDataTableState extends State<ExpandableDataTable> {
 
   void _updateHeaderTitles() {
     if (widget.headers.isNotEmpty) {
-      _headerTitles = widget.headers
+      _visibleColumns = widget.headers
           .sublist(0, min(widget.visibleColumnCount, widget.headers.length));
+      _visibleColumnTitles = {for (final c in _visibleColumns) c.columnTitle};
     }
+    _columnsByTitle = {for (final c in widget.headers) c.columnTitle: c};
   }
 
   /// Create or update two dimension sorted rows list
@@ -313,7 +325,6 @@ class _ExpandableDataTableState extends State<ExpandableDataTable> {
   /// Handles the row data by, loading titleCells and expansionCells lists for
   /// expansion tiles.
   void _createRowCells(
-    List<String> headerNames,
     ExpandableRow rowData,
     List<CellItem> titleCells,
     List<CellItem> expansionCells,
@@ -321,20 +332,24 @@ class _ExpandableDataTableState extends State<ExpandableDataTable> {
     final String placeholder = widget.nullValuePlaceholder;
 
     for (var element in rowData.cells) {
+      final ExpandableColumn? column = _columnsByTitle[element.columnTitle];
+
+      // Skip cells whose column title no longer exists in the current headers
+      // (can happen transiently when headers and rows are updated separately).
+      if (column == null) continue;
+
       // Preserve ImageProvider objects as-is; convert everything else to String.
       final dynamic displayValue = element.value is ImageProvider
           ? element.value
           : (element.value?.toString() ?? placeholder);
 
-      if (headerNames.contains(element.columnTitle)) {
-        int headerInd = _headerTitles
-            .indexWhere((val) => val.columnTitle == element.columnTitle);
-
+      if (_visibleColumnTitles.contains(element.columnTitle)) {
         titleCells.add(
           CellItem(
             columnName: element.columnTitle,
             value: displayValue,
-            flex: _headerTitles[headerInd].columnFlex,
+            flex: column.columnFlex,
+            cellBuilder: column.cellBuilder,
           ),
         );
       } else {
@@ -342,6 +357,7 @@ class _ExpandableDataTableState extends State<ExpandableDataTable> {
           CellItem(
             columnName: element.columnTitle,
             value: displayValue,
+            cellBuilder: column.cellBuilder,
           ),
         );
       }
@@ -451,12 +467,6 @@ class _ExpandableDataTableState extends State<ExpandableDataTable> {
   }
 
   Widget buildRows() {
-    List<String> headerNames = [];
-
-    for (var element in _headerTitles) {
-      headerNames.add(element.columnTitle);
-    }
-
     return Scrollbar(
       controller: _scrollController,
       child: ListView.builder(
@@ -470,7 +480,7 @@ class _ExpandableDataTableState extends State<ExpandableDataTable> {
           List<CellItem> expansionCells = [];
           List<CellItem> titleCells = [];
 
-          _createRowCells(headerNames, rowData, titleCells, expansionCells);
+          _createRowCells(rowData, titleCells, expansionCells);
 
           return buildSingleRow(
               context, index, rowData, expansionCells, titleCells);
@@ -515,7 +525,7 @@ class _ExpandableDataTableState extends State<ExpandableDataTable> {
 
   Widget buildHeader() {
     return TableHeader(
-      headerRow: _headerTitles,
+      headerRow: _visibleColumns,
       currentSort: _sortOperations.sortInformation,
       onTitleTap: _sortRowsByColumn,
       isEditable: widget.isEditable,
