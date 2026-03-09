@@ -1,4 +1,4 @@
-import 'package:flutter/painting.dart';
+import 'package:flutter/material.dart';
 
 class ExpandableColumn<T> {
   String columnTitle;
@@ -24,6 +24,28 @@ class ExpandableColumn<T> {
   /// Defaults to false for [ImageProvider] columns and true for all others.
   final bool isSortable;
 
+  /// Optional per-column cell builder. When provided, this callback is used
+  /// to render every cell in this column instead of the built-in type
+  /// inference logic.
+  ///
+  /// ```dart
+  /// ExpandableColumn<ImageProvider>(
+  ///   columnTitle: 'Avatar',
+  ///   columnFlex: 2,
+  ///   cellBuilder: (context, value) {
+  ///     return ClipRRect(
+  ///       borderRadius: BorderRadius.circular(8),
+  ///       child: Image(
+  ///         image: value as ImageProvider,
+  ///         height: 56,
+  ///         fit: BoxFit.cover,
+  ///       ),
+  ///     );
+  ///   },
+  /// )
+  /// ```
+  final Widget Function(BuildContext context, dynamic value)? cellBuilder;
+
   Type get type => T;
 
   ExpandableColumn({
@@ -32,5 +54,6 @@ class ExpandableColumn<T> {
     this.isEditable = true,
     this.hintText,
     bool? isSortable,
+    this.cellBuilder,
   }) : isSortable = isSortable ?? (T != ImageProvider);
 }

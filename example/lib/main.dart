@@ -37,7 +37,6 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   List<Users> userList = [];
 
-  late List<ExpandableColumn<dynamic>> headers;
   late List<ExpandableRow> rows;
 
   bool _isLoading = true;
@@ -79,29 +78,6 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void createDataSource() {
-    headers = [
-      ExpandableColumn<int>(
-        columnTitle: "ID",
-        columnFlex: 1,
-        isEditable: false,
-      ),
-      ExpandableColumn<ImageProvider>(
-        columnTitle: "Picture",
-        columnFlex: 2,
-        isEditable: false,
-      ),
-      ExpandableColumn<String>(
-        columnTitle: "First name",
-        columnFlex: 2,
-        hintText: "Enter first name",
-      ),
-      ExpandableColumn<String>(columnTitle: "Last name", columnFlex: 2),
-      ExpandableColumn<String>(columnTitle: "Maiden name", columnFlex: 2),
-      ExpandableColumn<int>(columnTitle: "Age", columnFlex: 1),
-      ExpandableColumn<String>(columnTitle: "Gender", columnFlex: 1),
-      ExpandableColumn<String>(columnTitle: "Email", columnFlex: 4),
-    ];
-
     rows = userList.map<ExpandableRow>((e) {
       return ExpandableRow(
         cells: [
@@ -188,7 +164,81 @@ class _MyHomePageState extends State<MyHomePage> {
                       ),
                     ),
                     child: ExpandableDataTable(
-                      headers: headers,
+                      headers: [
+                        ExpandableColumn<int>(
+                          columnTitle: "ID",
+                          columnFlex: 1,
+                          isEditable: false,
+                        ),
+                        ExpandableColumn<ImageProvider>(
+                          columnTitle: "Picture",
+                          columnFlex: 2,
+                          isEditable: false,
+                          // Example: custom cellBuilder with rounded corners and cover fit.
+                          cellBuilder: (context, value) {
+                            return Container(
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Colors.purple[300],
+                              ),
+                              height: 48,
+                              width: 48,
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: ClipOval(
+                                  child: Image(
+                                    image: value as ImageProvider,
+                                    fit: BoxFit.cover,
+                                    frameBuilder:
+                                        (
+                                          context,
+                                          child,
+                                          frame,
+                                          wasSynchronouslyLoaded,
+                                        ) {
+                                          if (wasSynchronouslyLoaded) {
+                                            return child;
+                                          }
+                                          return AnimatedOpacity(
+                                            opacity: frame == null ? 0 : 1,
+                                            duration: const Duration(
+                                              milliseconds: 400,
+                                            ),
+                                            child: child,
+                                          );
+                                        },
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                        ExpandableColumn<String>(
+                          columnTitle: "First name",
+                          columnFlex: 2,
+                          hintText: "Enter first name",
+                        ),
+                        ExpandableColumn<String>(
+                          columnTitle: "Last name",
+                          columnFlex: 2,
+                        ),
+                        ExpandableColumn<String>(
+                          columnTitle: "Maiden name",
+                          columnFlex: 2,
+                        ),
+                        ExpandableColumn<int>(
+                          columnTitle: "Age",
+                          columnFlex: 1,
+                        ),
+                        ExpandableColumn<String>(
+                          columnTitle: "Gender",
+                          columnFlex: 1,
+                        ),
+                        ExpandableColumn<String>(
+                          columnTitle: "Email",
+                          columnFlex: 4,
+                        ),
+                      ],
                       rows: rows,
                       isEditable: true,
                       pageSize: 8,

@@ -52,23 +52,25 @@ class ExpansionContainer extends StatelessWidget {
         ),
         Expanded(
           flex: 4,
-          child: element.value is ImageProvider
-              ? Align(
-                  alignment: Alignment.centerLeft,
-                  child: SizedBox(
-                    height:
-                        context.expandableTheme.imageColumnHeightExpansion ??
+          child: element.cellBuilder != null
+              ? element.cellBuilder!(context, element.value)
+              : element.value is ImageProvider
+                  ? Align(
+                      alignment: Alignment.centerLeft,
+                      child: SizedBox(
+                        height: context
+                                .expandableTheme.imageColumnHeightExpansion ??
                             GeneralConstants.imageColumnHeightExpansion,
-                    child: Image(
-                      image: element.value as ImageProvider,
-                      fit: BoxFit.contain,
+                        child: Image(
+                          image: element.value as ImageProvider,
+                          fit: BoxFit.contain,
+                        ),
+                      ),
+                    )
+                  : Text(
+                      "${element.value}",
+                      style: expandedTextStyle,
                     ),
-                  ),
-                )
-              : Text(
-                  "${element.value}",
-                  style: expandedTextStyle,
-                ),
         ),
       ],
     );

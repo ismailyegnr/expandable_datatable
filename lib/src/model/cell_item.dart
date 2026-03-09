@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 /// [ExpansionTile] title class that helps to build rows.
 ///
 /// Multiple [CellItem] creates a title of the row.
@@ -11,9 +13,16 @@ class CellItem {
   /// The flexible value you want this cell to contain
   int? flex;
 
+  /// Resolved per-cell rendering callback, copied from the matching
+  /// [ExpandableColumn.cellBuilder] by [ExpandableDataTable._createRowCells].
+  /// When non-null, this widget is returned directly by the cell rendering
+  /// methods, bypassing the built-in type inference.
+  final Widget Function(BuildContext context, dynamic value)? cellBuilder;
+
   CellItem({
     required this.columnName,
     this.value,
     this.flex,
+    this.cellBuilder,
   });
 }

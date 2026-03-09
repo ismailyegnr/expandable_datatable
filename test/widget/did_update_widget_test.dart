@@ -362,5 +362,76 @@ void main() {
       expect(find.text('NewName'), findsOneWidget);
       expect(find.text('OldName'), findsNothing);
     });
+
+    testWidgets(
+        'orphaned cell (header swapped, rows not yet updated) is silently '
+        'dropped — not leaked into the expansion panel', (tester) async {
+      // This test guards against the old accidental behaviour where a cell
+      // whose columnTitle no longer existed in `headers` would fall through
+      // to `expansionCells` and appear in the expansion panel as "OldName: x".
+      //
+      // New behaviour: the cell is skipped entirely for that transient frame.
+
+      var headers = [
+        ExpandableColumn<String>(columnTitle: 'OldName', columnFlex: 1),
+      ];
+
+      // Two columns so expansion panel is reachable (visibleColumnCount: 1).
+      final rows = [
+        ExpandableRow(cells: [
+          ExpandableCell<String>(columnTitle: 'OldName', value: 'orphan'),
+        ]),
+      ];
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: StatefulBuilder(
+              builder: (context, setState) {
+                return Column(
+                  children: [
+                    TextButton(
+                      // Only swap headers — rows intentionally keep "OldName".
+                      onPressed: () => setState(() => headers = [
+                            ExpandableColumn<String>(
+                                columnTitle: 'NewName', columnFlex: 1),
+                          ]),
+                      child: const Text('SWAP HEADERS'),
+                    ),
+                    Expanded(
+                      child: ExpandableDataTable(
+                        headers: headers,
+                        rows: rows,
+                        visibleColumnCount: 1,
+                        pageSize: 10,
+                      ),
+                    ),
+                  ],
+                );
+              },
+            ),
+          ),
+        ),
+      );
+
+      // Before swap: "OldName" header and "orphan" value visible.
+      expect(find.text('OldName'), findsOneWidget);
+      expect(find.text('orphan'), findsOneWidget);
+
+      await tester.tap(find.text('SWAP HEADERS'));
+      await tester.pumpAndSettle();
+
+      // "NewName" header is shown; the orphaned cell value must not appear
+      // anywhere — not in the title row, not leaked into the expansion panel.
+      expect(find.text('NewName'), findsOneWidget);
+      expect(find.text('orphan'), findsNothing);
+
+      // Because the orphaned cell was dropped, expansionCells is empty and
+      // the expansion arrow is not rendered — confirming nothing leaked.
+      // (Old behaviour: the cell would fall through to expansionCells,
+      // keeping the arrow visible and showing "OldName: orphan" inside.)
+      expect(find.byIcon(Icons.expand_more), findsNothing);
+      expect(find.text('OldName:'), findsNothing); // old label format
+    });
   });
 }
