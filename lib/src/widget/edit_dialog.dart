@@ -329,27 +329,17 @@ class _EditRowState extends State<EditRow> {
   }
 
   Widget _buildBoolInput(TextEditingController controller) {
-    String dropdownVal = controller.text;
-
-    return DropdownButtonHideUnderline(
-      child: DropdownButton<String>(
-        value: dropdownVal,
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: Switch(
+        value: controller.text == 'true',
         onChanged: widget.isEditable
-            ? (String? newValue) {
+            ? (bool newValue) {
                 setState(() {
-                  controller.text = newValue!;
-                  dropdownVal = controller.text;
+                  controller.text = newValue.toString();
                 });
               }
             : null,
-        items: <String>['true', 'false'].map<DropdownMenuItem<String>>(
-          (String value) {
-            return DropdownMenuItem<String>(
-              value: value,
-              child: Text(value),
-            );
-          },
-        ).toList(),
       ),
     );
   }
