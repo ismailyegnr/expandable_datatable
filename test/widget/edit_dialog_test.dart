@@ -509,4 +509,142 @@ void main() {
       expect(saveText.style?.color, saveColor);
     });
   });
+
+  group('bool cell renders as Switch', () {
+    List<ExpandableColumn> boolHeaders() => [
+          ExpandableColumn<String>(columnTitle: 'Name', columnFlex: 1),
+          ExpandableColumn<bool>(columnTitle: 'Active', columnFlex: 1),
+        ];
+
+    ExpandableRow boolRow(String name, bool active) => ExpandableRow(
+          cells: [
+            ExpandableCell<String>(columnTitle: 'Name', value: name),
+            ExpandableCell<bool>(columnTitle: 'Active', value: active),
+          ],
+        );
+
+    testWidgets('bool cell renders a Switch, not a DropdownButton',
+        (tester) async {
+      await tester.pumpWidget(
+        _buildEditableTable(
+          headers: boolHeaders(),
+          rows: [boolRow('Alice', true)],
+        ),
+      );
+
+      await tester.tap(find.byIcon(Icons.edit).first);
+      await tester.pumpAndSettle();
+
+      expect(find.byType(Switch), findsOneWidget);
+      expect(find.byType(DropdownButton<String>), findsNothing);
+    });
+
+    testWidgets('Switch reflects initial true value', (tester) async {
+      await tester.pumpWidget(
+        _buildEditableTable(
+          headers: boolHeaders(),
+          rows: [boolRow('Alice', true)],
+        ),
+      );
+
+      await tester.tap(find.byIcon(Icons.edit).first);
+      await tester.pumpAndSettle();
+
+      final sw = tester.widget<Switch>(find.byType(Switch));
+      expect(sw.value, isTrue);
+    });
+
+    testWidgets('Switch reflects initial false value', (tester) async {
+      await tester.pumpWidget(
+        _buildEditableTable(
+          headers: boolHeaders(),
+          rows: [boolRow('Bob', false)],
+        ),
+      );
+
+      await tester.tap(find.byIcon(Icons.edit).first);
+      await tester.pumpAndSettle();
+
+      final sw = tester.widget<Switch>(find.byType(Switch));
+      expect(sw.value, isFalse);
+    });
+
+    testWidgets('toggling Switch from true to false saves false',
+        (tester) async {
+      ExpandableRow? result;
+
+      await tester.pumpWidget(
+        _buildEditableTable(
+          headers: boolHeaders(),
+          rows: [boolRow('Alice', true)],
+          onRowChanged: (row, _) => result = row,
+        ),
+      );
+
+      await tester.tap(find.byIcon(Icons.edit).first);
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byType(Switch));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('SAVE'));
+      await tester.pumpAndSettle();
+
+      final activeCell =
+          result!.cells.firstWhere((c) => c.columnTitle == 'Active');
+      expect(activeCell.value, isFalse);
+    });
+
+    testWidgets('toggling Switch from false to true saves true',
+        (tester) async {
+      ExpandableRow? result;
+
+      await tester.pumpWidget(
+        _buildEditableTable(
+          headers: boolHeaders(),
+          rows: [boolRow('Bob', false)],
+          onRowChanged: (row, _) => result = row,
+        ),
+      );
+
+      await tester.tap(find.byIcon(Icons.edit).first);
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byType(Switch));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('SAVE'));
+      await tester.pumpAndSettle();
+
+      final activeCell =
+          result!.cells.firstWhere((c) => c.columnTitle == 'Active');
+      expect(activeCell.value, isTrue);
+    });
+
+    testWidgets('non-editable bool column renders disabled Switch',
+        (tester) async {
+      final headers = [
+        ExpandableColumn<bool>(
+          columnTitle: 'Active',
+          columnFlex: 1,
+          isEditable: false,
+        ),
+      ];
+      final rows = [
+        ExpandableRow(
+          cells: [ExpandableCell<bool>(columnTitle: 'Active', value: true)],
+        ),
+      ];
+
+      await tester.pumpWidget(
+        _buildEditableTable(headers: headers, rows: rows),
+      );
+
+      await tester.tap(find.byIcon(Icons.edit).first);
+      await tester.pumpAndSettle();
+
+      final sw = tester.widget<Switch>(find.byType(Switch));
+      expect(sw.onChanged, isNull);
+    });
+  });
 }
