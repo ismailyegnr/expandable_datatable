@@ -96,6 +96,11 @@ class _MainScreenState extends State<MainScreen> {
                 editedUser.password = cell.value;
                 break;
               }
+            case "isActive":
+              {
+                editedUser.isActive = cell.value;
+                break;
+              }
           }
         }
 
@@ -108,6 +113,7 @@ class _MainScreenState extends State<MainScreen> {
     ExpandableColumn<String>(columnTitle: "name", columnFlex: 1),
     ExpandableColumn<String>(columnTitle: "email", columnFlex: 1),
     ExpandableColumn<String>(columnTitle: "password", columnFlex: 1),
+    ExpandableColumn<bool>(columnTitle: "isActive", columnFlex: 1),
   ];
 
   List<ExpandableRow> rows(List<User> userList) {
@@ -117,6 +123,7 @@ class _MainScreenState extends State<MainScreen> {
           ExpandableCell<String>(columnTitle: "name", value: e.name),
           ExpandableCell<String>(columnTitle: "email", value: e.email),
           ExpandableCell<String>(columnTitle: "password", value: e.password),
+          ExpandableCell<bool>(columnTitle: "isActive", value: e.isActive),
         ],
       );
     }).toList();
@@ -125,10 +132,30 @@ class _MainScreenState extends State<MainScreen> {
 
 class MainViewModel extends ChangeNotifier {
   List<User> users = [
-    User(name: 'User 1', email: 'user1@naver.com', password: '1'),
-    User(name: 'User 2', email: 'user2@naver.com', password: '2'),
-    User(name: 'User 3', email: 'user3@naver.com', password: '3'),
-    User(name: 'User 4', email: 'user4@naver.com', password: '4'),
+    User(
+      name: 'User 1',
+      email: 'user1@naver.com',
+      password: '1',
+      isActive: true,
+    ),
+    User(
+      name: 'User 2',
+      email: 'user2@naver.com',
+      password: '2',
+      isActive: true,
+    ),
+    User(
+      name: 'User 3',
+      email: 'user3@naver.com',
+      password: '3',
+      isActive: false,
+    ),
+    User(
+      name: 'User 4',
+      email: 'user4@naver.com',
+      password: '4',
+      isActive: true,
+    ),
   ];
   int count = 4;
   bool isLoading = false;
@@ -142,6 +169,7 @@ class MainViewModel extends ChangeNotifier {
       name: 'User $count',
       email: 'user$count@naver.com',
       password: count.toString(),
+      isActive: true,
     );
 
     users.add(user);
@@ -172,6 +200,12 @@ class User {
   String name;
   String email;
   String password;
+  bool isActive;
 
-  User({required this.name, required this.email, required this.password});
+  User({
+    required this.name,
+    required this.email,
+    required this.password,
+    this.isActive = true,
+  });
 }
