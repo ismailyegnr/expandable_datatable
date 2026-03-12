@@ -1,4 +1,5 @@
 import 'package:expandable_datatable/expandable_datatable.dart';
+import 'package:expandable_datatable/src/widget/pagination_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -251,5 +252,285 @@ void main() {
       expect(find.text('r0c0'), findsNothing);
       expect(find.text('r6c0'), findsNothing);
     });
+  });
+
+  // ---------------------------------------------------------------------------
+  // Dynamic-window pagination (totalPageCount > maxVisiblePage)
+  //
+  // Configuration for all tests below:
+  //   totalPageCount = 10, maxVisiblePage = 4  →  midPointMargin = 2
+  //
+  // Button layout: [prev(0), label(1), label(2), label(3), label(4), next(5)]
+  //   → 6 buttons total (maxVisiblePage + 2)
+  // ---------------------------------------------------------------------------
+  group('pagination — dynamic window (totalPageCount > maxVisiblePage)', () {
+    // Stateless helper: builds a PaginationWidget at a fixed currentPage.
+    Widget staticPage(int currentPage, {int total = 10, int maxVisible = 4}) =>
+        MaterialApp(
+          home: Scaffold(
+            body: PaginationWidget(
+              currentPage: currentPage,
+              totalPageCount: total,
+              onChanged: (_) {},
+              maxVisiblePage: maxVisible,
+            ),
+          ),
+        );
+
+    // Stateful helper: holds page state so taps and external jumps both work.
+    Widget drivablePage({
+      required int Function() getPage,
+      required void Function(StateSetter setter, int newPage) onChanged,
+      int total = 10,
+      int maxVisible = 4,
+    }) =>
+        MaterialApp(
+          home: Scaffold(
+            body: StatefulBuilder(
+              builder: (_, setState) => PaginationWidget(
+                currentPage: getPage(),
+                totalPageCount: total,
+                onChanged: (p) => onChanged(setState, p),
+                maxVisiblePage: maxVisible,
+              ),
+            ),
+          ),
+        );
+
+    testWidgets(
+      'button count is fixed at maxVisiblePage + 2',
+      (tester) async {
+        await tester.pumpWidget(staticPage(0));
+
+        final tb = tester.widget<ToggleButtons>(find.byType(ToggleButtons));
+        // 4 page-number buttons + prev + next
+        expect(tb.children.length, 6);
+      },
+    );
+
+    testWidgets(
+      'initial window is left-clamped — shows labels 1..maxVisiblePage',
+      (tester) async {
+        // Page 0: _changeMidPoint(0) → 0 < midPointMargin(2) → _midPoint=2
+        // Labels: 2+0-2+1=1, …, 2+3-2+1=4  →  1 2 3 4
+        await tester.pumpWidget(staticPage(0));
+
+        for (final label in ['1', '2', '3', '4']) {
+          expect(find.text(label), findsOneWidget, reason: 'label $label');
+        }
+        expect(find.text('5'), findsNothing);
+      },
+    );
+
+    testWidgets(
+      'window slides into the middle zone when page crosses midPointMargin',
+      (tester) async {
+        // After 3 taps right: page 0→1→2→3
+        // _changeMidPoint(3): 3 not <2, not >8  →  _midPoint=3
+        // Labels: 3+0-2+1=2, …, 3+3-2+1=5  →  2 3 4 5
+        int page = 0;
+        await tester.pumpWidget(drivablePage(
+          getPage: () => page,
+          onChanged: (setState, p) => setState(() => page = p),
+        ));
+
+        for (int i = 0; i < 3; i++) {
+          await tester.tap(find.byIcon(Icons.keyboard_arrow_right).first);
+          await tester.pumpAndSettle();
+        }
+
+        expect(find.text('1'), findsNothing);
+        for (final label in ['2', '3', '4', '5']) {
+          expect(find.text(label), findsOneWidget, reason: 'label $label');
+        }
+        expect(find.text('6'), findsNothing);
+      },
+    );
+
+    testWidgets(
+      'selected toggle button matches the current page in the dynamic window',
+      (tester) async {
+        // At page 3, _midPoint=3, labels 2 3 4 5.
+        // toggleIndex = (midPointMargin+1) + (page - _midPoint) = 3 + 0 = 3
+        // → isSelected[3] = true  →  children[3] = Text("4")
+        int page = 0;
+        late StateSetter jump;
+
+        await tester.pumpWidget(MaterialApp(
+          home: Scaffold(
+            body: StatefulBuilder(
+              builder: (_, setState) {
+                jump = setState;
+                return PaginationWidget(
+                  currentPage: page,
+                  totalPageCount: 10,
+                  onChanged: (p) => setState(() => page = p),
+                  maxVisiblePage: 4,
+                );
+              },
+            ),
+          ),
+        ));
+
+        jump(() => page = 3);
+        await tester.pumpAndSettle();
+
+        final tb = tester.widget<ToggleButtons>(find.byType(ToggleButtons));
+        expect(tb.isSelected[3], isTrue,
+            reason: 'page 3 maps to toggle index 3 (label "4")');
+        expect(tb.isSelected[2], isFalse);
+        expect(tb.isSelected[4], isFalse);
+      },
+    );
+
+    testWidgets(
+      'window is right-clamped on last pages — shows last maxVisiblePage labels',
+      (tester) async {
+        // Page 9: _changeMidPoint(9) → 9 > 10-4+2=8  →  _midPoint=8
+        // Labels: 8+0-2+1=7, …, 8+3-2+1=10  →  7 8 9 10
+        int page = 0;
+        late StateSetter jump;
+
+        await tester.pumpWidget(MaterialApp(
+          home: Scaffold(
+            body: StatefulBuilder(
+              builder: (_, setState) {
+                jump = setState;
+                return PaginationWidget(
+                  currentPage: page,
+                  totalPageCount: 10,
+                  onChanged: (p) => setState(() => page = p),
+                  maxVisiblePage: 4,
+                );
+              },
+            ),
+          ),
+        ));
+
+        jump(() => page = 9);
+        await tester.pumpAndSettle();
+
+        expect(find.text('6'), findsNothing);
+        for (final label in ['7', '8', '9', '10']) {
+          expect(find.text(label), findsOneWidget, reason: 'label $label');
+        }
+      },
+    );
+
+    testWidgets(
+      'page 8 and page 9 share same window but different selected buttons',
+      (tester) async {
+        // Both pages clamp _midPoint to 8, showing 7 8 9 10.
+        // Page 8: toggleIndex = 3+0 = 3  →  label "9" selected
+        // Page 9: toggleIndex = 3+1 = 4  →  label "10" selected
+        int page = 0;
+        late StateSetter jump;
+
+        await tester.pumpWidget(MaterialApp(
+          home: Scaffold(
+            body: StatefulBuilder(
+              builder: (_, setState) {
+                jump = setState;
+                return PaginationWidget(
+                  currentPage: page,
+                  totalPageCount: 10,
+                  onChanged: (p) => setState(() => page = p),
+                  maxVisiblePage: 4,
+                );
+              },
+            ),
+          ),
+        ));
+
+        jump(() => page = 8);
+        await tester.pumpAndSettle();
+
+        final tbPage8 =
+            tester.widget<ToggleButtons>(find.byType(ToggleButtons));
+        // isSelected[3] == true  →  label "9"
+        expect(tbPage8.isSelected[3], isTrue);
+        expect(tbPage8.isSelected[4], isFalse);
+
+        jump(() => page = 9);
+        await tester.pumpAndSettle();
+
+        final tbPage9 =
+            tester.widget<ToggleButtons>(find.byType(ToggleButtons));
+        // isSelected[4] == true  →  label "10"
+        expect(tbPage9.isSelected[4], isTrue);
+        expect(tbPage9.isSelected[3], isFalse);
+      },
+    );
+
+    testWidgets(
+      'tapping a page label navigates to the correct 0-based page index',
+      (tester) async {
+        // Initial: page=0, _midPoint=2, labels 1 2 3 4.
+        // Tap "3"  (children index 3):
+        //   newPage = _midPoint + (3 - (midPointMargin+1)) = 2 + 0 = 2
+        final logged = <int>[];
+        int page = 0;
+
+        await tester.pumpWidget(MaterialApp(
+          home: Scaffold(
+            body: StatefulBuilder(
+              builder: (_, setState) => PaginationWidget(
+                currentPage: page,
+                totalPageCount: 10,
+                onChanged: (p) {
+                  setState(() => page = p);
+                  logged.add(p);
+                },
+                maxVisiblePage: 4,
+              ),
+            ),
+          ),
+        ));
+
+        await tester.tap(find.text('3'));
+        await tester.pumpAndSettle();
+
+        expect(logged, [2]);
+      },
+    );
+
+    testWidgets(
+      'window reverts to left-clamp when navigating back to an early page',
+      (tester) async {
+        // Navigate deep (page 8), then jump back to page 1.
+        // page 1 < midPointMargin(2)  →  _midPoint=2  →  labels 1 2 3 4
+        int page = 0;
+        late StateSetter jump;
+
+        await tester.pumpWidget(MaterialApp(
+          home: Scaffold(
+            body: StatefulBuilder(
+              builder: (_, setState) {
+                jump = setState;
+                return PaginationWidget(
+                  currentPage: page,
+                  totalPageCount: 10,
+                  onChanged: (p) => setState(() => page = p),
+                  maxVisiblePage: 4,
+                );
+              },
+            ),
+          ),
+        ));
+
+        jump(() => page = 8);
+        await tester.pumpAndSettle();
+        // Sanity: deep window shows 7..10
+        expect(find.text('7'), findsOneWidget);
+
+        jump(() => page = 1);
+        await tester.pumpAndSettle();
+
+        for (final label in ['1', '2', '3', '4']) {
+          expect(find.text(label), findsOneWidget, reason: 'label $label');
+        }
+        expect(find.text('5'), findsNothing);
+      },
+    );
   });
 }
