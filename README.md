@@ -25,6 +25,7 @@ Use `ExpandableDataTable` whenever you need a data table that:
 - **Column sorting** - tap any header to toggle ascending / descending sort
 - **Pagination** - built-in page controls, fully replaceable with a custom widget
 - **Editable rows** - built-in edit dialog pre-filled from cell values; or supply your own via `renderEditDialog`
+- **Custom cell rendering** - override the default cell widget for any column via `cellBuilder` on `ExpandableColumn`
 - **Per-column edit guard** - mark individual `ExpandableColumn`s as `isEditable: false` to make them read-only inside the dialog
 - **Custom expansion content** - replace the default expansion panel body via `renderExpansionContent`
 - **Multiple or single row expansion** - control via `multipleExpansion`
@@ -311,6 +312,66 @@ ExpandableDataTable(
 )
 ```
 
+## Custom cell rendering
+
+By default each cell renders its value as `Text(value.toString())` — except `ImageProvider` columns, which render an `Image` widget. To take full control of how a column's cells look, set `cellBuilder` on the `ExpandableColumn`:
+
+```dart
+ExpandableColumn<String>(
+  columnTitle: 'Status',
+  columnFlex: 2,
+  cellBuilder: (context, value) {
+    final color = value == 'Active' ? Colors.green : Colors.red;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.15),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Text(
+        value.toString(),
+        style: TextStyle(color: color, fontWeight: FontWeight.bold),
+      ),
+    );
+  },
+),
+```
+
+`cellBuilder` receives `(BuildContext context, dynamic value)` and must return a `Widget`. It applies everywhere the column appears — both in the **visible row** and in the **expansion panel**.
+
+### Use case: circular avatar
+
+```dart
+ExpandableColumn<ImageProvider>(
+  columnTitle: 'Picture',
+  columnFlex: 2,
+  isEditable: false,
+  cellBuilder: (context, value) {
+    return Container(
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: Colors.purple[300],
+      ),
+      height: 48,
+      width: 48,
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: ClipOval(
+          child: Image(
+            image: value as ImageProvider,
+            fit: BoxFit.cover,
+            errorBuilder: (context, error, stackTrace) =>
+                const Icon(Icons.broken_image),
+          ),
+        ),
+      ),
+    );
+  },
+),
+```
+
+> **Tip:** When a column has a `cellBuilder`, the default rendering (plain text or image) is completely bypassed. You are responsible for handling `null` values if your data can contain them.
+
 ## Editing
 
 Set `isEditable: true` to show an edit icon on every row. The built-in dialog pre-fills each field from the current cell values. You **must** provide `onRowChanged` when editing is enabled:
@@ -371,7 +432,9 @@ ExpandableDataTable(
 )
 ```
 
-Replace the **pagination widget**:
+## Custom pagination
+
+Replace the built-in pagination widget with `renderCustomPagination`:
 
 ```dart
 ExpandableDataTable(
