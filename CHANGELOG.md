@@ -1,4 +1,9 @@
-# 0.3.0 - 07/03/2026
+# 0.4.0 - 12/03/2026
+
+- Added `cellBuilder` property to `ExpandableColumn` which enables customizable cell rendering per column.
+- Replaced Switch widget for boolean value edit in EditDialog.
+
+## 0.3.0 - 07/03/2026
 
 - Added `ImageProvider` as a new `ExpandableColumn` type to render images as cells.
 - Added image size properties to `ExpandableTheme`.
