@@ -80,4 +80,71 @@ void main() {
       expect(scoreCell.value, 3.14);
     });
   });
+
+  group('editing an int cell', () {
+    List<ExpandableColumn> intHeaders() => [
+          ExpandableColumn<String>(columnTitle: 'Name', columnFlex: 1),
+          ExpandableColumn<int>(columnTitle: 'Count', columnFlex: 1),
+        ];
+
+    ExpandableRow intRow(String name, int count) => ExpandableRow(
+          cells: [
+            ExpandableCell<String>(columnTitle: 'Name', value: name),
+            ExpandableCell<int>(columnTitle: 'Count', value: count),
+          ],
+        );
+
+    testWidgets('a value can be entered and saved', (tester) async {
+      ExpandableRow? result;
+
+      await tester.pumpWidget(
+        buildEditableTable(
+          headers: intHeaders(),
+          rows: [intRow('Alice', 1)],
+          onRowChanged: (row, _) => result = row,
+        ),
+      );
+
+      await tester.tap(find.byIcon(Icons.edit).first);
+      await tester.pumpAndSettle();
+
+      await tester.enterText(editFieldFor('Count'), '42');
+
+      await tester.tap(find.text('SAVE'));
+      await tester.pumpAndSettle();
+
+      expect(tester.takeException(), isNull);
+      expect(result, isNotNull);
+      final countCell =
+          result!.cells.firstWhere((c) => c.columnTitle == 'Count');
+      expect(countCell.value, 42);
+    });
+
+    testWidgets('non-digit characters are stripped by the input formatter',
+        (tester) async {
+      ExpandableRow? result;
+
+      await tester.pumpWidget(
+        buildEditableTable(
+          headers: intHeaders(),
+          rows: [intRow('Alice', 1)],
+          onRowChanged: (row, _) => result = row,
+        ),
+      );
+
+      await tester.tap(find.byIcon(Icons.edit).first);
+      await tester.pumpAndSettle();
+
+      await tester.enterText(editFieldFor('Count'), '1a2b3');
+
+      await tester.tap(find.text('SAVE'));
+      await tester.pumpAndSettle();
+
+      expect(result, isNotNull);
+      final countCell =
+          result!.cells.firstWhere((c) => c.columnTitle == 'Count');
+      // The digitsOnly formatter strips 'a' and 'b', leaving "123".
+      expect(countCell.value, 123);
+    });
+  });
 }

@@ -185,4 +185,42 @@ void main() {
       greaterThanOrEqualTo(initialCount),
     );
   });
+
+  testWidgets(
+      'custom expansionAnimationStyle is accepted and the row still '
+      'expands and collapses correctly', (tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: ExpandableTheme(
+            data: const ExpandableThemeData(
+              expansionAnimationStyle: AnimationStyle(
+                curve: Curves.bounceOut,
+                reverseCurve: Curves.easeIn,
+                duration: Duration(milliseconds: 50),
+              ),
+            ),
+            child: ExpandableDataTable(
+              headers: _headers(3),
+              rows: _rows(2, 3),
+              visibleColumnCount: 1,
+              pageSize: 20,
+              renderExpansionContent: (row) =>
+                  Text('EXPANDED:${row.cells[0].value}'),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    expect(find.textContaining('EXPANDED:'), findsNothing);
+
+    await tester.tap(find.byIcon(Icons.expand_more).first);
+    await tester.pumpAndSettle();
+    expect(find.text('EXPANDED:r0c0'), findsOneWidget);
+
+    await tester.tap(find.byIcon(Icons.expand_more).first);
+    await tester.pumpAndSettle();
+    expect(find.text('EXPANDED:r0c0'), findsNothing);
+  });
 }
