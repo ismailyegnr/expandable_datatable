@@ -2,8 +2,11 @@ import '../model/expandable_row.dart';
 
 extension RowExtension on ExpandableRow {
   dynamic searchTitleValue(String columnTitle) {
-    return cells
-        .firstWhere((element) => element.columnTitle == columnTitle)
-        .value;
+    for (final cell in cells) {
+      if (cell.columnTitle == columnTitle) {
+        return cell.value;
+      }
+    }
+    return null;
   }
 }
