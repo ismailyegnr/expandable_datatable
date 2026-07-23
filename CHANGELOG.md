@@ -1,4 +1,12 @@
-# 0.4.0 - 12/03/2026
+# 0.4.1 - 21/07/2026
+
+- Fixed a crash when saving the edit dialog for a row containing a null cell value.
+- Fixed null cell values displaying as the literal string "null" in the edit dialog.
+- Fixed `searchTitleValue` throwing when a row has no cell for the given column title; it now returns `null`.
+- Fixed the double input formatter rejecting single-digit values (e.g. `"5"`) in the edit dialog.
+- Expanded test coverage: null-cell editing, numeric editing, exceptions, sort behavior with duplicate keys, and `expansionAnimationStyle`.
+
+## 0.4.0 - 12/03/2026
 
 - Added `cellBuilder` property to `ExpandableColumn` which enables customizable cell rendering per column.
 - Replaced Switch widget for boolean value edit in EditDialog.

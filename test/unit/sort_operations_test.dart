@@ -420,6 +420,56 @@ void main() {
   });
 
   // -------------------------------------------------------------------------
+  // Sort determinism with duplicate keys
+  // -------------------------------------------------------------------------
+
+  group('sort determinism with duplicate keys', () {
+    final col = ExpandableColumn<String>(columnTitle: 'name', columnFlex: 1);
+
+    List<List<SortableRow>> duplicateRows() => _wrap([
+          _row(0, {'name': 'Bob'}),
+          _row(1, {'name': 'Alice'}),
+          _row(2, {'name': 'Bob'}),
+          _row(3, {'name': 'Alice'}),
+        ]);
+
+    test('ASC sort on duplicate keys produces the same order on repeated runs',
+        () {
+      ops.changeSortDirection(col); // ASC
+
+      final first = ops.sortAllRows(col, duplicateRows());
+      final second = ops.sortAllRows(col, duplicateRows());
+
+      expect(
+        first.map((r) => r.index).toList(),
+        second.map((r) => r.index).toList(),
+      );
+    });
+
+    test('ASC then DESC toggling on duplicate keys is a clean reversal', () {
+      ops.changeSortDirection(col); // ASC
+      final asc = ops.sortAllRows(col, duplicateRows());
+
+      ops.changeSortDirection(col); // DESC
+      final desc = ops.sortAllRows(col, duplicateRows());
+
+      expect(
+        desc.map((r) => r.index).toList(),
+        asc.map((r) => r.index).toList().reversed.toList(),
+      );
+    });
+
+    test('all equal-key rows keep the correct key value after sorting', () {
+      ops.changeSortDirection(col); // ASC
+
+      final result = ops.sortAllRows(col, duplicateRows());
+      final keys = result.map((r) => r.row.cells.first.value).toList();
+
+      expect(keys, ['Alice', 'Alice', 'Bob', 'Bob']);
+    });
+  });
+
+  // -------------------------------------------------------------------------
   // isSortable defaults
   // -------------------------------------------------------------------------
 

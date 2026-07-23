@@ -62,11 +62,13 @@ class _EditDialogState extends State<EditDialog> {
 
   void _initTextFields() {
     for (int i = 0; i < rowCells.length; i++) {
-      // ImageProvider cannot be meaningfully serialized to text.
-      // Leave the controller empty; the field will be rendered read-only anyway.
-      controllers[i].text = rowCells[i].value is ImageProvider
-          ? ''
-          : rowCells[i].value.toString();
+      final dynamic value = rowCells[i].value;
+
+      // ImageProvider cannot be meaningfully serialized to text, and a null
+      // value has no useful string representation — leave the controller
+      // empty in both cases rather than showing the literal "null".
+      controllers[i].text =
+          (value == null || value is ImageProvider) ? '' : value.toString();
     }
   }
 
@@ -108,44 +110,51 @@ class _EditDialogState extends State<EditDialog> {
           continue;
         }
 
-        if (oldCell.value is String) {
-          resultCellList.add(
-            ExpandableCell<String>(
-              columnTitle: oldCell.columnTitle,
-              value: controllers[i].text,
-            ),
-          );
-        } else if (oldCell.value is bool) {
-          resultCellList.add(
-            ExpandableCell<bool>(
-              columnTitle: oldCell.columnTitle,
-              value: controllers[i].text.parseToBool,
-            ),
-          );
-        } else if (oldCell.value is int) {
-          resultCellList.add(
-            ExpandableCell<int>(
-              columnTitle: oldCell.columnTitle,
-              value: int.parse(controllers[i].text),
-            ),
-          );
-        } else if (oldCell.value is double) {
-          resultCellList.add(
-            ExpandableCell<double>(
-              columnTitle: oldCell.columnTitle,
-              value: double.parse(controllers[i].text),
-            ),
-          );
-        } else if (oldCell.value is ImageProvider) {
-          // ImageProvider is never editable; preserve original value unconditionally.
+        // A null cell value carries no runtime type information, so fall
+        // back to the column's declared generic type instead of throwing
+        // NoSupportException.
+        final Type effectiveType =
+            oldCell.value?.runtimeType ?? col?.type ?? Null;
+        final String text = controllers[i].text;
+
+        if (oldCell.value is ImageProvider || effectiveType == ImageProvider) {
+          // ImageProvider is never editable via text; preserve original value unconditionally.
           resultCellList.add(
             ExpandableCell(
               columnTitle: oldCell.columnTitle,
               value: oldCell.value,
             ),
           );
+        } else if (effectiveType == String) {
+          resultCellList.add(
+            ExpandableCell<String>(
+              columnTitle: oldCell.columnTitle,
+              value: text,
+            ),
+          );
+        } else if (effectiveType == bool) {
+          resultCellList.add(
+            ExpandableCell<bool>(
+              columnTitle: oldCell.columnTitle,
+              value: text.isEmpty ? null : text.parseToBool,
+            ),
+          );
+        } else if (effectiveType == int) {
+          resultCellList.add(
+            ExpandableCell<int>(
+              columnTitle: oldCell.columnTitle,
+              value: text.isEmpty ? null : int.tryParse(text),
+            ),
+          );
+        } else if (effectiveType == double) {
+          resultCellList.add(
+            ExpandableCell<double>(
+              columnTitle: oldCell.columnTitle,
+              value: text.isEmpty ? null : double.tryParse(text),
+            ),
+          );
         } else {
-          throw NoSupportException(oldCell.value.runtimeType.toString());
+          throw NoSupportException(effectiveType.toString());
         }
       }
 
