@@ -25,6 +25,7 @@ Use `ExpandableDataTable` whenever you need a data table that:
 - **Column sorting** - tap any header to toggle ascending / descending sort
 - **Pagination** - built-in page controls, fully replaceable with a custom widget
 - **Editable rows** - built-in edit dialog pre-filled from cell values; or supply your own via `renderEditDialog`
+- **Extensible cell types** - plug in `CellType<T>` adapters (`ImageCellType`, custom `DateTime`, etc.) to encapsulate rendering, sorting, and editing
 - **Custom cell rendering** - override the default cell widget for any column via `cellBuilder` on `ExpandableColumn`
 - **Per-column edit guard** - mark individual `ExpandableColumn`s as `isEditable: false` to make them read-only inside the dialog
 - **Custom expansion content** - replace the default expansion panel body via `renderExpansionContent`
@@ -371,6 +372,101 @@ ExpandableColumn<ImageProvider>(
 ```
 
 > **Tip:** When a column has a `cellBuilder`, the default rendering (plain text or image) is completely bypassed. You are responsible for handling `null` values if your data can contain them.
+
+## Extensible cell types (`CellType<T>`)
+
+Instead of writing one-off callbacks or handling branching across multiple files, you can provide a `CellType<T>` adapter to `ExpandableColumn` to encapsulate rendering, sorting, editing, and string formatting in one reusable object.
+
+### Built-in `ImageCellType`
+
+Declaratively configure image height, fit, alignment, and border radius without writing a custom builder:
+
+```dart
+ExpandableColumn<ImageProvider>(
+  columnTitle: 'Avatar',
+  columnFlex: 2,
+  cellType: ImageCellType(
+    height: 60,
+    fit: BoxFit.cover,
+    alignment: Alignment.center,
+    borderRadius: BorderRadius.circular(12),
+  ),
+)
+```
+
+### Custom `CellType<T>` (e.g. `DateTime`)
+
+Implement `CellType<T>` to add first-class support for any data type with custom sorting, editing, and formatting:
+
+```dart
+class DateTimeCellType extends CellType<DateTime> {
+  const DateTimeCellType();
+
+  @override
+  Widget buildTitleCell(BuildContext context, DateTime? value, TextStyle? textStyle) {
+    return Text(toDisplayString(value, '-'), style: textStyle);
+  }
+
+  @override
+  Widget buildExpansionCell(BuildContext context, DateTime? value, TextStyle? textStyle) {
+    return Text(toDisplayString(value, '-'), style: textStyle);
+  }
+
+  @override
+  int compare(DateTime? a, DateTime? b) {
+    if (a == null && b == null) return 0;
+    if (a == null) return -1;
+    if (b == null) return 1;
+    return a.compareTo(b);
+  }
+
+  @override
+  Widget? buildEditField(
+    BuildContext context,
+    DateTime? value,
+    ValueChanged<DateTime?> onChanged, {
+    bool isEditable = true,
+    String? hintText,
+    InputDecoration? baseDecoration,
+  }) {
+    return TextButton(
+      onPressed: isEditable
+          ? () async {
+              final picked = await showDatePicker(
+                context: context,
+                initialDate: value ?? DateTime.now(),
+                firstDate: DateTime(2000),
+                lastDate: DateTime(2100),
+              );
+              if (picked != null) onChanged(picked);
+            }
+          : null,
+      child: Text(toDisplayString(value, 'Select date')),
+    );
+  }
+
+  @override
+  String toDisplayString(DateTime? value, String placeholder) {
+    if (value == null) return placeholder;
+    return '${value.year}-${value.month.toString().padLeft(2, '0')}-${value.day.toString().padLeft(2, '0')}';
+  }
+}
+```
+
+```dart
+ExpandableColumn<DateTime>(
+  columnTitle: 'Created At',
+  columnFlex: 2,
+  cellType: const DateTimeCellType(),
+)
+```
+
+### Rendering priority
+
+When rendering cells in both the visible row and expansion panel, the table evaluates:
+1. `ExpandableColumn.cellBuilder` *(highest priority)*
+2. `ExpandableColumn.cellType`
+3. Built-in type inference *(fallback)*
 
 ## Editing
 
