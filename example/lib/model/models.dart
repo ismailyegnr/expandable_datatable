@@ -91,7 +91,9 @@ class Users {
     phone = json['phone'];
     username = json['username'];
     password = json['password'];
-    birthDate = json['birthDate'] != null ? DateTime.tryParse(json['birthDate']) : null;
+    birthDate = json['birthDate'] != null
+        ? DateTime.tryParse(json['birthDate'])
+        : null;
     image = json['image'];
     bloodGroup = json['bloodGroup'];
     height = json['height'];
