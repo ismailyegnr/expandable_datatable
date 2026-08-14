@@ -407,5 +407,348 @@ void main() {
       expect(savedRow, isNotNull);
       expect(savedRow!.cells.first.value, DateTime(2030, 12, 25));
     });
+
+    testWidgets('StringCellType renders in title cell and expansion cell',
+        (tester) async {
+      final headers = [
+        ExpandableColumn<String>(
+          columnTitle: 'Name',
+          columnFlex: 1,
+          cellType: const StringCellType(),
+        ),
+        ExpandableColumn<String>(
+          columnTitle: 'Description',
+          columnFlex: 1,
+          cellType: const StringCellType(),
+        ),
+      ];
+
+      final rows = [
+        ExpandableRow(
+          cells: [
+            ExpandableCell<String>(
+              columnTitle: 'Name',
+              value: 'John Doe',
+            ),
+            ExpandableCell<String>(
+              columnTitle: 'Description',
+              value: 'A software engineer',
+            ),
+          ],
+        ),
+      ];
+
+      await tester.pumpWidget(
+        _wrap(ExpandableDataTable(
+          headers: headers,
+          rows: rows,
+          visibleColumnCount: 1,
+        )),
+      );
+
+      // Title cell
+      expect(find.text('John Doe'), findsOneWidget);
+
+      // Expand row
+      await tester.tap(find.byIcon(Icons.expand_more).first);
+      await tester.pumpAndSettle();
+
+      // Expansion cell
+      expect(find.text('A software engineer'), findsOneWidget);
+    });
+
+    testWidgets('NumericCellType renders in title cell and expansion cell',
+        (tester) async {
+      final headers = [
+        ExpandableColumn<int>(
+          columnTitle: 'Age',
+          columnFlex: 1,
+          cellType: const NumericCellType<int>(),
+        ),
+        ExpandableColumn<double>(
+          columnTitle: 'Score',
+          columnFlex: 1,
+          cellType: const NumericCellType<double>(),
+        ),
+      ];
+
+      final rows = [
+        ExpandableRow(
+          cells: [
+            ExpandableCell<int>(
+              columnTitle: 'Age',
+              value: 30,
+            ),
+            ExpandableCell<double>(
+              columnTitle: 'Score',
+              value: 95.5,
+            ),
+          ],
+        ),
+      ];
+
+      await tester.pumpWidget(
+        _wrap(ExpandableDataTable(
+          headers: headers,
+          rows: rows,
+          visibleColumnCount: 1,
+        )),
+      );
+
+      // Title cell
+      expect(find.text('30'), findsOneWidget);
+
+      // Expand row
+      await tester.tap(find.byIcon(Icons.expand_more).first);
+      await tester.pumpAndSettle();
+
+      // Expansion cell
+      expect(find.text('95.5'), findsOneWidget);
+    });
+
+    testWidgets('BoolCellType renders in title cell and expansion cell',
+        (tester) async {
+      final headers = [
+        ExpandableColumn<bool>(
+          columnTitle: 'IsActiveTitle',
+          columnFlex: 1,
+          cellType: const BoolCellType(),
+        ),
+        ExpandableColumn<bool>(
+          columnTitle: 'IsActiveExp',
+          columnFlex: 1,
+          cellType: const BoolCellType(),
+        ),
+      ];
+
+      final rows = [
+        ExpandableRow(
+          cells: [
+            ExpandableCell<bool>(
+              columnTitle: 'IsActiveTitle',
+              value: true,
+            ),
+            ExpandableCell<bool>(
+              columnTitle: 'IsActiveExp',
+              value: false,
+            ),
+          ],
+        ),
+      ];
+
+      await tester.pumpWidget(
+        _wrap(ExpandableDataTable(
+          headers: headers,
+          rows: rows,
+          visibleColumnCount: 1,
+        )),
+      );
+
+      // Title cell
+      expect(find.text('true'), findsOneWidget);
+
+      // Expand row
+      await tester.tap(find.byIcon(Icons.expand_more).first);
+      await tester.pumpAndSettle();
+
+      // Expansion cell
+      expect(find.text('false'), findsOneWidget);
+    });
+
+    testWidgets('BoolCellType edit field updates and saves value',
+        (tester) async {
+      final headers = [
+        ExpandableColumn<bool>(
+          columnTitle: 'IsActive',
+          columnFlex: 1,
+          cellType: const BoolCellType(),
+        ),
+      ];
+
+      final rows = [
+        ExpandableRow(
+          cells: [
+            ExpandableCell<bool>(
+              columnTitle: 'IsActive',
+              value: false,
+            ),
+          ],
+        ),
+      ];
+
+      ExpandableRow? savedRow;
+
+      await tester.pumpWidget(
+        _wrap(ExpandableDataTable(
+          headers: headers,
+          rows: rows,
+          visibleColumnCount: 1,
+          isEditable: true,
+          onRowChanged: (newRow, originalIndex) {
+            savedRow = newRow;
+          },
+        )),
+      );
+
+      // Open Edit Dialog
+      await tester.tap(find.byIcon(Icons.edit).first);
+      await tester.pumpAndSettle();
+
+      // Edit field renders a Switch
+      final switchFinders = find.byType(Switch);
+      expect(switchFinders, findsOneWidget);
+
+      // Tap the switch (false -> true)
+      await tester.tap(switchFinders.first);
+      await tester.pumpAndSettle();
+
+      // Tap SAVE
+      await tester.tap(find.text('SAVE'));
+      await tester.pumpAndSettle();
+
+      expect(savedRow, isNotNull);
+      expect(savedRow!.cells[0].value, true);
+    });
+
+    testWidgets('ImageCellType handles null value in title and expansion cell',
+        (tester) async {
+      final headers = [
+        ExpandableColumn<ImageProvider>(
+          columnTitle: 'NullImgTitle',
+          columnFlex: 1,
+          cellType: const ImageCellType(),
+        ),
+        ExpandableColumn<ImageProvider>(
+          columnTitle: 'NullImgExp',
+          columnFlex: 1,
+          cellType: const ImageCellType(),
+        ),
+      ];
+
+      final rows = [
+        ExpandableRow(
+          cells: [
+            ExpandableCell<ImageProvider>(
+              columnTitle: 'NullImgTitle',
+              value: null,
+            ),
+            ExpandableCell<ImageProvider>(
+              columnTitle: 'NullImgExp',
+              value: null,
+            ),
+          ],
+        ),
+      ];
+
+      await tester.pumpWidget(
+        _wrap(ExpandableDataTable(
+          headers: headers,
+          rows: rows,
+          visibleColumnCount: 1,
+        )),
+      );
+
+      // Title cell with null should have empty text widget
+      expect(find.text(''), findsWidgets);
+
+      // Expand row
+      await tester.tap(find.byIcon(Icons.expand_more).first);
+      await tester.pumpAndSettle();
+
+      // Expansion cell with null should also have empty text widget
+      expect(find.text(''), findsWidgets);
+    });
+
+    testWidgets('ImageCellType uses customBuilder when provided',
+        (tester) async {
+      final imgProvider = MemoryImage(_kTransparentImage);
+
+      final headers = [
+        ExpandableColumn<ImageProvider>(
+          columnTitle: 'CustomImg',
+          columnFlex: 1,
+          cellType: ImageCellType(
+            customBuilder: (context, value) => const Text('CUSTOM_IMG_KEY'),
+          ),
+        ),
+      ];
+
+      final rows = [
+        ExpandableRow(
+          cells: [
+            ExpandableCell<ImageProvider>(
+              columnTitle: 'CustomImg',
+              value: imgProvider,
+            ),
+          ],
+        ),
+      ];
+
+      await tester.pumpWidget(
+        _wrap(ExpandableDataTable(
+          headers: headers,
+          rows: rows,
+          visibleColumnCount: 1,
+        )),
+      );
+
+      // customBuilder should be rendered
+      expect(find.text('CUSTOM_IMG_KEY'), findsOneWidget);
+    });
+
+    testWidgets(
+        'ImageCellType edit field ignores customBuilder and handles null value',
+        (tester) async {
+      final imgProvider = MemoryImage(_kTransparentImage);
+
+      final headers = [
+        ExpandableColumn<ImageProvider>(
+          columnTitle: 'NullImg',
+          columnFlex: 1,
+          cellType: const ImageCellType(),
+        ),
+        ExpandableColumn<ImageProvider>(
+          columnTitle: 'CustomImg',
+          columnFlex: 1,
+          cellType: ImageCellType(
+            customBuilder: (context, value) => const Text('CUSTOM_IMG_KEY'),
+          ),
+        ),
+      ];
+
+      final rows = [
+        ExpandableRow(
+          cells: [
+            ExpandableCell<ImageProvider>(
+              columnTitle: 'NullImg',
+              value: null,
+            ),
+            ExpandableCell<ImageProvider>(
+              columnTitle: 'CustomImg',
+              value: imgProvider,
+            ),
+          ],
+        ),
+      ];
+
+      await tester.pumpWidget(
+        _wrap(ExpandableDataTable(
+          headers: headers,
+          rows: rows,
+          visibleColumnCount: 1,
+          isEditable: true,
+          onRowChanged: (newRow, originalIndex) {},
+        )),
+      );
+
+      // Open Edit Dialog
+      await tester.tap(find.byIcon(Icons.edit).first);
+      await tester.pumpAndSettle();
+
+      // In the edit dialog, null value should render a shrink box (no Image widget for it).
+      // CustomBuilder should be ignored and it should render the default Image widget.
+      expect(find.byType(Image),
+          findsOneWidget); // Only one Image widget from the CustomImg edit field
+    });
   });
 }
