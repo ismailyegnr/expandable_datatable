@@ -8,15 +8,73 @@ Widget _wrap(Widget child) => MaterialApp(home: Scaffold(body: child));
 
 // 1×1 transparent PNG bytes.
 final Uint8List _kTransparentImage = Uint8List.fromList([
-  0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A,
-  0x00, 0x00, 0x00, 0x0D, 0x49, 0x48, 0x44, 0x52,
-  0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01,
-  0x08, 0x06, 0x00, 0x00, 0x00, 0x1F, 0x15, 0xC4,
-  0x89, 0x00, 0x00, 0x00, 0x0A, 0x49, 0x44, 0x41,
-  0x54, 0x78, 0x9C, 0x63, 0x00, 0x01, 0x00, 0x00,
-  0x05, 0x00, 0x01, 0x0D, 0x0A, 0x2D, 0xB4, 0x00,
-  0x00, 0x00, 0x00, 0x49, 0x45, 0x4E, 0x44, 0xAE,
-  0x42, 0x60, 0x82,
+  0x89,
+  0x50,
+  0x4E,
+  0x47,
+  0x0D,
+  0x0A,
+  0x1A,
+  0x0A,
+  0x00,
+  0x00,
+  0x00,
+  0x0D,
+  0x49,
+  0x48,
+  0x44,
+  0x52,
+  0x00,
+  0x00,
+  0x00,
+  0x01,
+  0x00,
+  0x00,
+  0x00,
+  0x01,
+  0x08,
+  0x06,
+  0x00,
+  0x00,
+  0x00,
+  0x1F,
+  0x15,
+  0xC4,
+  0x89,
+  0x00,
+  0x00,
+  0x00,
+  0x0A,
+  0x49,
+  0x44,
+  0x41,
+  0x54,
+  0x78,
+  0x9C,
+  0x63,
+  0x00,
+  0x01,
+  0x00,
+  0x00,
+  0x05,
+  0x00,
+  0x01,
+  0x0D,
+  0x0A,
+  0x2D,
+  0xB4,
+  0x00,
+  0x00,
+  0x00,
+  0x00,
+  0x49,
+  0x45,
+  0x4E,
+  0x44,
+  0xAE,
+  0x42,
+  0x60,
+  0x82,
 ]);
 
 class CustomDateCellType extends CellType<DateTime> {
@@ -29,7 +87,9 @@ class CustomDateCellType extends CellType<DateTime> {
     TextStyle? textStyle,
   ) {
     return Text(
-      value != null ? 'DATE:${value.year}-${value.month}-${value.day}' : 'NO_DATE',
+      value != null
+          ? 'DATE:${value.year}-${value.month}-${value.day}'
+          : 'NO_DATE',
       key: const Key('custom_date_title'),
     );
   }
@@ -41,7 +101,9 @@ class CustomDateCellType extends CellType<DateTime> {
     TextStyle? textStyle,
   ) {
     return Text(
-      value != null ? 'EXP_DATE:${value.year}-${value.month}-${value.day}' : 'NO_DATE',
+      value != null
+          ? 'EXP_DATE:${value.year}-${value.month}-${value.day}'
+          : 'NO_DATE',
       key: const Key('custom_date_exp'),
     );
   }
@@ -130,7 +192,8 @@ void main() {
       expect(find.text('EXP_DATE:2026-8-15'), findsOneWidget);
     });
 
-    testWidgets('ImageCellType renders with custom height, fit, and borderRadius',
+    testWidgets(
+        'ImageCellType renders with custom height, fit, and borderRadius',
         (tester) async {
       final headers = [
         ExpandableColumn<ImageProvider>(
@@ -283,7 +346,8 @@ void main() {
       expect(labelsAfterAsc, ['RowEarlier', 'RowLater']);
     });
 
-    testWidgets('Editing row with CellType.buildEditField updates and saves value',
+    testWidgets(
+        'Editing row with CellType.buildEditField updates and saves value',
         (tester) async {
       final headers = [
         ExpandableColumn<DateTime>(
@@ -325,7 +389,8 @@ void main() {
       await tester.pumpAndSettle();
 
       // Custom button from CustomDateCellType.buildEditField is present
-      expect(find.byKey(const Key('custom_date_picker_button')), findsOneWidget);
+      expect(
+          find.byKey(const Key('custom_date_picker_button')), findsOneWidget);
       expect(find.text('2020-1-1'), findsOneWidget);
 
       // Tap button to change date to 2030-12-25

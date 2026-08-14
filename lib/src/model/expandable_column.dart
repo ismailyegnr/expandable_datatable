@@ -64,5 +64,6 @@ class ExpandableColumn<T> {
     bool? isSortable,
     this.cellBuilder,
     this.cellType,
-  }) : isSortable = isSortable ?? (T != ImageProvider && cellType is! ImageCellType);
+  }) : isSortable =
+            isSortable ?? (T != ImageProvider && cellType is! ImageCellType);
 }

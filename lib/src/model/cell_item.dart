@@ -37,4 +37,3 @@ class CellItem {
     this.nullValuePlaceholder,
   });
 }
-
