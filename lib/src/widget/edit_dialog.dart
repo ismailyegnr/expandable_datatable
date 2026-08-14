@@ -44,6 +44,8 @@ class EditDialog extends StatefulWidget {
 
 class _EditDialogState extends State<EditDialog> {
   List<TextEditingController> controllers = [];
+  final Map<int, dynamic> _cellValues = {};
+  final Set<int> _customFieldIndices = {};
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
@@ -55,6 +57,7 @@ class _EditDialogState extends State<EditDialog> {
 
     for (int i = 0; i < rowCells.length; i++) {
       controllers.add(TextEditingController());
+      _cellValues[i] = rowCells[i].value;
     }
 
     _initTextFields();
@@ -105,6 +108,16 @@ class _EditDialogState extends State<EditDialog> {
             ExpandableCell(
               columnTitle: oldCell.columnTitle,
               value: oldCell.value,
+            ),
+          );
+          continue;
+        }
+
+        if (_customFieldIndices.contains(i)) {
+          resultCellList.add(
+            ExpandableCell(
+              columnTitle: oldCell.columnTitle,
+              value: _cellValues[i],
             ),
           );
           continue;
@@ -211,22 +224,63 @@ class _EditDialogState extends State<EditDialog> {
 
   Widget _buildContent(dynamic theme) {
     final List<Widget> widgets = [];
+    _customFieldIndices.clear();
 
     for (int i = 0; i < rowCells.length; i++) {
       final ExpandableColumn? col = _columnFor(rowCells[i]);
-      final dynamic cellValue = rowCells[i].value;
+      final dynamic cellValue = _cellValues[i];
 
-      widgets.add(
-        EditRow(
-          controller: controllers[i],
-          columnName: rowCells[i].columnTitle,
-          valueType: cellValue.runtimeType,
-          isEditable: col?.isEditable ?? true,
-          hintText: col?.hintText,
+      Widget? customEditWidget;
+      if (col?.cellType != null) {
+        customEditWidget = col!.cellType!.buildEditField(
+          context,
+          cellValue,
+          (newValue) {
+            setState(() {
+              _cellValues[i] = newValue;
+              if (newValue != null && newValue is! ImageProvider) {
+                controllers[i].text = newValue.toString();
+              }
+            });
+          },
+          isEditable: col.isEditable,
+          hintText: col.hintText,
           baseDecoration: theme.editInputDecoration,
-          imageProvider: cellValue is ImageProvider ? cellValue : null,
-        ),
-      );
+        );
+      }
+
+      if (customEditWidget != null) {
+        _customFieldIndices.add(i);
+        widgets.add(
+          Row(
+            children: [
+              Expanded(
+                flex: 2,
+                child: Text(rowCells[i].columnTitle),
+              ),
+              Expanded(
+                flex: 3,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 3),
+                  child: customEditWidget,
+                ),
+              ),
+            ],
+          ),
+        );
+      } else {
+        widgets.add(
+          EditRow(
+            controller: controllers[i],
+            columnName: rowCells[i].columnTitle,
+            valueType: cellValue?.runtimeType ?? col?.type ?? dynamic,
+            isEditable: col?.isEditable ?? true,
+            hintText: col?.hintText,
+            baseDecoration: theme.editInputDecoration,
+            imageProvider: cellValue is ImageProvider ? cellValue : null,
+          ),
+        );
+      }
     }
 
     return Column(children: widgets);
