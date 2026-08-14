@@ -1,4 +1,8 @@
-# 0.4.1 - 21/07/2026
+# 0.5.0 - 14/08/2026
+
+- Introduced an extensible cell type architecture and modularized data table components.
+
+## 0.4.1 - 21/07/2026
 
 - Fixed a crash when saving the edit dialog for a row containing a null cell value.
 - Fixed null cell values displaying as the literal string "null" in the edit dialog.

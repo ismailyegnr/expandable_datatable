@@ -329,8 +329,6 @@ class _ExpandableDataTableState extends State<ExpandableDataTable> {
     List<CellItem> titleCells,
     List<CellItem> expansionCells,
   ) {
-    final String placeholder = widget.nullValuePlaceholder;
-
     for (var element in rowData.cells) {
       final ExpandableColumn? column = _columnsByTitle[element.columnTitle];
 
@@ -338,26 +336,27 @@ class _ExpandableDataTableState extends State<ExpandableDataTable> {
       // (can happen transiently when headers and rows are updated separately).
       if (column == null) continue;
 
-      // Preserve ImageProvider objects as-is; convert everything else to String.
-      final dynamic displayValue = element.value is ImageProvider
-          ? element.value
-          : (element.value?.toString() ?? placeholder);
+      final dynamic cellValue = element.value;
 
       if (_visibleColumnTitles.contains(element.columnTitle)) {
         titleCells.add(
           CellItem(
             columnName: element.columnTitle,
-            value: displayValue,
+            value: cellValue,
             flex: column.columnFlex,
             cellBuilder: column.cellBuilder,
+            cellType: column.cellType,
+            nullValuePlaceholder: widget.nullValuePlaceholder,
           ),
         );
       } else {
         expansionCells.add(
           CellItem(
             columnName: element.columnTitle,
-            value: displayValue,
+            value: cellValue,
             cellBuilder: column.cellBuilder,
+            cellType: column.cellType,
+            nullValuePlaceholder: widget.nullValuePlaceholder,
           ),
         );
       }

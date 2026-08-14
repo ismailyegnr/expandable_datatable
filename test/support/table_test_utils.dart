@@ -14,7 +14,8 @@ Widget buildEditableTable({
   required List<ExpandableRow> rows,
   required List<ExpandableColumn> headers,
   void Function(ExpandableRow, int)? onRowChanged,
-  Widget Function(ExpandableRow, void Function(ExpandableRow))? renderEditDialog,
+  Widget Function(ExpandableRow, void Function(ExpandableRow))?
+      renderEditDialog,
   int visibleColumnCount = 3,
   String? editDialogTitle,
   String? editSaveLabel,

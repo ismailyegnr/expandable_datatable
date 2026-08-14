@@ -1,5 +1,6 @@
 import 'package:flutter/painting.dart';
 
+import '../extension/row_extension.dart';
 import '../extension/sort_extension.dart';
 import '../model/expandable_column.dart';
 import '../model/sortable_row.dart';
@@ -41,6 +42,15 @@ class SortOperations {
     ExpandableColumn<dynamic> column,
     List<SortableRow> tempSortArray,
   ) {
+    if (column.cellType != null) {
+      tempSortArray.sort((a, b) {
+        final aRaw = a.row.searchTitleValue(column.columnTitle);
+        final bRaw = b.row.searchTitleValue(column.columnTitle);
+        return column.cellType!.compare(aRaw, bRaw);
+      });
+      return;
+    }
+
     switch (column.type) {
       case String:
         tempSortArray.sortStringAscending(column.columnTitle);

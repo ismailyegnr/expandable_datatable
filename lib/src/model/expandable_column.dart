@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'cell_type.dart';
+
 class ExpandableColumn<T> {
   String columnTitle;
   int columnFlex;
@@ -46,6 +48,12 @@ class ExpandableColumn<T> {
   /// ```
   final Widget Function(BuildContext context, dynamic value)? cellBuilder;
 
+  /// Optional [CellType] adapter that controls rendering, sorting, editing,
+  /// and string formatting for this column's data type.
+  ///
+  /// When omitted, generic-based type inference is used.
+  final CellType<T>? cellType;
+
   Type get type => T;
 
   ExpandableColumn({
@@ -55,5 +63,7 @@ class ExpandableColumn<T> {
     this.hintText,
     bool? isSortable,
     this.cellBuilder,
-  }) : isSortable = isSortable ?? (T != ImageProvider);
+    this.cellType,
+  }) : isSortable =
+            isSortable ?? (T != ImageProvider && cellType is! ImageCellType);
 }

@@ -41,6 +41,35 @@ class ExpansionContainer extends StatelessWidget {
     final expandedTextStyle = context.expandableTheme.expandedTextStyle ??
         Theme.of(context).textTheme.bodyMedium;
 
+    Widget cellWidget;
+
+    if (element.cellBuilder != null) {
+      cellWidget = element.cellBuilder!(context, element.value);
+    } else if (element.cellType != null) {
+      cellWidget = element.cellType!.buildExpansionCell(
+        context,
+        element.value,
+        expandedTextStyle,
+      );
+    } else if (element.value is ImageProvider) {
+      cellWidget = Align(
+        alignment: Alignment.centerLeft,
+        child: SizedBox(
+          height: context.expandableTheme.imageColumnHeightExpansion ??
+              GeneralConstants.imageColumnHeightExpansion,
+          child: Image(
+            image: element.value as ImageProvider,
+            fit: BoxFit.contain,
+          ),
+        ),
+      );
+    } else {
+      cellWidget = Text(
+        "${element.value ?? (element.nullValuePlaceholder ?? '')}",
+        style: expandedTextStyle,
+      );
+    }
+
     return Row(
       children: [
         Expanded(
@@ -52,25 +81,7 @@ class ExpansionContainer extends StatelessWidget {
         ),
         Expanded(
           flex: 4,
-          child: element.cellBuilder != null
-              ? element.cellBuilder!(context, element.value)
-              : element.value is ImageProvider
-                  ? Align(
-                      alignment: Alignment.centerLeft,
-                      child: SizedBox(
-                        height: context
-                                .expandableTheme.imageColumnHeightExpansion ??
-                            GeneralConstants.imageColumnHeightExpansion,
-                        child: Image(
-                          image: element.value as ImageProvider,
-                          fit: BoxFit.contain,
-                        ),
-                      ),
-                    )
-                  : Text(
-                      "${element.value}",
-                      style: expandedTextStyle,
-                    ),
+          child: cellWidget,
         ),
       ],
     );

@@ -32,7 +32,7 @@ class Users {
   String? phone;
   String? username;
   String? password;
-  String? birthDate;
+  DateTime? birthDate;
   String? image;
   String? bloodGroup;
   int? height;
@@ -91,7 +91,9 @@ class Users {
     phone = json['phone'];
     username = json['username'];
     password = json['password'];
-    birthDate = json['birthDate'];
+    birthDate = json['birthDate'] != null
+        ? DateTime.tryParse(json['birthDate'])
+        : null;
     image = json['image'];
     bloodGroup = json['bloodGroup'];
     height = json['height'];
@@ -126,7 +128,7 @@ class Users {
     data['phone'] = phone;
     data['username'] = username;
     data['password'] = password;
-    data['birthDate'] = birthDate;
+    data['birthDate'] = birthDate?.toIso8601String().split('T').first;
     data['image'] = image;
     data['bloodGroup'] = bloodGroup;
     data['height'] = height;

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'cell_type.dart';
+
 /// [ExpansionTile] title class that helps to build rows.
 ///
 /// Multiple [CellItem] creates a title of the row.
@@ -19,10 +21,19 @@ class CellItem {
   /// methods, bypassing the built-in type inference.
   final Widget Function(BuildContext context, dynamic value)? cellBuilder;
 
+  /// Resolved [CellType] adapter, copied from the matching
+  /// [ExpandableColumn.cellType] by [ExpandableDataTable._createRowCells].
+  final CellType? cellType;
+
+  /// Placeholder string to display when [value] is null.
+  final String? nullValuePlaceholder;
+
   CellItem({
     required this.columnName,
     this.value,
     this.flex,
     this.cellBuilder,
+    this.cellType,
+    this.nullValuePlaceholder,
   });
 }

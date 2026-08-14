@@ -88,12 +88,11 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
           ExpandableCell<String>(columnTitle: "First name", value: e.firstName),
           ExpandableCell<String>(columnTitle: "Last name", value: e.lastName),
-          ExpandableCell<String>(
-            columnTitle: "Maiden name",
-            value: e.maidenName,
+          ExpandableCell<DateTime>(
+            columnTitle: "Birth Date",
+            value: e.birthDate,
           ),
           ExpandableCell<int>(columnTitle: "Age", value: e.age),
-          ExpandableCell<String>(columnTitle: "Gender", value: e.gender),
           ExpandableCell<String>(columnTitle: "Email", value: e.email),
         ],
       );
@@ -222,16 +221,13 @@ class _MyHomePageState extends State<MyHomePage> {
                           columnTitle: "Last name",
                           columnFlex: 2,
                         ),
-                        ExpandableColumn<String>(
-                          columnTitle: "Maiden name",
+                        ExpandableColumn<DateTime>(
+                          columnTitle: "Birth Date",
                           columnFlex: 2,
+                          cellType: const DateTimeCellType(),
                         ),
                         ExpandableColumn<int>(
                           columnTitle: "Age",
-                          columnFlex: 1,
-                        ),
-                        ExpandableColumn<String>(
-                          columnTitle: "Gender",
                           columnFlex: 1,
                         ),
                         ExpandableColumn<String>(
@@ -263,5 +259,67 @@ class _MyHomePageState extends State<MyHomePage> {
             : const Center(child: CircularProgressIndicator()),
       ),
     );
+  }
+}
+
+class DateTimeCellType extends CellType<DateTime> {
+  const DateTimeCellType();
+
+  @override
+  Widget buildTitleCell(
+    BuildContext context,
+    DateTime? value,
+    TextStyle? textStyle,
+  ) {
+    return Text(toDisplayString(value, '-'), style: textStyle);
+  }
+
+  @override
+  Widget buildExpansionCell(
+    BuildContext context,
+    DateTime? value,
+    TextStyle? textStyle,
+  ) {
+    return Text(toDisplayString(value, '-'), style: textStyle);
+  }
+
+  @override
+  int compare(DateTime? a, DateTime? b) {
+    if (a == null && b == null) return 0;
+    if (a == null) return -1;
+    if (b == null) return 1;
+    return a.compareTo(b);
+  }
+
+  @override
+  Widget? buildEditField(
+    BuildContext context,
+    DateTime? value,
+    ValueChanged<DateTime?> onChanged, {
+    bool isEditable = true,
+    String? hintText,
+    InputDecoration? baseDecoration,
+  }) {
+    return TextButton(
+      onPressed: isEditable
+          ? () async {
+              final picked = await showDatePicker(
+                context: context,
+                initialDate: value ?? DateTime.now(),
+                firstDate: DateTime(1900),
+                lastDate: DateTime(2100),
+              );
+              if (picked != null) onChanged(picked);
+            }
+          : null,
+      style: TextButton.styleFrom(alignment: Alignment.centerLeft),
+      child: Text(toDisplayString(value, 'Select date')),
+    );
+  }
+
+  @override
+  String toDisplayString(DateTime? value, String placeholder) {
+    if (value == null) return placeholder;
+    return '${value.day.toString().padLeft(2, '0')}.${value.month.toString().padLeft(2, '0')}.${value.year}';
   }
 }
