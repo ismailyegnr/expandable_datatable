@@ -223,28 +223,26 @@ class ImageCellType extends CellType<ImageProvider> {
     this.customBuilder,
   });
 
-  @override
-  Widget buildTitleCell(
+  Widget _buildImageWidget(
     BuildContext context,
-    ImageProvider? value,
-    TextStyle? textStyle,
-  ) {
+    ImageProvider? value, {
+    TextStyle? fallbackTextStyle,
+    required double defaultHeight,
+    bool isEditField = false,
+  }) {
     if (value == null) {
+      if (isEditField) return const SizedBox.shrink();
       return Text(
         '',
-        style: textStyle ??
-            context.expandableTheme.rowTextStyle ??
-            Theme.of(context).textTheme.bodyMedium,
+        style: fallbackTextStyle ?? Theme.of(context).textTheme.bodyMedium,
       );
     }
 
-    if (customBuilder != null) {
+    if (!isEditField && customBuilder != null) {
       return customBuilder!(context, value);
     }
 
-    final double effectiveHeight = height ??
-        context.expandableTheme.imageColumnHeightTitle ??
-        GeneralConstants.imageColumnHeightTitle;
+    final double effectiveHeight = height ?? defaultHeight;
 
     Widget imageWidget = SizedBox(
       height: effectiveHeight,
@@ -276,47 +274,33 @@ class ImageCellType extends CellType<ImageProvider> {
   }
 
   @override
+  Widget buildTitleCell(
+    BuildContext context,
+    ImageProvider? value,
+    TextStyle? textStyle,
+  ) {
+    return _buildImageWidget(
+      context,
+      value,
+      fallbackTextStyle: textStyle ?? context.expandableTheme.rowTextStyle,
+      defaultHeight: context.expandableTheme.imageColumnHeightTitle ??
+          GeneralConstants.imageColumnHeightTitle,
+    );
+  }
+
+  @override
   Widget buildExpansionCell(
     BuildContext context,
     ImageProvider? value,
     TextStyle? textStyle,
   ) {
-    if (value == null) {
-      return Text(
-        '',
-        style: textStyle ??
-            context.expandableTheme.expandedTextStyle ??
-            Theme.of(context).textTheme.bodyMedium,
-      );
-    }
-
-    if (customBuilder != null) {
-      return customBuilder!(context, value);
-    }
-
-    final double effectiveHeight = height ??
-        context.expandableTheme.imageColumnHeightExpansion ??
-        GeneralConstants.imageColumnHeightExpansion;
-
-    Widget imageWidget = Align(
-      alignment: alignment,
-      child: SizedBox(
-        height: effectiveHeight,
-        child: Image(
-          image: value,
-          fit: fit,
-        ),
-      ),
+    return _buildImageWidget(
+      context,
+      value,
+      fallbackTextStyle: textStyle ?? context.expandableTheme.expandedTextStyle,
+      defaultHeight: context.expandableTheme.imageColumnHeightExpansion ??
+          GeneralConstants.imageColumnHeightExpansion,
     );
-
-    if (borderRadius != null) {
-      imageWidget = ClipRRect(
-        borderRadius: borderRadius!,
-        child: imageWidget,
-      );
-    }
-
-    return imageWidget;
   }
 
   @override
@@ -328,31 +312,13 @@ class ImageCellType extends CellType<ImageProvider> {
     String? hintText,
     InputDecoration? baseDecoration,
   }) {
-    if (value == null) return const SizedBox.shrink();
-
-    final double effectiveHeight = height ??
-        context.expandableTheme.imageColumnHeightExpansion ??
-        GeneralConstants.imageColumnHeightExpansion;
-
-    Widget imageWidget = SizedBox(
-      height: effectiveHeight,
-      child: Align(
-        alignment: alignment,
-        child: Image(
-          image: value,
-          fit: fit,
-        ),
-      ),
+    return _buildImageWidget(
+      context,
+      value,
+      defaultHeight: context.expandableTheme.imageColumnHeightExpansion ??
+          GeneralConstants.imageColumnHeightExpansion,
+      isEditField: true,
     );
-
-    if (borderRadius != null) {
-      imageWidget = ClipRRect(
-        borderRadius: borderRadius!,
-        child: imageWidget,
-      );
-    }
-
-    return imageWidget;
   }
 
   @override
